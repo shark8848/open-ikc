@@ -6,4 +6,4 @@ logs/
 *.tmp
 *.swp
 .DS_Store
-*.Zone.Identifier
+*:Zone.Identifier

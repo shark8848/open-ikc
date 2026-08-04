@@ -31,7 +31,7 @@ API_CATALOG = [
             },
             {
                 "method": "GET",
-                "path": "/api/v1/knowledge-documents/{docId}",
+                "path": "/api/v1/knowledge-documents/{doc_id}",
                 "summary": "查询文档信息",
             },
         ],

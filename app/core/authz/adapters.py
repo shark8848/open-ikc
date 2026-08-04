@@ -135,8 +135,15 @@ def _pick_identity_value(
     default: Any,
 ) -> Any:
     mapped_key = identity_mapping.get(semantic_key, fallback_key)
-    if mapped_key in raw_identity:
-        return raw_identity[mapped_key]
-    if fallback_key in raw_identity:
-        return raw_identity[fallback_key]
+    for candidate_key in (mapped_key, fallback_key, semantic_key, "user_id", "tenant_id"):
+        if candidate_key in raw_identity and not _is_empty_value(raw_identity[candidate_key]):
+            return raw_identity[candidate_key]
     return default
+
+
+def _is_empty_value(value: Any) -> bool:
+    if value is None or value == "":
+        return True
+    if isinstance(value, (list, tuple, set, dict)) and len(value) == 0:
+        return True
+    return False

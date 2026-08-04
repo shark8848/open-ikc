@@ -9,7 +9,15 @@ from app.core.trace import bind_trace_context, build_trace_headers, clear_trace,
 
 
 AUTH_EXEMPT_PREFIXES = ("/docs", "/redoc")
-AUTH_EXEMPT_PATHS = {"/openapi.json", "/docs/oauth2-redirect"}
+AUTH_EXEMPT_PATHS = {
+    "/",
+    "/health",
+    "/openapi.json",
+    "/docs/oauth2-redirect",
+    "/api-browser",
+    "/api/catalog",
+    "/api/error-codes",
+}
 
 
 def _is_auth_exempt_path(path: str) -> bool:

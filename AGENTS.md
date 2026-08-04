@@ -1,0 +1,260 @@
+# AGENTS.md — open-ikc 项目实现契约
+
+> 本文件是所有自动化协作者（Codex / Claude Code 等）在本仓库内工作的**强制约定**。
+> Claude Code 通过 `CLAUDE.md` 的 `@AGENTS.md` 导入读取同一份契约；**契约只编辑本文件**。
+> 权威顺序：本文件 + 当前代码实现 > `docs/` 设计文档；设计文档只解释意图，不直接覆盖实现。
+
+## 1. 项目定位
+
+| 项 | 约定 |
+| --- | --- |
+| 仓库 / 包名 | `open-ikc` / `open-ikc-api` |
+| 形态 | FastAPI **北向开放平台 API**，当前为预占位脚手架 |
+| Python | `>=3.12` |
+| 默认端口 | `18000` |
+
+**对外只开放四类业务能力，禁止擅自扩展第五类或暴露内部流水线 API：**
+
+1. **知识库** — 创建 / 修改库信息
+2. **文档** — 接入知识源、文档查询
+3. **解析** — 解析任务与结果获取
+4. **检索** — 统一检索问答
+
+索引能力（reindex / task query）若落地，须先对齐 `docs/开放平台接口整体方案_V2_精简.md`，并同步 `app/core/catalog.py` 与路由，不得 silently 加私有路径。
+
+## 2. 目录与职责边界
+
+```
+app/
+  main.py                 # 仅 create_app()，禁止堆业务
+  core/
+    app_factory.py        # FastAPI 装配：路由、中间件、异常、SDK
+    middlewares.py        # Trace + AuthN 中间件
+    security.py           # Token / OAuth2 / OIDC 等认证实现
+    trace.py              # traceId 生成、绑定、下游透传头
+    error_codes.py        # ErrorCode / AppException / 领域异常与错误码表
+    exception_handlers.py # 全局异常 → 统一响应
+    responses.py          # 成功/占位响应构造（含 traceId）
+    catalog.py            # 对外 API 目录（与路由保持一致）
+    system_routes.py      # /、/health、/api-browser、/api/catalog、/api/error-codes
+    api_browser.py        # API 浏览页
+    logging.py            # 日志封装
+    authz/                # 独立 AUTHZ 集成层（勿与 middleware 交叉耦合）
+      schema.py           # 统一权限语义（身份、权限事实、授权请求、决策）
+      adapters.py         # 外部权限 schema → 统一语义的适配器
+      policy.py           # 统一策略引擎（deny-overrides）
+      service.py          # 适配器注册与 authorize 门面
+      bridge.py           # 业务桥接层（从 request/header 组装授权输入）
+      runtime.py          # 开关（authz_enabled）与 authorize_or_raise
+  routers/                # 薄路由：校验入参、鉴权桥接、调 service
+  schemas/                # Pydantic 请求/响应模型
+  services/               # 业务编排；当前多为占位
+docs/                     # 方案与 AUTHN/AUTHZ 设计（中文）
+scripts/                  # 启动脚本
+tests/                    # pytest 测试
+logs/                     # 运行日志（gitignore，勿提交）
+```
+
+**分层规则：**
+
+| 层 | 可以做 | 不可以做 |
+| --- | --- | --- |
+| `routers/*` | 定义路径、依赖注入、调用 `authorize_or_raise`、调 service | 写复杂业务、直接拼错误码字符串、访问 DB/下游细节 |
+| `services/*` | 业务规则、编排、抛 `*Exception` | 依赖 FastAPI `Request`（除非明确桥接）、绕过 error_codes |
+| `schemas/*` | 入参/出参模型、Field 描述与示例 | 副作用、I/O |
+| `core/*` | 横切能力、统一协议 | 具体业务领域逻辑 |
+| `core/authz/*` | 授权语义与适配 | 改 trace/token 主中间件链路 |
+
+## 3. API 与协议契约
+
+### 3.1 路径前缀
+
+- 实现与目录以代码为准：`/api/v1/...`；设计文档中的 `/openapi/v1/...` 仅作方案表述。
+- 新增/修改接口时使用 `/api/v1`，并同步：对应 `app/routers/*`、`app/core/catalog.py`、必要时 `docs/开放平台接口详细定义_精简版_V2.md`。
+- **改路由必改 catalog。**
+
+### 3.2 当前对外路由清单
+
+| 能力 | Method | Path |
+| --- | --- | --- |
+| 知识库 | POST | `/api/v1/knowledge-bases/create` |
+| 知识库 | POST | `/api/v1/knowledge-bases/update` |
+| 文档 | POST | `/api/v1/knowledge-documents/ingest` |
+| 文档 | POST | `/api/v1/knowledge-documents/ingest-and-parse` |
+| 文档 | GET | `/api/v1/knowledge-documents/{doc_id}` |
+| 解析 | POST | `/api/v1/knowledge-documents/parse` |
+| 解析 | GET | `/api/v1/knowledge-documents/parse-result/query` |
+| 解析 | GET | `/api/v1/knowledge-documents/parse-result/issue-download-ticket` |
+| 解析 | GET | `/api/v1/knowledge-documents/parse-result/download` |
+| 检索 | POST | `/api/v1/knowledge-search/query` |
+
+系统路由（免业务鉴权或文档用途）：`/`、`/health`、`/docs`、`/redoc`、`/openapi.json`、`/api-browser`、`/api/catalog`、`/api/error-codes`。
+
+### 3.3 统一响应体
+
+所有业务响应（成功与失败）遵循：
+
+```json
+{
+  "errCode": "000000",
+  "errMsg": "success",
+  "data": {},
+  "traceId": "23位数字"
+}
+```
+
+- 成功：`000000`；参数错误：`100001`（含 FastAPI/Pydantic 校验，由全局处理器映射）；未认证：`100401`；无权限：`100403`；未实现占位：`501001`；系统错误：`999999`。
+
+### 3.4 错误码与异常
+
+1. 业务层优先抛 `AppException` 或其子类（`KnowledgeBaseException` / `DocumentException` / `ParseException` / `SearchException`），表达不同领域/层级的异常边界。
+2. 推荐用 `error.as_exception(...)` 或 `exception_from_code(...)` 从错误码对象直接生成异常，避免业务层手写字符串。
+3. 子类只负责表达层级和边界，错误码对象负责承载默认消息、层级和说明。
+4. 应用层统一捕获异常并返回 `errCode`、`errMsg`、`data`。
+5. 参数校验错误由全局校验异常处理器统一映射为 `100001`。
+6. 文档、解析、检索三个领域分别继承 `DocumentException`、`ParseException`、`SearchException`，保持同一条异常链路。
+7. 错误码通过 `BaseErrorCodes.get_by_code(...)` 或 `error_code_catalog()` 查表，便于日志、文档和调试统一定位。
+8. 线上可通过 `/api/error-codes` 获取当前注册的错误码目录。
+
+### 3.5 Trace
+
+1. 每个请求注入 23 位纯数字 `traceId`，优先复用请求头 `X-Request-Id` / `X-Trace-Id` / `traceId` / `trace_id`。
+2. 响应头回写 `X-Request-Id` 与 `X-Trace-Id`，响应体顶层带 `traceId`。
+3. 日志上下文自动携带 `traceId`；调用下游时透传同一组追踪头，可复用 `build_trace_headers()`。
+
+## 4. 认证与鉴权契约
+
+### 4.1 认证（AUTHN）
+
+- 每次请求必须携带 `Authorization: Bearer <token>`，缺失或格式错误统一返回 `100401` + `traceId`。
+- 服务端 token：`OPEN_PLATFORM_TOKEN`（单个）/ `OPEN_PLATFORM_TOKENS`（多个，逗号分隔）；未配置时只强制 Bearer 存在、不做值比对。
+- `OPEN_PLATFORM_AUTH_MODE` 切换认证模式：`static` / `gateway_header` / `oidc_jwt` / `oauth2_introspection`。
+- 认证中间件把身份写入 `request.state.identity` 与 `request.state.permissions`，供 AUTHZ bridge 复用。
+- 免鉴权路径集中在 `app/core/middlewares.py` 的 `AUTH_EXEMPT_PATHS` / `AUTH_EXEMPT_PREFIXES`，新增系统级路径需同步更新并补测试。
+
+### 4.2 鉴权（AUTHZ，独立集成层）
+
+- 开关：`OPEN_PLATFORM_AUTHZ_ENABLED=true` 才启用；策略 **deny-overrides**，无命中默认拒绝，拒绝统一 `100403` + `traceId`。
+- 业务接入用 `authorize_or_raise(request, action, resource_type, ...)`，参考 `POST /api/v1/knowledge-search/query`；禁止把授权逻辑塞进 middleware。
+- 系统选择：请求头 `X-Auth-System` 或 `OPEN_PLATFORM_AUTH_SYSTEM`（内置 `default`、`digital_employee`）。
+- 常用身份头：`X-User-Id`、`X-Tenant-Id`、`X-User-Roles`、`X-User-Permissions`、`X-User-Deny-Permissions`。
+- 数据权限上下文可注入：`kb_id` / `kb_ids`、`owner_id`、`org_path` 等；检索路由已把请求体 `kbId/kbIds`、`ownerId`、`orgPath` 注入授权上下文。
+- 新接入方优先「适配器 + 映射配置」（`MappingAuthzAdapter`），禁止在业务 service 里写第三方字段 if/else 丛林。
+
+## 5. 代码风格与实现约定
+
+1. 文件首行：`from __future__ import annotations`。
+2. 路由保持薄：参数模型 →（可选）AUTHZ → Service。
+3. Service 用 `@staticmethod` 或清晰无状态方法；未实现能力必须返回 `501001`，**禁止静默空成功**。
+4. 依赖只在 `pyproject.toml` 声明；当前核心依赖 FastAPI、Uvicorn、PyJWT；日志走 `log_center_sdk`，勿随意替换日志体系。
+5. 注释与用户可见文案用中文（与仓库一致），标识符保持英文。
+6. 不要提交：`.venv/`、`logs/`、`__pycache__/`、`*:Zone.Identifier`、密钥与真实 token。
+7. 修改行为时同步：README 相关段落、`app/core/catalog.py`、必要 docs。
+
+## 6. 测试约定
+
+- 测试位于 `tests/`，使用 pytest；每个测试文件自行创建 `TestClient(app)`（`conftest.py` 只负责把仓库根目录加入 `sys.path`）。
+- 项目 `.venv` 未安装 pytest/httpx，本环境用以下命令运行：
+  ```bash
+  cd /home/open-ikc && /home/ikc-log-center/.venv/bin/python -m pytest tests -q
+  ```
+- 测试启动应用会写 `logs/open_ikc_api.log`，需具备项目目录写权限。
+- 新增/修改行为必须补测试：鉴权免检路径、`MappingAuthzAdapter` 身份映射兜底、deny-overrides、数据权限条件（资源 ID 范围 / owner-only / org 路径 / 部门 / 租户）等。
+
+## 7. Token 效率与协作约定
+
+> 目标：在保证质量的前提下降低单次任务的 token 消耗。主线程只做编排与集成，信息收集与可并行子任务尽量下沉。
+
+### 7.1 子代理优先
+
+1. 任务含多个边界清晰、可并行的子任务时，优先派发子代理（Codex：`spawn_agent`；Claude Code：`.claude/agents/` 子代理），主线程只做编排与集成。
+2. 子任务必须自包含：明确输入、输出与写范围（各子任务写范围不重叠）；交付物为「改动文件清单 + 精简结论」。
+3. 信息收集类任务（读代码、查文档、搜索）优先交子代理；主线程不要反复整读大文件。
+4. 子代理返回后，主线程只做精简 review 与集成，**禁止重做或重读其已完成的工作**。
+5. 已完成的子代理及时关闭/释放，不长期占用。
+
+### 7.2 上下文压缩
+
+1. 长任务按阶段推进：每完成一个阶段，主动更新计划、总结中间结果并触发上下文压缩（Claude Code：`/compact`；Codex 自动压缩，无需手动）。
+2. 不把大段文件/日志贴进消息：引用「路径 + 行号」，只贴必要片段（如关键 traceback 尾部）。
+3. 跨天/跨会话任务开工前，先读 `docs/worklog.md` 最近条目继承上下文，避免重读仓库。
+
+### 7.3 低消耗工作习惯
+
+1. 定位用 `rg`；读文件用 `sed -n` / `head -n` 取关键片段，禁止整文件 `cat`。
+2. 命令批量合并执行，并控制输出量（`tail -n`、`-q`、输出上限）。
+3. 不重复读取刚改动过的文件；工具已确认结果时不复查。
+4. diff 保持最小：只改必要代码，避免无关格式化大扫除。
+5. 失败排查只复述关键信息，不整段贴日志。
+
+### 7.4 汇报精简
+
+1. 最终回答控制在必要篇幅：结果 → 改动文件 → 验证 → 下一步。
+2. 不贴整文件内容，不输出大段引用；文件路径用行内代码引用即可。
+
+## 8. 工作日志与每日继承
+
+1. 统一日志文件 `docs/worklog.md`，按日期追加条目（`YYYY-MM-DD`），条目包含：任务、完成情况、进展、问题/阻塞、决策、下一步。
+2. **每日开工先读日志**：优先读取最近条目，继承进度与待办再开始任务；禁止重复调研日志已记录过的内容。
+3. **任务结束或每天结束时更新日志**：追加当天条目，保持简洁，记录关键决策、未解决问题与下一步；跨天任务在对应条目续写或互相引用。
+4. 日志是跨天/跨会话的上下文交接载体：以日志为准继续任务，替代重新通读仓库；与契约冲突时以本契约（`AGENTS.md`）为准。
+5. 提交时同步提交日志更新（在用户允许提交的前提下）；日志禁止记录密钥与真实 token。
+
+### 8.1 每日 17:30 例行提交
+
+1. 每个工作日 `17:30`（以本机时间为准）执行例行提交任务；若该时刻任务进行中，则在当前任务收尾阶段完成提交；若当时无任务，则下次会话开工时先补做。
+2. 提交前准备：确认/补齐当天 `docs/worklog.md` 条目（完成情况、问题、下一步）；代码或行为有改动时先跑 `pytest tests -q` 确认通过。
+3. 提交范围：只 `git add` 与当天任务相关的文件；`.venv/`、`logs/`、`__pycache__/`、密钥与真实 token 一律不提交。
+4. commit 信息简洁说明当天改动（如 `feat: 完成 XX 并更新工作日志`），可引用 worklog 日期；默认仅本地 commit，**不 push**，除非用户明确要求。
+5. 当天无改动时：不创建空提交，在 worklog 中记录「当日无改动」。
+
+## 9. 功能落地工作流
+
+1. 对照 V2 精简方案确认功能在四类能力内。
+2. 按 `schemas` → `services` → `routers` 顺序实现。
+3. 需要鉴权则 `authorize_or_raise` + 注入资源上下文。
+4. 错误与成功均走 error_codes + trace。
+5. 更新 `catalog.py` 与必要文档。
+6. 本地启动（`bash scripts/start_open_platform.sh` 或 `python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload`），用 `/docs` 或 curl 带 Bearer 与 trace 头验证。
+7. 保持 diff 可读，避免无关格式化大扫除。
+8. 按 `docs/worklog.md` 约定，记录完成情况、问题与下一步。
+
+## 10. 文档权威顺序
+
+实现与评审时按以下优先级：
+
+1. **本文件 `AGENTS.md`**（实现契约；`CLAUDE.md` 为其 Claude Code 导入入口）
+2. **当前代码**（`app/`、路由、catalog、error_codes）
+3. `docs/开放平台接口整体方案_V2_精简.md` + `docs/开放平台接口详细定义_精简版_V2.md`
+4. `docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md`
+5. `docs/开放平台统一认证鉴权集成_AUTHZ.md`
+6. V1 / 规划类长文仅作背景参考，不直接当接口真理
+
+Excel / 抽取 JSON 仅作历史接口盘点，**不得**未经评审直接扩成对外 API。
+
+## 11. 硬性约束
+
+1. **不扩大能力面**：不新增第五类对外业务域，不把内部流水线原子接口直接暴露。
+2. **不破坏统一协议**：`errCode` / `errMsg` / `data` / `traceId` 结构不可拆。
+3. **不合并 AUTHN 与 AUTHZ 中间件职责**：授权走 `authz` 包与业务桥接。
+4. **不绕过异常体系**：不用裸 `HTTPException` 替代已有 `AppException` 链路（除非框架层必要且仍映射统一体）。
+5. **改路由必改 catalog**；改错误码必进 registry。
+6. **密钥与生产配置**：只用环境变量示例，不把真实凭证写入仓库。
+7. **提交**：仅在用户明确要求时 commit/push（用户已约定每日 17:30 例行提交，见 §8.1）；commit 信息简洁说明动机。
+8. **优先最小改动**：占位项目以可运行骨架 + 清晰边界为先，避免过度设计。
+9. **权限不降级**：检索与读写必须可按调用方权限过滤；数据权限条件要可测试。
+10. 不确定产品语义时：先读 V2 精简方案与现有 router/service，再改；缺少决策时询问用户，不擅自定外部 API 形状。
+
+## 12. 快速索引
+
+| 主题 | 位置 |
+| --- | --- |
+| 应用入口 | `app/main.py` |
+| 装配 | `app/core/app_factory.py` |
+| 错误码 / 异常 | `app/core/error_codes.py` |
+| Trace | `app/core/trace.py` |
+| 认证 | `app/core/security.py`、`app/core/middlewares.py` |
+| 鉴权 | `app/core/authz/` |
+| API 目录 | `app/core/catalog.py` |
+| 人读说明 | `README.md` |
+| 接口方案 | `docs/开放平台接口整体方案_V2_精简.md` |

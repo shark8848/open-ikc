@@ -67,6 +67,17 @@ class KnowledgeBaseStore:
             return cls._records.get(kb_id)
 
     @classmethod
+    def list_records(cls, *, keyword: str = "") -> list[KnowledgeBaseRecord]:
+        keyword_lower = keyword.strip().lower()
+        with cls._lock:
+            records = []
+            for record in cls._records.values():
+                if keyword_lower and keyword_lower not in record.kb_name.lower() and keyword_lower not in record.kb_desc.lower():
+                    continue
+                records.append(record)
+            return records
+
+    @classmethod
     def reset(cls) -> None:
         with cls._lock:
             cls._records.clear()

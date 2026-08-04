@@ -199,3 +199,53 @@ class KnowledgeBaseErrorResponse(BaseModel):
     errCode: str = Field(..., description="错误码。")
     errMsg: str = Field(..., description="错误信息。")
     data: dict[str, str] = Field(default_factory=dict, description="错误扩展信息。")
+
+
+class KnowledgeBaseQueryRequest(BaseModel):
+    kbType: Literal["personal", "team", "enterprise"] | None = Field(
+        None,
+        description="按知识库类型过滤；不传表示全部类型。",
+    )
+    teamId: str = Field(
+        "",
+        description="团队知识库标识；查看 team 库时必填，用于成员范围收敛。",
+    )
+    orgId: str = Field(
+        "",
+        description="企业知识库组织标识；查看 enterprise 库时建议填写，为空时使用调用主体租户。",
+    )
+    ownerId: str = Field(
+        "",
+        description="个人库创建者过滤；个人库始终按调用方身份收敛，此字段仅作展示语义。",
+    )
+    keyword: str = Field("", description="按知识库名称或描述关键字过滤。")
+    page: int = Field(1, ge=1, description="页码，从 1 开始。")
+    pageSize: int = Field(20, ge=1, le=100, description="每页条数，最大 100。")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "kbType": "enterprise",
+                "teamId": "",
+                "orgId": "org_001",
+                "ownerId": "",
+                "keyword": "客服",
+                "page": 1,
+                "pageSize": 20,
+            }
+        }
+    )
+
+
+class KnowledgeBaseQueryData(BaseModel):
+    total: int = Field(..., description="命中总数。")
+    page: int = Field(..., description="当前页码。")
+    pageSize: int = Field(..., description="每页条数。")
+    items: list[KnowledgeBaseDataResponse] = Field(default_factory=list, description="知识库列表。")
+
+
+class KnowledgeBaseQueryResponse(BaseModel):
+    traceId: str = Field(..., description="请求链路追踪 ID。")
+    errCode: str = Field(..., description="错误码。")
+    errMsg: str = Field(..., description="错误信息。")
+    data: KnowledgeBaseQueryData = Field(..., description="业务数据。")

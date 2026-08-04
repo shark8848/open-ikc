@@ -36,6 +36,21 @@
 - 修正：`middlewares.py` 免鉴权判定容忍尾斜杠（`/api-browser/`、`/health/` 等不再 401）。
 - 完成：新增 3 例测试（docs 免鉴权、尾斜杠豁免、401 复用 trace 头）；全量测试 **58 passed**。
 
+### 任务：启动服务实测验证
+
+- 完成：沙箱外启动 `uvicorn app.main:app --host 0.0.0.0 --port 18000`（项目 `.venv`）。
+- 实测：`/docs`、`/redoc`、`/openapi.json`、`/docs/oauth2-redirect`、`/api-browser`、`/api/catalog`、`/api/error-codes`、`/health` 无 token 均 200；尾斜杠变体（`/api-browser/`、`/health/`、`/docs/`）307 而非 401。
+- 实测：业务路由无 token 返回 `100401`；带 Bearer 创建知识库返回 `000000`（真实 kbId），响应体与 `X-Request-Id`/`X-Trace-Id` 均回写传入 traceId `99988877766655544433321`。
+- 环境备注：沙箱禁用 socket 创建且网络命名空间隔离，服务启动与 curl 验证均需在沙箱外执行。
+
+### 任务：知识库读接口开放（列表查询 + 详情查询）
+
+- 完成：新增 `POST /api/v1/knowledge-bases/query`（分页 + kbType/teamId/orgId/keyword 过滤）与 `GET /api/v1/knowledge-bases/{kb_id}`（详情）。
+- 完成：数据范围收敛——个人库仅本人、团队库需显式 `teamId`、企业库按 `orgId` 或调用主体租户；详情个人库非创建者 `100403`、不存在 `100404`。
+- 完成：两个读路由接入 `authorize_or_raise(action="read", resource_type="knowledge_base")` 与数据上下文。
+- 完成：同步 `catalog.py`（知识库域 4 个路由）、V2 整体方案 §3.1（新增第 3/4 项）、详细定义 A-03/A-04、README。
+- 完成：新增 12 例测试（列表空/范围/团队/企业/关键字/分页/详情/403/404/AUTHZ）；全量测试 **70 passed**。
+
 ### 问题 / 已知不一致
 
 - **环境问题**：沙箱内 asyncio 跨线程唤醒失效（`call_soon_threadsafe` 无法唤醒其他线程的事件循环），导致 `TestClient` 死锁，pytest 在沙箱内无法运行；需在沙箱外（escalated）执行测试。本地 `.venv` 已装 `httpx2` 但缺 pytest，测试仍用 `/home/ikc-log-center/.venv/bin/python -m pytest tests` 运行（starlette TestClient 的 httpx 废弃告警为环境告警，未处理）。

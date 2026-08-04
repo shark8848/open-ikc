@@ -233,3 +233,128 @@ def test_authz_update_denied_for_reader(monkeypatch) -> None:
     }
     body = client.post("/api/v1/knowledge-bases/update", json=payload, headers=reader).json()
     assert body["errCode"] == "100403"
+
+
+def _query(payload: dict | None = None, headers: dict | None = None) -> dict:
+    response = client.post("/api/v1/knowledge-bases/query", json=payload or {}, headers=headers or AUTH)
+    return response.json()
+
+
+def _detail(kb_id: str, headers: dict | None = None) -> dict:
+    response = client.get(f"/api/v1/knowledge-bases/{kb_id}", headers=headers or AUTH)
+    return response.json()
+
+
+def test_query_empty_list() -> None:
+    body = _query()
+    assert body["errCode"] == "000000"
+    assert body["data"]["total"] == 0
+    assert body["data"]["items"] == []
+
+
+def test_query_personal_scope_by_caller() -> None:
+    alice = {**AUTH, "X-User-Id": "alice"}
+    bob = {**AUTH, "X-User-Id": "bob"}
+    _create(headers=alice, kbName="alice库A")
+    _create(headers=alice, kbName="alice库B")
+    _create(headers=bob, kbName="bob库")
+
+    alice_body = _query(headers=alice)
+    assert alice_body["data"]["total"] == 2
+    assert {item["kbName"] for item in alice_body["data"]["items"]} == {"alice库A", "alice库B"}
+
+    bob_body = _query(headers=bob)
+    assert bob_body["data"]["total"] == 1
+    assert bob_body["data"]["items"][0]["kbName"] == "bob库"
+
+
+def test_query_team_requires_team_id() -> None:
+    headers = {**AUTH, "X-User-Id": "alice"}
+    _create(headers=headers, kbName="团队库", kbType="team", teamId="team_01")
+
+    without_team = _query(headers=headers)
+    assert without_team["data"]["total"] == 0
+
+    with_team = _query(headers=headers, payload={"kbType": "team", "teamId": "team_01"})
+    assert with_team["data"]["total"] == 1
+    assert with_team["data"]["items"][0]["kbName"] == "团队库"
+
+
+def test_query_enterprise_scope_by_tenant() -> None:
+    tenant_headers = {**AUTH, "X-User-Id": "alice", "X-Tenant-Id": "tenant_001"}
+    _create(headers=tenant_headers, kbName="企业库", kbType="enterprise", orgId="")
+
+    visible = _query(headers=tenant_headers, payload={"kbType": "enterprise"})
+    assert visible["data"]["total"] == 1
+    assert visible["data"]["items"][0]["orgId"] == "tenant_001"
+
+    other_tenant = {**AUTH, "X-User-Id": "bob", "X-Tenant-Id": "tenant_002"}
+    hidden = _query(headers=other_tenant, payload={"kbType": "enterprise"})
+    assert hidden["data"]["total"] == 0
+
+
+def test_query_keyword_filter() -> None:
+    alice = {**AUTH, "X-User-Id": "alice"}
+    _create(headers=alice, kbName="产品知识库")
+    _create(headers=alice, kbName="制度汇编")
+    body = _query(headers=alice, payload={"keyword": "产品"})
+    assert body["data"]["total"] == 1
+    assert body["data"]["items"][0]["kbName"] == "产品知识库"
+
+
+def test_query_pagination() -> None:
+    alice = {**AUTH, "X-User-Id": "alice"}
+    for index in range(3):
+        _create(headers=alice, kbName=f"分页库{index}")
+
+    page1 = _query(headers=alice, payload={"page": 1, "pageSize": 2})
+    assert page1["data"]["total"] == 3
+    assert len(page1["data"]["items"]) == 2
+    assert page1["data"]["page"] == 1
+
+    page2 = _query(headers=alice, payload={"page": 2, "pageSize": 2})
+    assert len(page2["data"]["items"]) == 1
+
+
+def test_detail_success() -> None:
+    created = _create()["data"]
+    body = _detail(created["kbId"])
+    assert body["errCode"] == "000000"
+    assert body["data"]["kbId"] == created["kbId"]
+    assert body["data"]["kbName"] == created["kbName"]
+
+
+def test_detail_other_personal_forbidden() -> None:
+    alice = {**AUTH, "X-User-Id": "alice"}
+    bob = {**AUTH, "X-User-Id": "bob"}
+    created = _create(headers=alice)["data"]
+    body = _detail(created["kbId"], headers=bob)
+    assert body["errCode"] == "100403"
+    assert "创建者" in body["data"]["reason"]
+
+
+def test_detail_not_found() -> None:
+    body = _detail("kb_missing")
+    assert body["errCode"] == "100404"
+
+
+def test_detail_enterprise_matching_tenant() -> None:
+    tenant_headers = {**AUTH, "X-User-Id": "alice", "X-Tenant-Id": "tenant_001"}
+    created = _create(headers=tenant_headers, kbName="企业库详情", kbType="enterprise", orgId="")["data"]
+    body = _detail(created["kbId"], headers=tenant_headers)
+    assert body["errCode"] == "000000"
+
+
+def test_authz_query_denied_for_reader(monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_PLATFORM_AUTHZ_ENABLED", "true")
+    headers = {**AUTH, "X-User-Id": "alice", "X-User-Roles": "km_reader"}
+    body = _query(headers=headers)
+    assert body["errCode"] == "100403"
+
+
+def test_authz_detail_allowed_for_admin(monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_PLATFORM_AUTHZ_ENABLED", "true")
+    admin = {**AUTH, "X-User-Id": "alice", "X-User-Roles": "km_admin"}
+    created = _create(headers=admin)["data"]
+    body = _detail(created["kbId"], headers=admin)
+    assert body["errCode"] == "000000"

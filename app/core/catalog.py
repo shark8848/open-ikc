@@ -13,6 +13,16 @@ API_CATALOG = [
                 "path": "/api/v1/knowledge-bases/update",
                 "summary": "修改知识库信息",
             },
+            {
+                "method": "POST",
+                "path": "/api/v1/knowledge-bases/query",
+                "summary": "查询知识库列表",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}",
+                "summary": "查询知识库详情",
+            },
         ],
     },
     {

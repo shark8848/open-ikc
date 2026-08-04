@@ -3,8 +3,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from app.core.error_codes import CommonErrorCodes, KnowledgeBaseException
-from app.core.responses import knowledge_base_create_response, knowledge_base_update_response
-from app.schemas.knowledge_base import KnowledgeBaseCreateRequest, KnowledgeBaseUpdateRequest
+from app.core.responses import (
+    knowledge_base_create_response,
+    knowledge_base_detail_response,
+    knowledge_base_query_response,
+    knowledge_base_update_response,
+)
+from app.schemas.knowledge_base import KnowledgeBaseCreateRequest, KnowledgeBaseQueryRequest, KnowledgeBaseUpdateRequest
 from app.services.knowledge_base_store import (
     KnowledgeBaseRecord,
     KnowledgeBaseStore,
@@ -151,3 +156,59 @@ class KnowledgeBaseService:
                 {"field": "kbName", "reason": f"同范围知识库名称重复：{payload.kbName}"},
             )
         return knowledge_base_update_response(updated)
+
+    @staticmethod
+    def get_detail(kb_id: str, *, owner_id: str = "", tenant_id: str = "") -> dict:
+        record = KnowledgeBaseService.get_or_raise(kb_id)
+        if record.kb_type == "personal" and record.owner_id != owner_id:
+            raise KnowledgeBaseException(
+                CommonErrorCodes.FORBIDDEN,
+                {"field": "kbId", "reason": "个人知识库仅创建者可访问"},
+            )
+        # team / enterprise 读范围由 AUTHZ 或外部团队/组织系统收敛（成员关系校验占位）
+        return knowledge_base_detail_response(record)
+
+    @staticmethod
+    def _visible_records(
+        payload: KnowledgeBaseQueryRequest,
+        *,
+        owner_id: str,
+        tenant_id: str,
+    ) -> list:
+        records = KnowledgeBaseStore.list_records(keyword=payload.keyword)
+        visible: list = []
+        for record in records:
+            if payload.kbType is not None and record.kb_type != payload.kbType:
+                continue
+            if record.kb_type == "personal":
+                if record.owner_id != owner_id:
+                    continue
+            elif record.kb_type == "team":
+                team_id = payload.teamId.strip()
+                if not team_id or record.team_id != team_id:
+                    continue
+            else:  # enterprise
+                org_scope = payload.orgId.strip() or tenant_id.strip()
+                if not org_scope or record.org_id != org_scope:
+                    continue
+            visible.append(record)
+        return visible
+
+    @staticmethod
+    def query(payload: KnowledgeBaseQueryRequest, *, owner_id: str = "", tenant_id: str = "") -> dict:
+        records = KnowledgeBaseService._visible_records(
+            payload,
+            owner_id=owner_id,
+            tenant_id=tenant_id,
+        )
+        # 可见范围内按创建时间倒序
+        records.sort(key=lambda record: record.create_time, reverse=True)
+        total = len(records)
+        start = (payload.page - 1) * payload.pageSize
+        page_records = records[start : start + payload.pageSize]
+        return knowledge_base_query_response(
+            total=total,
+            page=payload.page,
+            page_size=payload.pageSize,
+            records=page_records,
+        )

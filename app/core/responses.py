@@ -51,3 +51,28 @@ def knowledge_base_update_response(record: KnowledgeBaseRecord) -> dict[str, Any
         KnowledgeBaseErrorCodes.SUCCESS,
         _knowledge_base_data(record),
     ))
+
+
+def knowledge_base_detail_response(record: KnowledgeBaseRecord) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        KnowledgeBaseErrorCodes.SUCCESS,
+        _knowledge_base_data(record),
+    ))
+
+
+def knowledge_base_query_response(
+    *,
+    total: int,
+    page: int,
+    page_size: int,
+    records: list[KnowledgeBaseRecord],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        KnowledgeBaseErrorCodes.SUCCESS,
+        {
+            "total": total,
+            "page": page,
+            "pageSize": page_size,
+            "items": [_knowledge_base_data(record) for record in records],
+        },
+    ))

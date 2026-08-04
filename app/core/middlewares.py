@@ -21,9 +21,10 @@ AUTH_EXEMPT_PATHS = {
 
 
 def _is_auth_exempt_path(path: str) -> bool:
-    if path in AUTH_EXEMPT_PATHS:
+    normalized = path.rstrip("/") or "/"
+    if normalized in AUTH_EXEMPT_PATHS:
         return True
-    return any(path.startswith(prefix) for prefix in AUTH_EXEMPT_PREFIXES)
+    return any(normalized.startswith(prefix) for prefix in AUTH_EXEMPT_PREFIXES)
 
 
 def build_trace_middleware(logger: logging.Logger):

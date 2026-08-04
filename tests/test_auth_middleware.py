@@ -106,3 +106,43 @@ def test_business_route_accepts_any_bearer_token_when_unconfigured(
     )
     assert response.status_code == 200
     assert response.json()["errCode"] == "000000"
+
+
+def test_api_docs_are_accessible_without_auth() -> None:
+    docs = client.get("/docs")
+    assert docs.status_code == 200
+    assert "swagger" in docs.text.lower()
+
+    redoc = client.get("/redoc")
+    assert redoc.status_code == 200
+    assert "redoc" in redoc.text.lower()
+
+    openapi = client.get("/openapi.json")
+    assert openapi.status_code == 200
+    assert "openapi" in openapi.json()
+
+    oauth_redirect = client.get("/docs/oauth2-redirect")
+    assert oauth_redirect.status_code == 200
+
+
+def test_exempt_system_routes_tolerate_trailing_slash() -> None:
+    for path in ["/api-browser/", "/health/", "/api/catalog/", "/api/error-codes/", "/docs/"]:
+        response = client.get(path, follow_redirects=False)
+        assert response.status_code in {200, 307}, path
+        if "json" in response.headers.get("content-type", ""):
+            body = response.json()
+            assert body.get("errCode") != "100401", path
+
+
+def test_unauthorized_response_reuses_incoming_trace_header() -> None:
+    incoming = "12345678901234567890123"
+    response = client.get(
+        "/api/v1/knowledge-search/query",
+        headers={"X-Request-Id": incoming},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["errCode"] == "100401"
+    assert body["traceId"] == incoming
+    assert response.headers.get("X-Request-Id") == incoming
+    assert response.headers.get("X-Trace-Id") == incoming

@@ -29,6 +29,13 @@
 - 完成：核查文档/解析域路由 ↔ `catalog.py` ↔ V2 方案/详细定义一致性；`/ingest`、`/ingest-and-parse`、`/parse`、`/parse-result/*` 与 `GET /{doc_id}` 均已对齐（`/openapi/v1` 为方案表述，以 `/api/v1` 实现为准）。
 - 完成：补齐文档缺口——`GET /api/v1/knowledge-documents/{doc_id}`「查询文档信息」在代码/catalog 已存在但 V2 方案未收录；已在整体方案 §3.2 增补第 7 项，并在详细定义新增 B-07（标注预占位，字段契约待实现时对齐，不擅自定外部 API 形状）。
 
+### 任务：API 文档免鉴权核查与修正
+
+- 完成：实测 `/docs`、`/redoc`、`/openapi.json`、`/docs/oauth2-redirect`、`/api-browser` 等无 token 均可访问，主逻辑已符合「API 文档不需要 auth」。
+- 修正：`app_factory.py` 调整中间件注册顺序（AuthN 内层、Trace 外层），未认证响应复用并回写调用方传入的 `X-Request-Id`/`X-Trace-Id`（契约 §3.5），未授权请求也具备完整 request start/end 链路日志。
+- 修正：`middlewares.py` 免鉴权判定容忍尾斜杠（`/api-browser/`、`/health/` 等不再 401）。
+- 完成：新增 3 例测试（docs 免鉴权、尾斜杠豁免、401 复用 trace 头）；全量测试 **58 passed**。
+
 ### 问题 / 已知不一致
 
 - **环境问题**：沙箱内 asyncio 跨线程唤醒失效（`call_soon_threadsafe` 无法唤醒其他线程的事件循环），导致 `TestClient` 死锁，pytest 在沙箱内无法运行；需在沙箱外（escalated）执行测试。本地 `.venv` 已装 `httpx2` 但缺 pytest，测试仍用 `/home/ikc-log-center/.venv/bin/python -m pytest tests` 运行（starlette TestClient 的 httpx 废弃告警为环境告警，未处理）。

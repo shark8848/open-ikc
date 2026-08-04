@@ -61,6 +61,7 @@ bash scripts/start_open_platform.sh
 2. 日志上下文会自动携带当前请求的 `traceId`，便于串联 `ikc-log-center` 风格的链路日志。
 3. 若调用方传入 `X-Request-Id`，服务端会优先复用；否则按 23 位数字规则生成。
 4. 调用下游接口时应透传同一组追踪头，可复用 `build_trace_headers()`。
+5. 未认证（`100401`）响应同样复用调用方传入的 `X-Request-Id` / `X-Trace-Id`，缺失时生成 23 位数字 `traceId`。
 
 下游透传示例：
 
@@ -82,7 +83,7 @@ headers = {
 	- `OPEN_PLATFORM_TOKEN`：单个 token
 	- `OPEN_PLATFORM_TOKENS`：多个 token，逗号分隔
 4. 若未配置上述环境变量，服务端仍会强制要求 Bearer token 存在，但不做值比对。
-5. 文档端点 ` /docs`、`/redoc`、`/openapi.json`（含 docs 子路径）免 token 校验，便于接口浏览。
+5. API 文档端点 `/docs`、`/redoc`、`/openapi.json` 及其子路径（含尾斜杠写法）免 token 校验，便于接口浏览。
 
 ## 认证模式（OAuth2 / SSO）
 

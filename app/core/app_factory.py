@@ -39,8 +39,10 @@ def create_app() -> FastAPI:
     app.include_router(parse_router)
     app.include_router(search_router)
 
-    app.middleware("http")(build_trace_middleware(logger))
+    # 先注册 AuthN（内层），再注册 Trace（外层）：Trace 先绑定/复用 traceId，
+    # 保证未认证响应也能回写同一链路 ID（契约 §3.5）。
     app.middleware("http")(build_auth_middleware(logger))
+    app.middleware("http")(build_trace_middleware(logger))
 
     register_exception_handlers(app)
     register_system_routes(app)

@@ -24,6 +24,11 @@
 - 完成：`routers/knowledge_base.py` 接入 `authorize_or_raise`（create/update + `kb_id/kb_type/owner_id/org_path` 数据上下文）。
 - 完成：新增 `tests/test_knowledge_base.py`（16 例）；`test_auth_middleware.py` 补 store 复位 fixture；全量测试 **55 passed**。
 
+### 任务：文档服务接口信息同步核查
+
+- 完成：核查文档/解析域路由 ↔ `catalog.py` ↔ V2 方案/详细定义一致性；`/ingest`、`/ingest-and-parse`、`/parse`、`/parse-result/*` 与 `GET /{doc_id}` 均已对齐（`/openapi/v1` 为方案表述，以 `/api/v1` 实现为准）。
+- 完成：补齐文档缺口——`GET /api/v1/knowledge-documents/{doc_id}`「查询文档信息」在代码/catalog 已存在但 V2 方案未收录；已在整体方案 §3.2 增补第 7 项，并在详细定义新增 B-07（标注预占位，字段契约待实现时对齐，不擅自定外部 API 形状）。
+
 ### 问题 / 已知不一致
 
 - **环境问题**：沙箱内 asyncio 跨线程唤醒失效（`call_soon_threadsafe` 无法唤醒其他线程的事件循环），导致 `TestClient` 死锁，pytest 在沙箱内无法运行；需在沙箱外（escalated）执行测试。本地 `.venv` 已装 `httpx2` 但缺 pytest，测试仍用 `/home/ikc-log-center/.venv/bin/python -m pytest tests` 运行（starlette TestClient 的 httpx 废弃告警为环境告警，未处理）。

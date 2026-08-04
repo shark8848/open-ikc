@@ -5,7 +5,7 @@ import log_center_sdk
 from log_center_sdk.integrations.fastapi import TraceMiddleware
 
 from app.core.exception_handlers import register_exception_handlers
-from app.core.middlewares import build_auth_middleware, build_trace_middleware
+from app.core.middlewares import build_auth_middleware, build_framework_error_response_middleware, build_trace_middleware
 from app.core.system_routes import register_system_routes
 from app.routers.document import router as document_router
 from app.routers.knowledge_base import router as knowledge_base_router
@@ -39,11 +39,47 @@ def create_app() -> FastAPI:
     app.include_router(parse_router)
     app.include_router(search_router)
 
-    # 先注册 AuthN（内层），再注册 Trace（外层）：Trace 先绑定/复用 traceId，
-    # 保证未认证响应也能回写同一链路 ID（契约 §3.5）。
+    # 注册顺序（后注册者更外层）：Trace 最外层先绑定/复用 traceId；
+    # 框架错误改写位于 AuthN 内层，确保未认证/业务响应不被改写。
+    app.middleware("http")(build_framework_error_response_middleware(logger))
     app.middleware("http")(build_auth_middleware(logger))
     app.middleware("http")(build_trace_middleware(logger))
 
     register_exception_handlers(app)
     register_system_routes(app)
+    _apply_openapi_docs(app)
     return app
+
+
+def _apply_openapi_docs(app: FastAPI) -> None:
+    """对齐 OpenAPI 文档与运行时行为：移除不实际返回的 422，并在 200 响应上说明统一错误码。"""
+
+    original_openapi = app.openapi
+
+    def custom_openapi() -> dict:
+        if app.openapi_schema is not None:
+            return app.openapi_schema
+
+        schema = original_openapi()
+        error_codes_hint = (
+            "统一响应体；业务错误码（100001/100401/100403/100404/100405/100409/501001/999999）"
+            "见 GET /api/error-codes"
+        )
+        for path_item in schema.get("paths", {}).values():
+            if not isinstance(path_item, dict):
+                continue
+            for operation in path_item.values():
+                if not isinstance(operation, dict):
+                    continue
+                responses = operation.get("responses")
+                if not isinstance(responses, dict):
+                    continue
+                responses.pop("422", None)
+                success = responses.get("200")
+                if isinstance(success, dict):
+                    success["description"] = error_codes_hint
+
+        app.openapi_schema = schema
+        return schema
+
+    app.openapi = custom_openapi

@@ -146,3 +146,35 @@ def test_unauthorized_response_reuses_incoming_trace_header() -> None:
     assert body["traceId"] == incoming
     assert response.headers.get("X-Request-Id") == incoming
     assert response.headers.get("X-Trace-Id") == incoming
+
+
+def test_unknown_route_returns_unified_404() -> None:
+    response = client.get("/api/v1/unknown/foo", headers={"Authorization": "Bearer test-token"})
+    assert response.status_code == 404
+    body = response.json()
+    assert body["errCode"] == "100404"
+    assert "traceId" in body
+    assert body["data"]["path"] == "/api/v1/unknown/foo"
+
+
+def test_method_not_allowed_returns_unified_405() -> None:
+    response = client.delete(
+        "/api/v1/knowledge-bases/query",
+        headers={"Authorization": "Bearer test-token"},
+    )
+    assert response.status_code == 405
+    body = response.json()
+    assert body["errCode"] == "100405"
+    assert "traceId" in body
+
+
+def test_openapi_documents_no_422_and_error_codes_hint() -> None:
+    schema = client.get("/openapi.json").json()
+    for path in schema["paths"].values():
+        for operation in path.values():
+            if isinstance(operation, dict):
+                responses = operation.get("responses", {})
+                assert "422" not in responses
+                success = responses.get("200")
+                if isinstance(success, dict):
+                    assert "100401" in success["description"]

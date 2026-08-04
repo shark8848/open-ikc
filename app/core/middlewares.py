@@ -3,7 +3,11 @@ from __future__ import annotations
 import logging
 
 from fastapi import Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
+from app.core.error_codes import CommonErrorCodes, error_response
+from app.core.responses import with_trace_id
 from app.core.security import authenticate_request, build_unauthorized_response
 from app.core.trace import bind_trace_context, build_trace_headers, clear_trace, normalize_trace_id
 
@@ -18,6 +22,49 @@ AUTH_EXEMPT_PATHS = {
     "/api/catalog",
     "/api/error-codes",
 }
+
+
+def build_framework_error_response_middleware(logger: logging.Logger):
+    """将框架层 404/405 响应改写为统一响应体（保留 HTTP 状态码）。
+
+    未知路由与方法不允许由 Starlette 路由层直接返回裸 JSON，不经过异常链路，
+    这里在响应路径统一映射为 {errCode, errMsg, data, traceId}。
+    """
+
+    async def framework_error_middleware(request: Request, call_next):
+        response = await call_next(request)
+        if response.status_code not in {404, 405}:
+            return response
+
+        error = (
+            CommonErrorCodes.METHOD_NOT_ALLOWED
+            if response.status_code == 405
+            else CommonErrorCodes.NOT_FOUND
+        )
+        unified = with_trace_id(
+            error_response(
+                error,
+                {"method": request.method, "path": request.url.path},
+            )
+        )
+        headers = {
+            name: value
+            for name, value in response.headers.items()
+            if name.lower() not in {"content-type", "content-length"}
+        }
+        logger.info(
+            "framework error %s %s -> %s",
+            request.method,
+            request.url.path,
+            response.status_code,
+        )
+        return JSONResponse(
+            status_code=response.status_code,
+            content=jsonable_encoder(unified),
+            headers=headers,
+        )
+
+    return framework_error_middleware
 
 
 def _is_auth_exempt_path(path: str) -> bool:

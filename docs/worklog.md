@@ -51,6 +51,13 @@
 - 完成：同步 `catalog.py`（知识库域 4 个路由）、V2 整体方案 §3.1（新增第 3/4 项）、详细定义 A-03/A-04、README。
 - 完成：新增 12 例测试（列表空/范围/团队/企业/关键字/分页/详情/403/404/AUTHZ）；全量测试 **70 passed**。
 
+### 任务：HTTP 状态码与 OpenAPI 文档一致性核查与修正
+
+- 核查：运行时业务/校验错误统一 HTTP 200 + errCode（校验为 100001），符合契约统一响应体。
+- 修正：`/docs` 声明 422 但实际从不返回（校验已被映射为 200/100001）——新增 `_apply_openapi_docs` 移除 422 并在 200 响应描述说明统一错误码。
+- 修正：未知路由 404、方法不允许 405 原为裸 `{"detail": ...}` 且无 traceId——新增 `build_framework_error_response_middleware` 映射统一体（保留 HTTP 状态码）；新增错误码 `100405 请求方法不允许`（进 registry，/api/error-codes 自动可见）。
+- 完成：新增 3 例测试（404/405 统一体、OpenAPI 无 422）；全量测试 **73 passed**。
+
 ### 问题 / 已知不一致
 
 - **环境问题**：沙箱内 asyncio 跨线程唤醒失效（`call_soon_threadsafe` 无法唤醒其他线程的事件循环），导致 `TestClient` 死锁，pytest 在沙箱内无法运行；需在沙箱外（escalated）执行测试。本地 `.venv` 已装 `httpx2` 但缺 pytest，测试仍用 `/home/ikc-log-center/.venv/bin/python -m pytest tests` 运行（starlette TestClient 的 httpx 废弃告警为环境告警，未处理）。

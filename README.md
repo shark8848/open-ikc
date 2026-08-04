@@ -48,6 +48,8 @@ bash scripts/start_open_platform.sh
 6. 文档、解析、检索三个领域后续可分别继承 `DocumentException`、`ParseException`、`SearchException`，保持同一条异常链路。
 7. 错误码推荐通过 `BaseErrorCodes.get_by_code(...)` 或 `error_code_catalog()` 查表，便于在日志、文档和调试中统一定位。
 8. 线上可直接访问 `/api/error-codes` 获取当前注册的错误码目录。
+9. 框架层未知路由/方法不允许（HTTP 404/405）同样映射统一响应体（`100404`/`100405` + `traceId`），保留 HTTP 状态码。
+10. `/docs` 不再声明实际不返回的 `422`；校验类错误运行时统一返回 HTTP 200 + `100001`。
 
 ## TraceID
 

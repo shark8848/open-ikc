@@ -67,6 +67,7 @@ class BaseErrorCodes:
     UNAUTHORIZED = ErrorCode("100401", "未认证或认证失败", level="auth", description="调用方未通过认证")
     FORBIDDEN = ErrorCode("100403", "无权限访问", level="authz", description="调用方无权限或发生越权访问")
     NOT_FOUND = ErrorCode("100404", "资源不存在", level="resource", description="目标资源不存在或已被删除")
+    METHOD_NOT_ALLOWED = ErrorCode("100405", "请求方法不允许", level="framework", description="请求路径存在但 HTTP 方法不被支持")
     CONFLICT = ErrorCode("100409", "资源冲突", level="resource", description="资源重复创建或状态冲突")
     NOT_IMPLEMENTED = ErrorCode("501001", "接口已预占位，待实现", level="placeholder", description="当前仅提供框架占位")
     INTERNAL_ERROR = ErrorCode("999999", "系统内部错误", level="system", description="不可预期的系统异常")
@@ -79,6 +80,7 @@ class BaseErrorCodes:
             cls.UNAUTHORIZED,
             cls.FORBIDDEN,
             cls.NOT_FOUND,
+            cls.METHOD_NOT_ALLOWED,
             cls.CONFLICT,
             cls.NOT_IMPLEMENTED,
             cls.INTERNAL_ERROR,

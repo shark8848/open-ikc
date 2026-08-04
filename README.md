@@ -111,6 +111,13 @@ headers = {
 6. `app/core/system_routes.py`：系统路由（`/`、`/health`、`/api-browser`、`/api/catalog`、`/api/error-codes`）。
 7. `app/core/api_browser.py`：API 浏览页 HTML 渲染。
 
+## 当前实现进度
+
+1. 知识库 `create` / `update` 已真实落地：进程内存储（`app/services/knowledge_base_store.py`）+ 业务校验 + AUTHZ 接入。
+2. 创建返回真实 `kbId`（`kb_` + 17 位数字）与 UTC 时间；同范围（personal 按 owner、team 按 teamId、enterprise 按 orgId/租户）`kbName` 重复返回 `100409`。
+3. 更新需知识库存在（否则 `100404`）；个人库仅创建者可修改（否则 `100403`）；企业库无法识别组织授权时返回 `100403`。
+4. 其余文档、解析、检索接口仍为 `501001` 预占位。
+
 ## 统一认证鉴权集成层（独立）
 
 为适配“两个系统权限 schema 差异明显”的场景，新增了独立的统一认证鉴权集成层，不与现有 middleware 的 trace/token 逻辑交叉。
@@ -164,7 +171,7 @@ bridge.require_allowed(decision)
 运行时接入（不修改 middleware）：
 
 1. 通过环境变量 `OPEN_PLATFORM_AUTHZ_ENABLED=true` 开启细粒度授权。
-2. 当前示例已在 `POST /api/v1/knowledge-search/query` 接入 `authorize_or_raise(...)`。
+2. `POST /api/v1/knowledge-bases/create`、`POST /api/v1/knowledge-bases/update`、`POST /api/v1/knowledge-search/query` 已接入 `authorize_or_raise(...)`。
 3. 默认适配器系统名为 `default`，可通过请求头 `X-Auth-System` 指定系统。
 4. 数字员工系统可直接使用 `X-Auth-System: digital_employee`，并按文档配置角色动作映射。
 5. 可通过请求头传入授权事实（示例）：

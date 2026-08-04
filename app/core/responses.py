@@ -4,6 +4,7 @@ from typing import Any
 
 from app.core.error_codes import CommonErrorCodes, ErrorCode, KnowledgeBaseErrorCodes, error_response
 from app.core.trace import current_trace_id
+from app.services.knowledge_base_store import KnowledgeBaseRecord
 
 
 def with_trace_id(payload: dict[str, Any]) -> dict[str, Any]:
@@ -22,39 +23,31 @@ def placeholder_response(category: str, action: str, path: str) -> dict[str, Any
     ))
 
 
-def knowledge_base_create_response(payload: Any) -> dict[str, Any]:
+def _knowledge_base_data(record: KnowledgeBaseRecord) -> dict[str, Any]:
+    return {
+        "kbId": record.kb_id,
+        "kbName": record.kb_name,
+        "kbType": record.kb_type,
+        "teamId": record.team_id,
+        "orgId": record.org_id,
+        "kbDesc": record.kb_desc,
+        "bizDomain": record.biz_domain,
+        "visibility": record.visibility,
+        "metadataSchema": record.metadata_schema,
+        "createTime": record.create_time,
+        "updateTime": record.update_time,
+    }
+
+
+def knowledge_base_create_response(record: KnowledgeBaseRecord) -> dict[str, Any]:
     return with_trace_id(error_response(
         KnowledgeBaseErrorCodes.SUCCESS,
-        {
-            "kbId": "kb_10001",
-            "kbName": payload.kbName,
-            "kbType": payload.kbType,
-            "teamId": payload.teamId,
-            "orgId": payload.orgId,
-            "kbDesc": payload.kbDesc,
-            "bizDomain": payload.bizDomain,
-            "visibility": payload.visibility,
-            "metadataSchema": [field.model_dump() for field in payload.metadataSchema],
-            "createTime": "2026-08-03T10:20:30Z",
-            "updateTime": None,
-        },
+        _knowledge_base_data(record),
     ))
 
 
-def knowledge_base_update_response(payload: Any) -> dict[str, Any]:
+def knowledge_base_update_response(record: KnowledgeBaseRecord) -> dict[str, Any]:
     return with_trace_id(error_response(
         KnowledgeBaseErrorCodes.SUCCESS,
-        {
-            "kbId": payload.kbId,
-            "kbName": payload.kbName or "产品知识库-客服版",
-            "kbType": payload.kbType,
-            "teamId": payload.teamId,
-            "orgId": payload.orgId,
-            "kbDesc": payload.kbDesc,
-            "bizDomain": "general",
-            "visibility": payload.visibility,
-            "metadataSchema": [field.model_dump() for field in payload.metadataSchema],
-            "createTime": None,
-            "updateTime": "2026-08-03T10:35:00Z",
-        },
+        _knowledge_base_data(record),
     ))

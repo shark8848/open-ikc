@@ -4,9 +4,17 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services.knowledge_base_store import KnowledgeBaseStore
 
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_knowledge_base_store() -> None:
+    KnowledgeBaseStore.reset()
+    yield
+    KnowledgeBaseStore.reset()
 
 
 @pytest.mark.parametrize(

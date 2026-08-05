@@ -261,3 +261,67 @@ def test_ingest_and_parse_async_task_queryable() -> None:
     body = _query(data["docId"])
     assert body["errCode"] == "000000"
     assert body["data"]["parseStatus"] == data["taskStatus"]
+
+
+def test_document_update_time_preserved_after_parse() -> None:
+    kb = _create_kb()
+    doc = _ingest(_ingest_payload(kb["kbId"]))["data"]
+    payload = _ingest_payload(
+        kb["kbId"],
+        parseStrategy={"docType": "pdf", "parseMethod": "auto"},
+        resultFormat={"type": "json", "includeLayout": True},
+        executeMode="sync",
+    )
+    body = _ingest_and_parse(payload)
+    assert body["errCode"] == "000000"
+    info = _get_document(doc["docId"])
+    assert info["data"]["updateTime"] == doc["ingestTime"]
+    assert info["data"]["updateTime"] is not None
+
+
+def test_authz_ingest_allowed_for_operator(monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_PLATFORM_AUTHZ_ENABLED", "true")
+    admin = {**AUTH, "X-User-Id": "alice", "X-Tenant-Id": "tenant_001", "X-User-Roles": "km_admin"}
+    operator = {
+        **AUTH,
+        "X-Auth-System": "digital_employee",
+        "X-User-Id": "emp_1",
+        "X-Tenant-Id": "tenant_001",
+        "X-User-Roles": "de_km_operator",
+    }
+    kb = _create_kb(headers=admin, kbType="enterprise", orgId="")
+    body = _ingest(_ingest_payload(kb["kbId"]), headers=operator)
+    assert body["errCode"] == "000000"
+
+
+def test_authz_ingest_and_parse_allowed_for_operator(monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_PLATFORM_AUTHZ_ENABLED", "true")
+    admin = {**AUTH, "X-User-Id": "alice", "X-Tenant-Id": "tenant_001", "X-User-Roles": "km_admin"}
+    operator = {
+        **AUTH,
+        "X-Auth-System": "digital_employee",
+        "X-User-Id": "emp_1",
+        "X-Tenant-Id": "tenant_001",
+        "X-User-Roles": "de_km_operator",
+    }
+    kb = _create_kb(headers=admin, kbType="enterprise", orgId="")
+    payload = _ingest_payload(
+        kb["kbId"],
+        parseStrategy={"docType": "pdf", "parseMethod": "auto"},
+        resultFormat={"type": "json", "includeLayout": True},
+        executeMode="sync",
+    )
+    body = _ingest_and_parse(payload, headers=operator)
+    assert body["errCode"] == "000000"
+
+
+def test_ingest_and_parse_rejects_invalid_doc_type() -> None:
+    kb = _create_kb()
+    payload = _ingest_payload(
+        kb["kbId"],
+        parseStrategy={"docType": "exe", "parseMethod": "auto"},
+        resultFormat={"type": "json", "includeLayout": True},
+        executeMode="async",
+    )
+    body = _ingest_and_parse(payload)
+    assert body["errCode"] == "100001"

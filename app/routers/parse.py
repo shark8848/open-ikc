@@ -52,7 +52,7 @@ async def parse_document(request: Request, payload: DocumentParseRequest) -> dic
     identity = _request_identity(request)
     authorize_or_raise(
         request=request,
-        action="parse",
+        action="write",
         resource_type="parse",
         resource_id=payload.docId,
         context=_doc_scope_context(payload.docId),

@@ -44,6 +44,8 @@ flowchart TD
 
 说明：沿用 `Authorization: Bearer <token>`，支持 `OPEN_PLATFORM_TOKEN` 或 `OPEN_PLATFORM_TOKENS`。
 
+> ⚠️ **安全边界**：static 模式直接采信 `X-User-Id / X-User-Roles` 等身份头（未配置 token 时仅校验 Bearer 存在、不比对其值），**仅限内网/测试环境**；平台公网可达且 token 泄漏时，攻击者可伪造身份头越权读写个人库。生产环境禁止使用 static 模式。
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -62,6 +64,8 @@ sequenceDiagram
 ### 3.2 gateway_header（企业网关 SSO）
 
 说明：网关先完成 OIDC/SAML/LDAP，后端只消费标准 Header。
+
+> ⚠️ **安全前提**：生产必须由可信网关完成认证，并**剥离/覆盖客户端伪造的身份头**（`X-User-Id / X-User-Roles / X-User-Permissions` 等）；后端直接采信这些头，若网关未清理伪造头，任何能直连平台的调用方均可冒用任意身份。
 
 ```mermaid
 sequenceDiagram
@@ -145,6 +149,8 @@ AUTHZ bridge 会优先读取这些 state 数据，避免重复从 Header 解析�
 1. `OPEN_PLATFORM_TOKEN`
 2. `OPEN_PLATFORM_TOKENS`（逗号分隔）
 
+> ⚠️ static 模式仅限内网/测试；生产必须切换到 `gateway_header`（或 oidc_jwt / oauth2_introspection）并由网关剥离伪造身份头。
+
 ### 5.3 gateway_header
 
 1. `OPEN_PLATFORM_AUTH_HEADER_USER_ID`（默认 `X-User-Id`）
@@ -219,9 +225,11 @@ sequenceDiagram
 
 内置默认值：
 
-1. `de_km_reader -> search:query,knowledge_base:read,document:read`
-2. `de_km_operator -> search:query,document:read,document:write`
+1. `de_km_reader -> search:query,knowledge_base:read,document:read,parse:read`
+2. `de_km_operator -> search:query,document:read,document:write,parse:read,parse:write`
 3. `de_km_admin -> *:*`
+
+动作语义约定：`resource_type:action` 使用统一小写词汇（`read` / `write` / `create` / `update` / `query`），文档接入类写操作为 `document:write`，解析任务启动为 `parse:write`，解析结果查询/下载为 `parse:read`；`ingest-and-parse` 复合接口同时校验 `document:write` 与 `parse:write`。
 
 可通过环境变量覆盖：
 

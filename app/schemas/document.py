@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.schemas.parse import validate_parse_strategy, validate_result_format
+
 
 class DocumentSource(BaseModel):
     type: Literal["url", "file", "directory", "archive"] = Field(
@@ -100,6 +102,12 @@ class DocumentIngestAndParseRequest(DocumentIngestRequest):
         "async",
         description="执行方式：async 异步返回任务 ID（默认），sync 同步内联返回解析结果。",
     )
+
+    @model_validator(mode="after")
+    def validate_parse_options(self) -> "DocumentIngestAndParseRequest":
+        validate_parse_strategy(self.parseStrategy)
+        validate_result_format(self.resultFormat)
+        return self
 
     model_config = ConfigDict(
         json_schema_extra={

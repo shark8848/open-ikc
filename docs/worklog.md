@@ -206,3 +206,20 @@
 - 测试：`tests/test_parse.py` 全部 `_parse_payload` 调用点补真实 kbId（含 1 处漏改 `test_download_with_ticket_for_other_document`）、新增 kbId 不匹配 100001 用例；`tests/test_document.py` 更新 async 断言 `taskStatus=="queued"` 并新增 3 用例；新建 `tests/test_search.py`（鉴权 501001 / 未认证 100401）。
 - 验证：平台 `pytest tests -q` **110 passed**；SDK `pytest sdk/python/tests -q` **91 passed**，无回归。
 - 下一步：剩余 P1/P2 待办（P2-13 directory/archive 伪展开标注、P2-14 responses.py 收敛、P1-8 下载 000000 豁免决策、P1-6 AUTHZ parse 权限语义）可自行决定继续或交还逻辑层。
+
+### 任务：Claude Code 代码/安全审查 6 项修复闭环
+
+- 完成：AUTHZ action 语义统一——document `/ingest`、`/ingest-and-parse` 由 `create` 改 `write`（对齐 `document:write`），parse 启动由 `parse` 改 `write`；`ingest-and-parse` 复合校验 `document:write` + `parse:write`；`runtime.py` de 映射补 `parse:read`/`parse:write`（`de_km_reader`/`de_km_operator`），修复 operator 无法接入/解析、非 admin 无法发起解析的缺口（P1-6 闭环）。
+- 完成：下载凭证一次性消费——`ParseTicketStore.validate` 命中即删除（one-time），新增单次使用用例。
+- 完成：`DocumentStore.update_status` 不再把 update_time 覆盖为 None（`update_time or record.update_time`），文档创建时 `update_time=ingest_time`，新增保留用例。
+- 完成：AUTHN 文档 §3.1/§3.2/§5.2 补安全边界说明——static 仅限内网/测试、生产必须 gateway_header 且网关剥离伪造身份头。
+- 决策：parseStrategy/resultFormat 深度校验按审查建议延后（落地真实解析引擎前补枚举/范围校验）。
+- 测试：新增 5 例（operator ingest/ingest-and-parse/parse 允许、凭证单次使用、updateTime 保留）；平台 **115 passed**、SDK **91 passed**。
+- 下一步：剩余 #7/#8/#9/#13/#14/#15/#16/#17 与 GET 403/401 用例按待办清单继续或交还逻辑层。
+
+### 任务：审查复查闭环——README/AGENTS.md 安全边界 + parse schema 深度校验
+
+- 完成：问题 3 复查项——README「认证模式」段与 `AGENTS.md` §4.1 补部署安全边界（static 仅限内网/测试，生产必须 gateway_header 且网关剥离伪造头，或 oidc_jwt/oauth2_introspection）。
+- 完成：问题 6 复查项——`app/schemas/parse.py` 新增 `validate_parse_strategy`/`validate_result_format` 与 `DocumentParseRequest` model_validator：docType/parseMethod/backend/parseMode/chunkStrategy/resultFormat.type/imageEncoding 枚举、chunkSize≥0（顶层与 chunking 嵌套）、pageRange 格式（`\d+(-\d+)?`）；`app/schemas/document.py` 的 ingest-and-parse 复用同一套校验。
+- 测试：新增 7 例（非法 docType/parseMethod/resultFormat.type/parseMode、负 chunkSize、非法 pageRange、ingest-and-parse 非法 docType）；平台 **122 passed**、SDK **91 passed**。
+- 备注：附带发现 2（错 doc_id 消费凭证即丢失）与发现 3（ingest-and-parse parse 授权 resource_id="*"）均为一次性/复合操作的务实折中，保持现状并在待办清单记录。

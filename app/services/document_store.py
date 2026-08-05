@@ -85,7 +85,7 @@ class DocumentStore:
             record = cls._records.get(doc_id)
             if record is None:
                 return None
-            updated = replace(record, status=status, update_time=update_time)
+            updated = replace(record, status=status, update_time=update_time or record.update_time)
             cls._records[doc_id] = updated
             return updated
 

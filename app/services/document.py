@@ -120,6 +120,7 @@ class DocumentService:
         owner_id: str,
         tenant_id: str,
     ) -> DocumentRecord:
+        now_iso = _now_iso()
         record = make_record(
             kb_id=kb_id,
             ingest_task_id=generate_ingest_task_id(),
@@ -132,7 +133,8 @@ class DocumentService:
             status=status,
             owner_id=owner_id,
             tenant_id=tenant_id,
-            ingest_time=_now_iso(),
+            ingest_time=now_iso,
+            update_time=now_iso,
         )
         try:
             DocumentStore.create(record)

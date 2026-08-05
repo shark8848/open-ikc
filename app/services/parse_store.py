@@ -155,9 +155,9 @@ class ParseTicketStore:
 
     @classmethod
     def validate(cls, ticket: str, now_ts: float) -> ParseTicketRecord | None:
-        """校验凭证：不存在或已过期返回 None。"""
+        """一次性凭证校验：命中即消费（删除），不存在或已过期返回 None。"""
         with cls._lock:
-            record = cls._tickets.get(ticket)
+            record = cls._tickets.pop(ticket, None)
             if record is None:
                 return None
             if now_ts > record.expires_in:

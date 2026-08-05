@@ -97,6 +97,9 @@ headers = {
 2. 认证中间件会把身份写入 `request.state.identity` 和 `request.state.permissions`，供 AUTHZ bridge 复用。
 3. 具体流程图和配置清单见 `docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md`。
 
+> ⚠️ **部署安全边界**：`static` 模式直接采信 `X-User-Id/X-User-Roles` 等身份头，**仅限内网/测试环境**；
+> 生产必须使用 `gateway_header`（由可信网关完成认证并剥离/覆盖客户端伪造头）或 `oidc_jwt`/`oauth2_introspection`（服务端验签 token 派生身份）。
+
 ## 访问地址
 
 - 平台服务: http://127.0.0.1:18000

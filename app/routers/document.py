@@ -40,7 +40,7 @@ async def ingest_document(request: Request, payload: DocumentIngestRequest) -> d
     kb_record = KnowledgeBaseService.get_or_raise(payload.kbId)
     authorize_or_raise(
         request=request,
-        action="create",
+        action="write",
         resource_type="document",
         resource_id=payload.kbId,
         context={
@@ -64,9 +64,22 @@ async def ingest_and_parse_document(request: Request, payload: DocumentIngestAnd
     kb_record = KnowledgeBaseService.get_or_raise(payload.kbId)
     authorize_or_raise(
         request=request,
-        action="create",
+        action="write",
         resource_type="document",
         resource_id=payload.kbId,
+        context={
+            "kb_id": payload.kbId,
+            "kb_type": kb_record.kb_type,
+            "owner_id": identity["user_id"],
+            "org_path": payload.orgId or identity["tenant_id"],
+        },
+    )
+    # 复合操作：接入 + 解析，需同时具备 document 写入与 parse 写入权限
+    authorize_or_raise(
+        request=request,
+        action="write",
+        resource_type="parse",
+        resource_id="*",
         context={
             "kb_id": payload.kbId,
             "kb_type": kb_record.kb_type,

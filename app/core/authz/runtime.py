@@ -80,8 +80,8 @@ def _register_builtin_adapters(service: AuthIntegrationService) -> None:
     de_role_mapping = _load_role_action_mapping(
         "OPEN_PLATFORM_DE_ROLE_ACTION_MAPPING",
         {
-            "de_km_reader": ["search:query", "knowledge_base:read", "document:read"],
-            "de_km_operator": ["search:query", "document:read", "document:write"],
+            "de_km_reader": ["search:query", "knowledge_base:read", "document:read", "parse:read"],
+            "de_km_operator": ["search:query", "document:read", "document:write", "parse:read", "parse:write"],
             "de_km_admin": ["*:*"],
         },
     )

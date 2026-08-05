@@ -253,3 +253,80 @@ def test_parse_kb_id_mismatch_returns_invalid_params() -> None:
     doc = _ingest(kb1["kbId"])
     body = _parse({"kbId": kb2["kbId"], "docId": doc["docId"], "executeMode": "async"})
     assert body["errCode"] == "100001"
+
+
+def test_download_ticket_single_use() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    _parse(_parse_payload(doc["docId"], kb_id=kb["kbId"], executeMode="sync"))
+    ticket = _issue_ticket(doc["docId"])["data"]["ticket"]
+    first = _download(doc["docId"], ticket)
+    assert first["errCode"] == "000000"
+    second = _download(doc["docId"], ticket)
+    assert second["errCode"] == "200004"
+
+
+def test_authz_parse_allowed_for_operator(monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_PLATFORM_AUTHZ_ENABLED", "true")
+    admin = {**AUTH, "X-User-Id": "alice", "X-Tenant-Id": "tenant_001", "X-User-Roles": "km_admin"}
+    operator = {
+        **AUTH,
+        "X-Auth-System": "digital_employee",
+        "X-User-Id": "emp_1",
+        "X-Tenant-Id": "tenant_001",
+        "X-User-Roles": "de_km_operator",
+    }
+    kb = _create_kb(headers=admin, kbType="enterprise", orgId="")
+    doc = _ingest(kb["kbId"], headers=operator)
+    body = _parse(_parse_payload(doc["docId"], kb_id=kb["kbId"]), headers=operator)
+    assert body["errCode"] == "000000"
+
+
+def test_parse_rejects_invalid_doc_type() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    payload = _parse_payload(doc["docId"], kb_id=kb["kbId"])
+    payload["parseStrategy"]["docType"] = "exe"
+    body = _parse(payload)
+    assert body["errCode"] == "100001"
+
+
+def test_parse_rejects_invalid_parse_method() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    payload = _parse_payload(doc["docId"], kb_id=kb["kbId"])
+    payload["parseStrategy"]["parseMethod"] = "llm"
+    body = _parse(payload)
+    assert body["errCode"] == "100001"
+
+
+def test_parse_rejects_invalid_result_format_type() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    payload = _parse_payload(doc["docId"], kb_id=kb["kbId"])
+    payload["resultFormat"]["type"] = "xml"
+    body = _parse(payload)
+    assert body["errCode"] == "100001"
+
+
+def test_parse_rejects_negative_chunk_size() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    body = _parse(_parse_payload(doc["docId"], kb_id=kb["kbId"], chunkSize=-1))
+    assert body["errCode"] == "100001"
+
+
+def test_parse_rejects_invalid_page_range() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    payload = _parse_payload(doc["docId"], kb_id=kb["kbId"])
+    payload["parseStrategy"]["pageRange"] = ["4-"]
+    body = _parse(payload)
+    assert body["errCode"] == "100001"
+
+
+def test_parse_rejects_invalid_parse_mode() -> None:
+    kb = _create_kb()
+    doc = _ingest(kb["kbId"])
+    body = _parse(_parse_payload(doc["docId"], kb_id=kb["kbId"], parseMode="llm"))
+    assert body["errCode"] == "100001"

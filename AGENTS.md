@@ -129,6 +129,7 @@ logs/                     # 运行日志（gitignore，勿提交）
 - 每次请求必须携带 `Authorization: Bearer <token>`，缺失或格式错误统一返回 `100401` + `traceId`。
 - 服务端 token：`OPEN_PLATFORM_TOKEN`（单个）/ `OPEN_PLATFORM_TOKENS`（多个，逗号分隔）；未配置时只强制 Bearer 存在、不做值比对。
 - `OPEN_PLATFORM_AUTH_MODE` 切换认证模式：`static` / `gateway_header` / `oidc_jwt` / `oauth2_introspection`。
+- **部署边界**：`static` 模式直接采信身份头，仅限内网/测试；生产必须 `gateway_header`（网关剥离伪造头）或 `oidc_jwt`/`oauth2_introspection`。
 - 认证中间件把身份写入 `request.state.identity` 与 `request.state.permissions`，供 AUTHZ bridge 复用。
 - 免鉴权路径集中在 `app/core/middlewares.py` 的 `AUTH_EXEMPT_PATHS` / `AUTH_EXEMPT_PREFIXES`，新增系统级路径需同步更新并补测试。
 

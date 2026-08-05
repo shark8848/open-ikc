@@ -1,8 +1,73 @@
 from __future__ import annotations
 
-from typing import Literal
+import re
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+PARSE_DOC_TYPES = {"auto", "pdf", "docx", "xlsx", "pptx", "txt", "md", "html", "jpg", "png"}
+PARSE_METHODS = {"auto", "ocr", "txt"}
+PARSE_BACKENDS = {"pipeline", "vllm-engine"}
+PARSE_MODES = {"auto", "ocr", "structure"}
+CHUNK_STRATEGIES = {"auto", "fixed", "semantic"}
+RESULT_FORMAT_TYPES = {"json", "markdown", "text"}
+IMAGE_ENCODINGS = {"url", "base64"}
+_PAGE_RANGE_PATTERN = re.compile(r"\d+(-\d+)?")
+
+
+def _validate_parse_strategy(strategy: dict[str, Any]) -> None:
+    """parseStrategy 枚举与范围校验：docType/parseMethod/backend/pageRange/chunking。"""
+    doc_type = strategy.get("docType")
+    if doc_type is not None and doc_type not in PARSE_DOC_TYPES:
+        raise ValueError(
+            f"parseStrategy.docType 非法：{doc_type}（可选：{'/'.join(sorted(PARSE_DOC_TYPES))}）"
+        )
+    parse_method = strategy.get("parseMethod")
+    if parse_method is not None and parse_method not in PARSE_METHODS:
+        raise ValueError(
+            f"parseStrategy.parseMethod 非法：{parse_method}（可选：{'/'.join(sorted(PARSE_METHODS))}）"
+        )
+    backend = strategy.get("backend")
+    if backend is not None and backend not in PARSE_BACKENDS:
+        raise ValueError(
+            f"parseStrategy.backend 非法：{backend}（可选：{'/'.join(sorted(PARSE_BACKENDS))}）"
+        )
+    page_range = strategy.get("pageRange")
+    if page_range is not None:
+        if not isinstance(page_range, list) or not all(
+            isinstance(item, str) and _PAGE_RANGE_PATTERN.fullmatch(item.strip()) for item in page_range
+        ):
+            raise ValueError('parseStrategy.pageRange 格式非法（示例：["1","2","4-8"]）')
+    chunking = strategy.get("chunking")
+    if isinstance(chunking, dict):
+        for field_name in (
+            "chunkSize",
+            "chunkOverlap",
+            "parentChunkSize",
+            "parentChunkOverlap",
+            "audioVideoChunkDuration",
+        ):
+            value = chunking.get(field_name)
+            if value is not None and (isinstance(value, bool) or not isinstance(value, int) or value < 0):
+                raise ValueError(f"parseStrategy.chunking.{field_name} 必须为非负整数")
+
+
+def validate_parse_strategy(strategy: dict[str, Any]) -> None:
+    """解析策略入参校验入口（Parse 请求与 ingest-and-parse 共用）。"""
+    if isinstance(strategy, dict):
+        _validate_parse_strategy(strategy)
+
+
+def validate_result_format(result_format: dict[str, Any]) -> None:
+    """返回格式枚举校验：type/imageEncoding。"""
+    if not isinstance(result_format, dict):
+        return
+    fmt_type = result_format.get("type")
+    if fmt_type is not None and fmt_type not in RESULT_FORMAT_TYPES:
+        raise ValueError(f"resultFormat.type 非法：{fmt_type}（可选：{'/'.join(sorted(RESULT_FORMAT_TYPES))}）")
+    image_encoding = result_format.get("imageEncoding")
+    if image_encoding is not None and image_encoding not in IMAGE_ENCODINGS:
+        raise ValueError(f"resultFormat.imageEncoding 非法：{image_encoding}（可选：{'/'.join(sorted(IMAGE_ENCODINGS))}）")
 
 
 class DocumentParseRequest(BaseModel):
@@ -24,6 +89,20 @@ class DocumentParseRequest(BaseModel):
     parseMode: str = Field("auto", description="解析模式：auto/ocr/structure。")
     chunkStrategy: str = Field("auto", description="分段策略：auto/fixed/semantic。")
     chunkSize: int = Field(800, description="分段长度，chunkStrategy=fixed 时生效。")
+
+    @model_validator(mode="after")
+    def validate_parse_options(self) -> "DocumentParseRequest":
+        validate_parse_strategy(self.parseStrategy)
+        validate_result_format(self.resultFormat)
+        if self.parseMode not in PARSE_MODES:
+            raise ValueError(f"parseMode 非法：{self.parseMode}（可选：{'/'.join(sorted(PARSE_MODES))}）")
+        if self.chunkStrategy not in CHUNK_STRATEGIES:
+            raise ValueError(
+                f"chunkStrategy 非法：{self.chunkStrategy}（可选：{'/'.join(sorted(CHUNK_STRATEGIES))}）"
+            )
+        if isinstance(self.chunkSize, bool) or self.chunkSize < 0:
+            raise ValueError("chunkSize 必须为非负整数")
+        return self
 
     model_config = ConfigDict(
         json_schema_extra={

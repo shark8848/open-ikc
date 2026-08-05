@@ -223,3 +223,13 @@
 - 完成：问题 6 复查项——`app/schemas/parse.py` 新增 `validate_parse_strategy`/`validate_result_format` 与 `DocumentParseRequest` model_validator：docType/parseMethod/backend/parseMode/chunkStrategy/resultFormat.type/imageEncoding 枚举、chunkSize≥0（顶层与 chunking 嵌套）、pageRange 格式（`\d+(-\d+)?`）；`app/schemas/document.py` 的 ingest-and-parse 复用同一套校验。
 - 测试：新增 7 例（非法 docType/parseMethod/resultFormat.type/parseMode、负 chunkSize、非法 pageRange、ingest-and-parse 非法 docType）；平台 **122 passed**、SDK **91 passed**。
 - 备注：附带发现 2（错 doc_id 消费凭证即丢失）与发现 3（ingest-and-parse parse 授权 resource_id="*"）均为一次性/复合操作的务实折中，保持现状并在待办清单记录。
+
+### 任务：完成后自动审查机制落地（claude headless 只读审查）+ 4 轮实测验证
+
+- 完成：新增 `scripts/review_with_claude.sh`——headless `claude -p --permission-mode plan` 只读审查（机制性禁止写工具），默认审未提交改动（含未跟踪文件清单），工作区干净回退最近一次提交；`OPEN_PLATFORM_AUTO_REVIEW=false` 跳过；`--since/--out` 可覆盖；失败/空报告自动清理半成品并退出非零。
+- 完成：`AGENTS.md` 新增 §13 自动审查契约、README 新增说明节。
+- 实测 4 轮：第 1 轮抓到「开关未实现」P2 → 修复；第 2 轮抓到「pipefail 下 git diff|head 崩溃」「未跟踪文件不在范围」2 个 P1 → 重写脚本（临时文件截断、未跟踪清单）；第 3 轮抓到「git diff 错误被 || true 静默」「无 HEAD~1 回退」→ 显式失败/首提交回退，并顺带修复 P2（ingest-and-parse parse 授权 `resource_id="*"` → `kbId`）；第 4 轮无 P0/P1。
+- 验证：第 4 轮报告 7 项 P2 已闭环或记录——适配器恒生成 `resource_id="*"` 补固化测试（`tests/test_authz_adapters.py`）、resource_id 语义注释、P2-4 schema 校验此前已落地（审查者未注意到 model_validator）；`.err` 残留清理、worktree 遗留（`.claude/worktrees/`，Claude Code 并行产物不纳入）。
+- 决策：资源级授权当前由 service 业务校验兜底（`MappingAuthzAdapter` 事实恒 `resource_id="*"`），策略引擎不按 request.resource_id 收敛，已在测试固化并记录待办。
+- 验证：平台 `pytest tests -q` **123 passed**（+1 固化测试）；SDK **91 passed**。
+- 下一步：P2-2（pageRange start<=end）、P2-3（ingest_and_parse 幂等 executeMode 歧义）、P2-4（download 凭证语义文档化）记入待办，落地真实解析引擎/存储前定稿。

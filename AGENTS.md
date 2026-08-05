@@ -259,3 +259,11 @@ Excel / 抽取 JSON 仅作历史接口盘点，**不得**未经评审直接扩�
 | API 目录 | `app/core/catalog.py` |
 | 人读说明 | `README.md` |
 | 接口方案 | `docs/开放平台接口整体方案_V2_精简.md` |
+
+## 13. 完成后自动审查（Claude Code 只读审查）
+
+1. 任务收尾且 `pytest tests -q` 全绿、行为有改动时，Codex 自动运行 `scripts/review_with_claude.sh` 触发 Claude Code 只读审查（headless `claude -p`）。
+2. 审查 prompt 强制「只读、禁止修改文件」；报告输出 `docs/code-review_<日期>.md`，与逻辑层写范围不重叠，避免与并行 Claude Code 开发冲突。
+3. 审查结论写入 worklog；P0/P1 问题闭环后再提交；P2 项记入对应待办清单。
+4. 开关：`OPEN_PLATFORM_AUTO_REVIEW=true`（默认开）；置 `false` 可跳过以节省 token/时间。
+5. claude CLI 走 Anthropic API 需网络，Codex 沙箱内执行需沙箱外批准（`claude -p` 前缀规则可复用）。

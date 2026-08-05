@@ -74,12 +74,13 @@ async def ingest_and_parse_document(request: Request, payload: DocumentIngestAnd
             "org_path": payload.orgId or identity["tenant_id"],
         },
     )
-    # 复合操作：接入 + 解析，需同时具备 document 写入与 parse 写入权限
+    # 复合操作：接入 + 解析，需同时具备 document 写入与 parse 写入权限；
+    # parse 授权在文档尚未创建时以 kbId 作资源标识（parse 域单条路由仍用 docId）
     authorize_or_raise(
         request=request,
         action="write",
         resource_type="parse",
-        resource_id="*",
+        resource_id=payload.kbId,
         context={
             "kb_id": payload.kbId,
             "kb_type": kb_record.kb_type,

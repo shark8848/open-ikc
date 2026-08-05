@@ -127,6 +127,14 @@ headers = {
 6. 解析域四接口已真实落地：`POST /parse`（async 返回 queued 任务、sync 返回内联结果）、`GET /parse-result/query`、`GET /parse-result/issue-download-ticket`、`GET /parse-result/download`；进程内解析任务/结果/凭证存储（`app/services/parse_store.py`）+ 文档归属与数据范围校验 + 幂等 + AUTHZ 接入；新增解析域错误码 `200003`/`200004`/`200011`。下载接口在真实结果存储落地前返回统一体（含下载说明）。
 7. 检索接口仍为 `501001` 预占位。
 
+## 完成后自动审查（Claude Code）
+
+任务收尾且测试通过后，可运行 `scripts/review_with_claude.sh` 自动调用 Claude Code headless（`claude -p`）对当前改动做只读代码+安全审查，报告输出到 `docs/code-review_<日期>.md`（默认审查未提交改动，工作区干净时回退最近一次提交）。
+
+- 审查 prompt 强制只读，不修改文件，可与并行开发安全共存。
+- 环境变量 `OPEN_PLATFORM_AUTO_REVIEW=false` 可跳过自动审查；`CLAUDE_BIN` 可覆盖 claude 可执行文件路径。
+- 约定详见 `AGENTS.md` §13。
+
 ## 统一认证鉴权集成层（独立）
 
 为适配“两个系统权限 schema 差异明显”的场景，新增了独立的统一认证鉴权集成层，不与现有 middleware 的 trace/token 逻辑交叉。

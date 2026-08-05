@@ -183,3 +183,39 @@ def test_authorize_denied_for_unregistered_system() -> None:
     )
     assert decision.allow is False
     assert decision.reason == "adapter not registered"
+
+
+def test_mapping_facts_resource_id_wildcard() -> None:
+    """固化当前行为：内置映射生成的事实 resource_id 恒为 '*'，
+    request.resource_id 不参与策略决策，资源级授权由 service 业务校验兜底。"""
+    service = AuthIntegrationService()
+    service.register_adapter(
+        "default",
+        MappingAuthzAdapter(
+            "default",
+            identity_mapping={
+                "user_id": "user_id",
+                "tenant_id": "tenant_id",
+                "roles": "roles",
+                "scopes": "scopes",
+            },
+            role_action_mapping={"km_reader": ["document:read"]},
+        ),
+    )
+    identity = {"user_id": "u1", "tenant_id": "t1", "roles": ["km_reader"]}
+    permissions = {"roles": ["km_reader"], "permissions": [], "deny_permissions": []}
+
+    first = service.authorize(
+        system_name="default",
+        raw_identity=identity,
+        raw_permissions=permissions,
+        request=AuthorizationRequest(action="read", resource_type="document", resource_id="kb_9"),
+    )
+    other = service.authorize(
+        system_name="default",
+        raw_identity=identity,
+        raw_permissions=permissions,
+        request=AuthorizationRequest(action="read", resource_type="document", resource_id="kb_999"),
+    )
+    assert first.allow is True
+    assert other.allow is True

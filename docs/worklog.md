@@ -233,3 +233,15 @@
 - 决策：资源级授权当前由 service 业务校验兜底（`MappingAuthzAdapter` 事实恒 `resource_id="*"`），策略引擎不按 request.resource_id 收敛，已在测试固化并记录待办。
 - 验证：平台 `pytest tests -q` **123 passed**（+1 固化测试）；SDK **91 passed**。
 - 下一步：P2-2（pageRange start<=end）、P2-3（ingest_and_parse 幂等 executeMode 歧义）、P2-4（download 凭证语义文档化）记入待办，落地真实解析引擎/存储前定稿。
+
+### 任务：headroom 上下文压缩代理 systemctl 托管 + 压缩率优化 + 集成方案文档
+
+- 完成：代理从手动 `setsid` 进程迁移为 `systemctl --user` 托管——`~/.config/systemd/user/headroom.service`（EnvironmentFile=`~/.headroom/headroom.env`，`Restart=on-failure`，`enable --now` 已生效，`/health` 200）。
+- 完成：压缩参数显式注入（settings.json 对直启 proxy 不生效）——`HEADROOM_TARGET_RATIO=0.3`、`HEADROOM_SAVINGS_PROFILE=coding`、`HEADROOM_LOSSLESS=0`、`HEADROOM_MODE=token`、`HEADROOM_COMPRESS_TOOL_TURNS=1`；已通过 `/proc/<pid>/environ` 核验。
+- 根因分析：37 请求累计节省 4.68%（852,833→812,887 tokens，中位 0.39%）；路由 `ratio_too_high=16`、`cache_hit=22`、`lossless_log` 26 次只记录不压缩；最大浪费为工具结果 JSON 膨胀（~12k tokens/请求）；当前最大节省来自 tool_search_deferral（~23k tokens/请求）。
+- 结论：Kompress ONNX 后端正常（1.1–1.8s/块）；启动横幅 `Kompress: not installed` 为显示缺陷（eager 状态 deferred 未映射），已写入文档说明。
+- 输出：`docs/headroom上下文压缩代理集成方案.md`（架构链路、venv 角色、统计与根因、参数表、systemd 管理命令、验证/回滚、后续调参建议）。
+- 下一步：观察 24h 新参数 PERF 统计；若仍 <5% 优先下调 `HEADROOM_MIN_TOKENS` 至 400/300 并评估 `HEADROOM_FORCE_KOMPRESS_ALL=1`；WSL 登录前自启可 `loginctl enable-linger sharkyai`。
+  - 续写：`loginctl enable-linger sharkyai` 已执行（Linger=yes），headroom 随机器开机自启完成；服务自 14:11:54 运行（PID 122444，health 200）。重启后首 11 个 Claude Code 请求实测：原始 582,089 → 优化 569,230 tokens，压缩节省 12,859（2.21%，中位 2.17%），另有 tool_search_deferral 平均 ~21k tokens/请求延迟注入未计入压缩；Kompress ONNX 于 14:14:12 后台加载成功，code/text/tool 块按 0.07–0.24 保留比压缩；路由仍拒大量小块（ratio_too_high 28–37、unchanged ratio>=1.00 28–29）。proxy_savings.json 为会话级统计（上一会话 37 请求/4.63%），实时口径以 headroom-proxy.jsonl 为准。
+  - 续写：按 litellm 同款改造为系统级服务——`/tmp/headroom.service` 已生成（`/etc/systemd/system/`、User=sharkyai、日志 append 到 /home/litellm/headroom.log、WantedBy=default.target），root 下可直接 `systemctl status headroom`；安装需 root（本会话无免密 sudo），命令已写入方案文档 §6.4。
+  - 续写：`docs/headroom上下文压缩代理集成方案.md` 已重写为全量配置手册（337 行）——前置条件、客户端配置、headroom.env 参数表、user 级/系统级 systemd 完整步骤、日志清单、验证命令、压缩效果与根因、已知问题排障、管理速查、回滚、变更记录；当前状态明确标注「user 级运行中、系统级待 root 安装」。

@@ -182,3 +182,27 @@
 - 完成：新增 `sdk/python/examples/async_quickstart.py`（异步客户端 create/query 示例）。
 - 完成：README 新增「联调冒烟」章节；两脚本 `py_compile` 通过。
 - 备注：冒烟需平台服务运行（沙箱网络隔离，需在沙箱外执行）并配置 `OPEN_PLATFORM_TOKEN`；SDK 全量测试基线 **91 passed** 不受影响。
+
+### 任务：开放平台 API 接口定义全面一致性核查（只读审计）
+
+- 完成：以知识库域为规范基准，并行派发文档/解析/检索三域只读审计子代理（各域路由↔catalog↔schema↔service↔错误码↔AUTHZ↔V2文档↔测试 交叉核对）。
+- 结论：四域主干协议/路由↔catalog/统一响应壳/异常链路均达标；共 20 项发现（高 2、中 11、低 7）。
+- 关键：高 1 文档域 quick 分支 `taskStatus` 硬编码 INGESTED 与 PARSING 状态不符（`services/document.py:191`）；高 2 V2 B-07 仍标注占位但接口已真实实现；中 11 含 KB A-02 文档「保持不变」与实际重置语义不符、解析 data 裸 dict、kbId 未校验、检索缺 response_model/测试、错误码编号跨域交错等。
+- 决策：逻辑层相关修复交由并行开发收尾时处理（避免文件冲突）；文档同步项（B-07/A-02/B-03~05/B-06/错误码表）可独立先行；SDK 侧无需改动。
+- 输出：`docs/API接口定义一致性核查报告_2026-08-05.md`（73 行，含修复建议与归属）。
+
+### 任务：一致性核查后续动作（文档同步修正 + 逻辑层待办交接）
+
+- 完成：修正 `docs/开放平台接口详细定义_精简版_V2.md`（20 处，+27 行）——错误码表补 200003/200004/200010/200011 并泛化公共码适用范围；A-02 修正 update 缺省重置语义（kbType/visibility/teamId/orgId 全量字段）+ 出参样例 createTime；B-03/B-04/B-05 以代码为准（仅 docId/docId+ticket 查询参数，下载出参改统一体+目标态文件流说明，补错误码 200003/200004）；B-06 补 docTitle/tags/metadata/orchestrationMode 入参与 taskStatus 出参；B-07 由「预占位」重写为真实实现（完整出参表+错误 100404/100403）；附录占位说明收敛为「仅检索/索引占位」。
+- 完成：新增 `docs/逻辑层一致性修复待办_2026-08-05.md`（17 项交接清单：P0 行为正确性 3 项、P1 契约对齐 6 项、P2 测试/文档 8 项，含位置/动作/验收）。
+- 备注：文档同步项不触碰 `app/`，与并行逻辑层开发零冲突；逻辑层修复项待其收尾时按待办清单闭环。
+
+### 任务：逻辑层一致性修复闭环（P0 全部 + P1 部分，测试全绿）
+
+- 完成：`app/services/parse.py` 增加 kbId 归属校验——`kbId` 与文档所属知识库不一致返回 `100001 INVALID_PARAMS`（P0-2）。
+- 完成：`app/services/document.py` quick 分支 `taskStatus` 改为返回 `record.status`（与解析状态一致，P0-1）；`ingest_and_parse` 重构——先新建/复用文档，再委托 `ParseService.parse`，async 返回真实 queued 任务、sync 返回真实内联结果（P0-3）。
+- 完成：`app/schemas/parse.py` 新增 `DocumentParseData`（taskId/taskStatus/executeMode/resultInline），`DocumentParseResponse.data` 由裸 dict 改为强类型（P1-4）；`app/schemas/search.py` 新增 `SearchResultItemData/SearchQueryData/SearchQueryResponse`，`app/routers/search.py` 补 summary/description/response_model 三件套（P1-5 响应模型部分）。
+- 决策：P1-6 AUTHZ 角色映射补 parse 权限曾试做，但与既有「km_reader 仅 search:query 被拒」测试冲突，已回退保持现状，待逻辑层确认权限语义后再议。
+- 测试：`tests/test_parse.py` 全部 `_parse_payload` 调用点补真实 kbId（含 1 处漏改 `test_download_with_ticket_for_other_document`）、新增 kbId 不匹配 100001 用例；`tests/test_document.py` 更新 async 断言 `taskStatus=="queued"` 并新增 3 用例；新建 `tests/test_search.py`（鉴权 501001 / 未认证 100401）。
+- 验证：平台 `pytest tests -q` **110 passed**；SDK `pytest sdk/python/tests -q` **91 passed**，无回归。
+- 下一步：剩余 P1/P2 待办（P2-13 directory/archive 伪展开标注、P2-14 responses.py 收敛、P1-8 下载 000000 豁免决策、P1-6 AUTHZ parse 权限语义）可自行决定继续或交还逻辑层。

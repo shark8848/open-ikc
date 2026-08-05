@@ -21,3 +21,21 @@ class SearchQueryRequest(BaseModel):
             }
         }
     }
+
+class SearchResultItemData(BaseModel):
+    docId: str = Field(..., description="文档 ID。")
+    score: float = Field(0.0, description="相关性分值。")
+    snippet: str = Field("", description="命中片段。")
+    citation: dict = Field(default_factory=dict, description="引用信息（页码/位置）。")
+
+
+class SearchQueryData(BaseModel):
+    answer: str = Field("", description="问答模式下的回答。")
+    results: list[SearchResultItemData] = Field(default_factory=list, description="检索结果列表。")
+
+
+class SearchQueryResponse(BaseModel):
+    traceId: str = Field(..., description="请求链路追踪 ID。")
+    errCode: str = Field(..., description="错误码。")
+    errMsg: str = Field(..., description="错误信息。")
+    data: SearchQueryData = Field(..., description="业务数据。")

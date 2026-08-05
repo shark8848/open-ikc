@@ -107,6 +107,24 @@ class KnowledgeBaseErrorCodes(BaseErrorCodes):
         return super().registry() + [cls.CREATE_FAILED, cls.UPDATE_FAILED]
 
 
+class DocumentErrorCodes(BaseErrorCodes):
+    INGEST_FAILED = ErrorCode("200010", "接入知识源失败", level="business", description="文档接入知识源业务处理失败")
+
+    @classmethod
+    def registry(cls) -> list[ErrorCode]:
+        return super().registry() + [cls.INGEST_FAILED]
+
+
+class ParseErrorCodes(BaseErrorCodes):
+    RESULT_NOT_READY = ErrorCode("200003", "解析结果尚未就绪", level="business", description="文档尚未完成解析或不存在解析产物")
+    TICKET_INVALID = ErrorCode("200004", "下载凭证无效或已过期", level="business", description="下载凭证不存在、无效或已过期")
+    PARSE_FAILED = ErrorCode("200011", "解析失败", level="business", description="文档解析业务处理失败")
+
+    @classmethod
+    def registry(cls) -> list[ErrorCode]:
+        return super().registry() + [cls.RESULT_NOT_READY, cls.TICKET_INVALID, cls.PARSE_FAILED]
+
+
 def error_response(error: ErrorCode, data: Any | None = None, message: str | None = None) -> dict[str, Any]:
     return error.to_response(data, message)
 
@@ -126,7 +144,12 @@ def exception_from_code(error: ErrorCode, data: Any | None = None, message: str 
 def error_code_catalog() -> list[dict[str, str]]:
     seen: set[str] = set()
     catalog: list[dict[str, str]] = []
-    for error_code in BaseErrorCodes.registry() + KnowledgeBaseErrorCodes.registry():
+    for error_code in (
+        BaseErrorCodes.registry()
+        + KnowledgeBaseErrorCodes.registry()
+        + DocumentErrorCodes.registry()
+        + ParseErrorCodes.registry()
+    ):
         if error_code.code in seen:
             continue
         seen.add(error_code.code)

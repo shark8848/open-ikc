@@ -120,7 +120,9 @@ headers = {
 2. 创建返回真实 `kbId`（`kb_` + 17 位数字）与 UTC 时间；同范围（personal 按 owner、team 按 teamId、enterprise 按 orgId/租户）`kbName` 重复返回 `100409`。
 3. 更新需知识库存在（否则 `100404`）；个人库仅创建者可修改/访问（否则 `100403`）；企业库无法识别组织授权时返回 `100403`。
 4. 列表查询按调用方数据范围收敛：个人库仅本人、团队库需 `teamId`、企业库按 `orgId` 或调用主体租户。
-5. 其余文档、解析、检索接口仍为 `501001` 预占位。
+5. 文档域 `ingest` / `ingest-and-parse` / 查询文档信息（`GET /{doc_id}`）已真实落地：进程内文档存储（`app/services/document_store.py`）+ 知识库归属校验 + 幂等登记 + AUTHZ 接入；返回真实 `ing_`/`doc_` 任务与文档 ID。
+6. 解析域四接口已真实落地：`POST /parse`（async 返回 queued 任务、sync 返回内联结果）、`GET /parse-result/query`、`GET /parse-result/issue-download-ticket`、`GET /parse-result/download`；进程内解析任务/结果/凭证存储（`app/services/parse_store.py`）+ 文档归属与数据范围校验 + 幂等 + AUTHZ 接入；新增解析域错误码 `200003`/`200004`/`200011`。下载接口在真实结果存储落地前返回统一体（含下载说明）。
+7. 检索接口仍为 `501001` 预占位。
 
 ## 统一认证鉴权集成层（独立）
 

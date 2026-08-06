@@ -71,19 +71,74 @@ python3.12 -m venv /home/litellm/.venv
 /home/litellm/.venv/bin/pip install -U "headroom-ai[ml]"
 ```
 
-### 3.3 客户端配置（Claude Code）
+### 3.3 客户端配置（Claude Code / Codex）
 
-`~/.claude/settings.json` 的 `env` 节（其余键不展示，含真实凭据）：
+#### 3.3.1 Claude Code（已实施）
+
+`~/.claude/settings.json` 的 `env` 节（`ANTHROPIC_AUTH_TOKEN` 已脱敏，不展示真实值）：
 
 ```json
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "http://localhost:8787"
-  }
+    "ANTHROPIC_BASE_URL": "http://localhost:8787",
+    "ANTHROPIC_AUTH_TOKEN": "<脱敏，占位即可>",
+    "ANTHROPIC_MODEL": "deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash"
+  },
+  "model": "opus"
 }
 ```
 
-要点：`ANTHROPIC_BASE_URL` 指向 headroom 而非 LiteLLM；headroom 再转发到 `ANTHROPIC_TARGET_API_URL`。
+| 键 | 值 | 说明 |
+| --- | --- | --- |
+| `ANTHROPIC_BASE_URL` | `http://localhost:8787` | 指向 headroom 而非 LiteLLM；headroom 再转发到 `ANTHROPIC_TARGET_API_URL` |
+| `ANTHROPIC_AUTH_TOKEN` | 任意非空 | headroom 为 loopback-only、无入站鉴权；上游认证由 headroom.env 的 `OPENAI_API_KEY` 注入 |
+| `ANTHROPIC_MODEL` / `*_MODEL` | `deepseek-v4-flash` | 全部模型档位（含子代理）统一映射到 LiteLLM 的 deepseek 模型 |
+| `model` | `opus` | Claude Code 默认档位，实际由 `ANTHROPIC_DEFAULT_*_MODEL` 覆盖 |
+
+#### 3.3.2 Codex（已实施）
+
+`~/.codex/config.toml`（原配置备份于 `~/.codex/config.toml.bak.20260805`）：
+
+```toml
+model = "deepseek-v4-flash"
+model_provider = "headroom"
+model_context_window = 1000000
+
+[model_providers.litellm]
+name = "LiteLLM"
+base_url = "http://localhost:4000"
+env_key = "LITELLM_TOKEN"
+wire_api = "responses"
+
+[model_providers.headroom]
+name = "Headroom Proxy"
+base_url = "http://127.0.0.1:8787"
+env_key = "LITELLM_TOKEN"
+wire_api = "responses"
+
+[projects."/home/open-ikc"]
+trust_level = "trusted"
+```
+
+| 键 | 值 | 说明 |
+| --- | --- | --- |
+| `model` | `deepseek-v4-flash` | Codex 请求的模型名，LiteLLM 需已配置该模型别名 |
+| `model_provider` | `headroom` | 当前走 headroom；回切改回 `litellm` 即直连 `:4000` |
+| `base_url` | `http://127.0.0.1:8787` | 与 litellm 同款不带 `/v1`（Codex 自动追加 `/v1/responses`） |
+| `wire_api` | `responses` | 与直连 LiteLLM 时一致；headroom 提供 `/v1/responses`（HTTP+WebSocket）转发到 LiteLLM |
+| `env_key` | `LITELLM_TOKEN` | 复用已导出的 token；headroom 为 loopback-only、无入站鉴权，仅需非空 |
+| `model_context_window` | `1000000` | 上下文窗口上限，保持原值 |
+
+#### 3.3.3 生效 / 验证 / 回切
+
+- **生效**：两个客户端均在启动时读取配置；Claude Code 重启会话、Codex 退出后重新 `codex` 即生效（当前运行中的会话不受影响）。
+- **验证**：`~/.headroom/logs/proxy.log` 的 PERF 行出现 `client=claude-code` / `client=codex`，或 `/home/litellm/headroom-proxy.jsonl` 的 `tags.client` 字段对应。
+- **回切（Codex）**：`model_provider` 改回 `litellm`，或 `cp ~/.codex/config.toml.bak.20260805 ~/.codex/config.toml`。
+- **回切（Claude Code）**：`ANTHROPIC_BASE_URL` 改回 `http://localhost:4000`（LiteLLM 直连）。
 
 ### 3.4 环境变量（headroom.env）
 

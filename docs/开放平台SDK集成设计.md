@@ -207,7 +207,7 @@ print(kb.kbId, kb.createTime)
 
 | 方法 | 对应路由 | 关键参数 |
 | --- | --- | --- |
-| `query` | POST `/api/v1/knowledge-search/query` | `query`、`kbId`、`kbIds`、`ownerId`、`orgPath`（对齐平台当前 schema；`mode`/`topK`/`filters`/`withCitation` 等目标态参数待平台落地后补充） |
+| `query` | POST `/api/v1/knowledge-search/query` | `query`、`kbId`、`kbIds`、`ownerId`、`orgPath`（对齐平台当前 schema；`mode`/`topK`/`filters`/`withCitation` 等目标态参数已随平台检索域落地，SDK 如需透传可扩展 `query()` 签名） |
 
 `kbId/kbIds/ownerId/orgPath` 同时是平台 AUTHZ 数据权限上下文（AGENTS.md §4.2），SDK 原样透传。
 

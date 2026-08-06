@@ -6,6 +6,19 @@
 
 ## 2026-08-05
 
+### 任务：检索域真实实现落地（统一检索问答，四域全落地）
+
+- 完成：新增 `app/services/search_store.py`（进程内检索索引：`SearchIndexRecord`/`SearchIndexStore` 原子读写、`index_doc` 按 doc_id 重建幂等覆盖、`search` 关键词加权打分[标题 3.0/keywords 2.0/content 1.0] + 元数据过滤 + topK 截断、轻量分词）。
+- 完成：`app/schemas/search.py` 扩展——`SearchQueryRequest` 补 `teamId/orgId/mode(search|qa 默认 qa)/topK(默认 5)/filters/withCitation(默认 true)` + field_validator（mode 枚举、topK>=1）+ model_validator（kbId/kbIds 至少其一）；`SearchResultItemData` 补 `docTitle`、`SearchQueryData` 补 `total`。
+- 完成：`app/core/responses.py` 新增 `search_query_response(answer/total/results)` 构造器收敛；`app/services/search.py` 占位替换——逐 kb 存在性 100404、个人库仅创建者可检索 100403、索引检索 + topK/filters/withCitation、mode=search 空 answer / mode=qa 占位 answer（引用 top1 证据，注明回答引擎落地后替换）。
+- 完成：`app/routers/search.py` 保留 `action="query"` AUTHZ，补从 `request.state.identity` 取 owner_id/tenant_id 传 service（修复占位期未传身份的缺口）、注入 team_id/org_id 数据上下文、description 去掉「预占位」。
+- 决策：检索索引为进程内内存模拟，真实索引引擎落地前由调用方显式注入（不随 ingest/parse 自动构建）；错误码复用公共码（100404/100403/100001），检索域不新增错误码。
+- 决策：AUTHZ 语义固化——`km_reader` 含 `search:query`（只读能力读者可检索），deny 用例走 `X-User-Deny-Permissions: search:query`；reader 企业库放行测试用 enterprise + 同租户构造。
+- 测试：重写 `tests/test_search.py`（2→18 例，覆盖 qa/search/topK/filters/withCitation/空结果/404/403/100001/401/AUTHZ 三态/catalog 一致性）；全量测试 **139 passed**（原 123+16）。
+- 实测：TestClient 端到端冒烟——create KB → 注入索引 → query `000000`（answer 引用证据、total=1、23 位 traceId、citation 完整）、mode=search 空 answer、不存在 kb `100404`；SDK `pytest sdk/python/tests -q` **91 passed** 无回归。
+- 同步：README §当前实现进度（检索占位→真实，第 7 条重写，四域全落地）；V2 详细定义附录「当前占位实现说明」收敛为仅索引 C-01/C-02 占位；SDK 集成设计 §6.4 检索目标态参数已落地标注。
+- 下一步：真实检索/索引引擎落地后替换进程内关键词索引并补向量/倒排；检索自动随 ingest/parse 构建索引的联动；`goals/search-goal.md` 已建并标记完成。
+
 ### 任务：解析域真实实现落地（parse / parse-result query / download ticket / download）
 
 - 完成：新增 `app/services/parse_store.py`（进程内存储：`ParseTaskRecord`/`ParseResultRecord`/`ParseTicketRecord`、`ParseTaskStore` 任务与结果原子读写、`ParseTicketStore` 短期凭证签发与校验、`generate_parse_task_id` `parse_`+17 位数字）。
@@ -245,3 +258,21 @@
   - 续写：`loginctl enable-linger sharkyai` 已执行（Linger=yes），headroom 随机器开机自启完成；服务自 14:11:54 运行（PID 122444，health 200）。重启后首 11 个 Claude Code 请求实测：原始 582,089 → 优化 569,230 tokens，压缩节省 12,859（2.21%，中位 2.17%），另有 tool_search_deferral 平均 ~21k tokens/请求延迟注入未计入压缩；Kompress ONNX 于 14:14:12 后台加载成功，code/text/tool 块按 0.07–0.24 保留比压缩；路由仍拒大量小块（ratio_too_high 28–37、unchanged ratio>=1.00 28–29）。proxy_savings.json 为会话级统计（上一会话 37 请求/4.63%），实时口径以 headroom-proxy.jsonl 为准。
   - 续写：按 litellm 同款改造为系统级服务——`/tmp/headroom.service` 已生成（`/etc/systemd/system/`、User=sharkyai、日志 append 到 /home/litellm/headroom.log、WantedBy=default.target），root 下可直接 `systemctl status headroom`；安装需 root（本会话无免密 sudo），命令已写入方案文档 §6.4。
   - 续写：`docs/headroom上下文压缩代理集成方案.md` 已重写为全量配置手册（337 行）——前置条件、客户端配置、headroom.env 参数表、user 级/系统级 systemd 完整步骤、日志清单、验证命令、压缩效果与根因、已知问题排障、管理速查、回滚、变更记录；当前状态明确标注「user 级运行中、系统级待 root 安装」。
+  - 续写：Codex 切换 headroom——`/v1/responses` 端到端测试通过（model=deepseek-v4-flash）；`~/.codex/config.toml` 新增 `model_providers.headroom`（base_url=http://127.0.0.1:8787、wire_api=responses、复用 LITELLM_TOKEN）并将 `model_provider` 切为 `headroom`，原配置备份 `config.toml.bak.20260805`；重启 Codex 会话生效，回切改 `model_provider=litellm`。
+  - 续写：`docs/headroom上下文压缩代理集成方案.md` §3.3 扩展为双客户端完整配置——Claude Code `settings.json` env 全键（token 脱敏）、Codex `config.toml` 全量（含 litellm/headroom 双 provider）、生效/验证/回切步骤。
+
+### 任务：OpenAPI 发布文档与实际实现一致性更新（/docs、/redoc、/openapi.json）
+
+- 更新：`app/core/app_factory.py`——应用信息由「开放平台 API 浏览服务 0.1.0 / 预占位框架」改为「开放平台北向 API 1.0.0」，描述覆盖四类能力、Bearer 认证要求与统一响应体；四个 tag 描述同步去掉「预占位」表述并细化（文档域注明 url/file/directory/archive、解析域注明 async/sync 与一次性凭证、检索域注明 search/qa）。
+- 优化：OpenAPI 新增 HTTP Bearer securityScheme + 全局 security 声明，/docs 出现 Authorize 且文档明示认证要求（与 AuthN 中间件一致）；200 响应描述补充业务错误码 200xxx（如 200004）并指向 /api/error-codes。
+- 校正：`app/routers/parse.py` 解析结果查询描述改为「解析任务启动后轮询」，补充 200003 未就绪语义；`app/routers/search.py` 检索描述补充 kbId/kbIds 至少提供一个、qa 回答当前为占位生成、个人库仅创建者可检索。
+- 核对：12 条业务路由路径与 `app/core/catalog.py` 一致；全部响应模型（含 data 字段）与 service 实际返回逐项比对一致；错误码 100404/100409/200004 与描述一致。
+- 验证：`/openapi.json` 重新生成核对（info/security/tags/描述）；平台 `pytest tests -q` **140 passed** 无回归。
+- 下一步：重启平台（uvicorn）后访问 /docs、/redoc 查看生效。
+
+### 任务：基于历史 Excel 检索接口定义，重设计开放平台检索接口（设计草案）
+
+- 盘点：`docs/_excel_interfaces_extracted.json` 检索相关条目（VectorSearchV2 内部/第三方、DeepSearch、searchTest、queryChunk、queryAiKlgDatasetList 等），提炼可对外复用能力：图文检索、searchType/partitions、score 阈值/useRerank/relNum/maxToken、问题优化、结构化 filters、usage/debug/imageUnderstanding 可观测返回。
+- 输出：`docs/开放平台检索接口重设计方案_2026-08-05.md`——历史能力盘点、现状差距分析、增强版请求/响应模型（全部向后兼容，新增字段可选）、检索域错误码 300001/300002/300003、数据权限不变、Phase 0–3 分期落地、5 项评审决策点。
+- 决策：未落码（遵守 AGENTS.md：Excel 抽取不得未经评审直接扩成对外 API）；待确认决策点后进入 Phase 1 落码。
+  - 续写：按用户要求，检索接口名定为 `universalRetriever`，路径改为 `POST /api/v1/knowledge-search/universalRetriever`；设计文档同步更新（§5.1 路径、§5.5 兼容性标注 Breaking Change、决策点 6 新增旧路径 `/query` 是否保留兼容别名）。

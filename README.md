@@ -125,7 +125,7 @@ headers = {
 4. 列表查询按调用方数据范围收敛：个人库仅本人、团队库需 `teamId`、企业库按 `orgId` 或调用主体租户。
 5. 文档域 `ingest` / `ingest-and-parse` / 查询文档信息（`GET /{doc_id}`）已真实落地：进程内文档存储（`app/services/document_store.py`）+ 知识库归属校验 + 幂等登记 + AUTHZ 接入；返回真实 `ing_`/`doc_` 任务与文档 ID。
 6. 解析域四接口已真实落地：`POST /parse`（async 返回 queued 任务、sync 返回内联结果）、`GET /parse-result/query`、`GET /parse-result/issue-download-ticket`、`GET /parse-result/download`；进程内解析任务/结果/凭证存储（`app/services/parse_store.py`）+ 文档归属与数据范围校验 + 幂等 + AUTHZ 接入；新增解析域错误码 `200003`/`200004`/`200011`。下载接口在真实结果存储落地前返回统一体（含下载说明）。
-7. 检索接口仍为 `501001` 预占位。
+7. 检索域 `POST /knowledge-search/query` 已真实落地：进程内检索索引（`app/services/search_store.py`，关键词命中打分 + 元数据过滤 + topK 截断）+ 知识库存在性与数据范围校验（个人库仅创建者可检索，团队库需 `teamId`、企业库按 `orgId` 或调用主体租户收敛）+ AUTHZ 接入（多库逐库授权，任一库失败整体拒绝）；`mode=search` 返回证据列表、`mode=qa` 附带占位回答（真实问答引擎接入后替换）。检索索引在真实索引引擎落地前由调用方显式注入，不随 ingest/parse 自动构建。
 
 ## 完成后自动审查（Claude Code）
 
@@ -198,4 +198,3 @@ bridge.require_allowed(decision)
 	- `X-User-Permissions`
 	- `X-User-Deny-Permissions`
 6. 检索路由会把请求体中的 `kbId/kbIds`、`ownerId`、`orgPath` 注入授权上下文，用于数据权限匹配。
-

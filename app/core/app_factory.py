@@ -15,14 +15,19 @@ from app.routers.search import router as search_router
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="开放平台 API 浏览服务",
-        version="0.1.0",
-        description="FastAPI 预占位框架，仅保留知识库、文档、解析、检索四大类。",
+        title="开放平台北向 API",
+        version="1.0.0",
+        description=(
+            "对外提供知识库、文档、解析、检索四类业务能力（知识库基本信息管理 / 文档接入与查询 / "
+            "解析任务与结果获取 / 统一检索问答）。"
+            "所有业务接口需携带 Authorization: Bearer <token>；统一响应体 {errCode, errMsg, data, traceId}，"
+            "完整错误码目录见 GET /api/error-codes。"
+        ),
         openapi_tags=[
-            {"name": "知识库", "description": "知识库创建与基础信息维护"},
-            {"name": "文档", "description": "文档接入与文档级预占位接口"},
-            {"name": "解析", "description": "文档解析任务与结果获取接口"},
-            {"name": "检索", "description": "统一检索与问答接口"},
+            {"name": "知识库", "description": "知识库创建、修改、列表查询与详情获取"},
+            {"name": "文档", "description": "知识源接入（url/file/directory/archive）、一体化接入解析与文档信息查询"},
+            {"name": "解析", "description": "解析任务启动（async/sync）、进度查询与结果下载（一次性下载凭证）"},
+            {"name": "检索", "description": "统一检索与问答（search 证据列表 / qa 带回答，按数据权限过滤）"},
         ],
         docs_url="/docs",
         redoc_url="/redoc",
@@ -61,9 +66,18 @@ def _apply_openapi_docs(app: FastAPI) -> None:
             return app.openapi_schema
 
         schema = original_openapi()
+        # 声明 HTTP Bearer 鉴权，使 /docs 与 /redoc 呈现统一认证要求（与运行时 AuthN 中间件一致）
+        schema.setdefault("components", {}).setdefault("securitySchemes", {})["BearerAuth"] = {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "opaque",
+            "description": "所有业务接口需携带 Authorization: Bearer <token>；缺失或格式错误返回 100401。",
+        }
+        schema.setdefault("security", [{"BearerAuth": []}])
         error_codes_hint = (
-            "统一响应体；业务错误码（100001/100401/100403/100404/100405/100409/501001/999999）"
-            "见 GET /api/error-codes"
+            "统一响应体（errCode/errMsg/data/traceId）；通用错误码 100001/100401/100403/100404/100405/"
+            "100409/501001/999999，业务错误码 200xxx（如 200004 下载凭证无效或已过期），"
+            "完整目录见 GET /api/error-codes"
         )
         for path_item in schema.get("paths", {}).values():
             if not isinstance(path_item, dict):

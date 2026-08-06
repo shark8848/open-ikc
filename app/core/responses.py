@@ -149,3 +149,19 @@ def download_result_response(
             "note": "解析结果存储落地前返回统一体，后续切换为文件流下载。",
         },
     ))
+
+
+def search_query_response(
+    *,
+    answer: str,
+    total: int,
+    results: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "answer": answer,
+            "total": total,
+            "results": results,
+        },
+    ))

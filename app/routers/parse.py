@@ -63,7 +63,7 @@ async def parse_document(request: Request, payload: DocumentParseRequest) -> dic
 @router.get(
     "/parse-result/query",
     summary="查询解析结果",
-    description="查询文档解析状态与解析产物摘要，用于上传后轮询解析进度。",
+    description="查询文档解析状态与解析产物摘要（parseStatus/pageCount/chunkCount/failedReason），用于解析任务启动后轮询进度。任务不存在或结果未就绪返回 200003。",
     response_model=ParseResultQueryResponse,
 )
 async def query_parse_result(request: Request, doc_id: str = Query(..., alias="docId")) -> dict:

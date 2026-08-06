@@ -276,3 +276,10 @@
 - 输出：`docs/开放平台检索接口重设计方案_2026-08-05.md`——历史能力盘点、现状差距分析、增强版请求/响应模型（全部向后兼容，新增字段可选）、检索域错误码 300001/300002/300003、数据权限不变、Phase 0–3 分期落地、5 项评审决策点。
 - 决策：未落码（遵守 AGENTS.md：Excel 抽取不得未经评审直接扩成对外 API）；待确认决策点后进入 Phase 1 落码。
   - 续写：按用户要求，检索接口名定为 `universalRetriever`，路径改为 `POST /api/v1/knowledge-search/universalRetriever`；设计文档同步更新（§5.1 路径、§5.5 兼容性标注 Breaking Change、决策点 6 新增旧路径 `/query` 是否保留兼容别名）。
+
+### 任务：发布 v1.0.0 版本并打 tag
+
+- 版本：`pyproject.toml`（open-ikc-api）、`sdk/python/pyproject.toml` 与 `sdk/python/open_ikc_sdk/_version.py`（open-ikc-sdk）统一升至 `1.0.0`，与 `app_factory.py` 中 OpenAPI info 版本一致。
+- 提交：检索域重设计实现（search_store、强类型响应、数据权限过滤）入库；随后提交版本 bump 并打标签 `v1.0.0`。
+- 验证：发布前 `pytest tests -q` 平台 146 测试全绿。
+- 下一步：如需发布到远端，执行 `git push github main && git push github v1.0.0`（待用户确认）。

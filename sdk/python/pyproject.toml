@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "open-ikc-sdk"
-version = "0.1.0"
+version = "1.0.0"
 description = "OpenIKC 开放平台应用集成 SDK（知识库 / 文档 / 解析 / 检索）"
 readme = "README.md"
 requires-python = ">=3.12"

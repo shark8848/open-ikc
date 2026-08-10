@@ -19,6 +19,16 @@
 - 边界：不新增/修改任何平台 REST 路由、`catalog.py`、`app/`（仅 SDK 侧封装）；不暴露 reindex/task query 等未落地能力；平台侧 `pytest tests -q` 146 测试不受影响。
 - 下一步：真实平台服务冒烟（`python -m open_ikc_sdk.mcp` 与 CLI 命令对运行中的 18000 平台实测）；MCP 客户端（Claude Desktop 等）接入配置示例可补入 README。
 
+### 任务：MCP 2.0 适配 + stdio 端到端冒烟 + 推送远端
+
+- 完成：MCP 实现从 mcp 1.x `fastmcp` 适配为 **mcp 2.0 `MCPServer`**（提交 `a4574c3`）——`list_tools` 异步协程返回 `list[MCPTool]`、工具经 `call_tool` 返回 `CallToolResult`；复杂结构参数（source/parseStrategy/resultFormat/metadataSchema/tags/kbIds）声明为原生 object/array 类型；`pyproject.toml` 依赖 `mcp>=2.0`；CLI `--json` 渲染修复（`_render._as_dict()` 兜底）；平台 `pytest tests -q` 146 + SDK 130 全绿。
+- 发现：mcp 2.x 协议字段为 snake_case——`InitializeResult.server_info`、`CallToolResult.is_error`（1.x/部分文档为 camelCase），冒烟脚本与测试已按 2.0 字段名适配。
+- 完成：新增 `scripts/mcp_stdio_smoke.py`（提交 `dab76bd`）——以官方 mcp 2.0 `ClientSession + stdio_client` 连接 `python -m open_ikc_sdk.mcp --transport stdio`，四步全链路：`initialize（open-ikc）→ list_tools（14 工具齐全）→ call_tool(sys_catalog) → call_tool(kb_create)`，对运行中的 18000 平台实测通过（平台 AUTHN Bearer 校验、SDK token 透传链路一并验证）。
+- 完成：`git push github main` 推送 `2ebf3a2..a4574c3..dab76bd`（github 远端领先 origin 4 个提交，origin 停在 b75686c，未同步）。
+- 清理：冒烟创建的测试知识库为平台进程内存储，服务停止后自动消失，无持久化残留；`logs/smoke_server.log` 已删除。
+- 文档：本次同步更新根 `README.md`（落地状态 + SDK/MCP/CLI 入口）、`sdk/python/README.md`（检索落地 + stdio 冒烟 + 测试命令）、`docs/开放平台SDK集成设计.md`（v1.0.0 已发布、包结构、里程碑全落地）、`docs/MCP与CLI接口定义.md`（2.0 适配要点 + 客户端接入示例 + 端到端冒烟）。
+- 下一步：`origin`（code.tiancloud.com）如需同步执行 `git push origin main`（待用户确认）。
+
 ## 2026-08-05
 
 ### 任务：检索域真实实现落地（统一检索问答，四域全落地）

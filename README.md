@@ -1,6 +1,7 @@
 # open-ikc-api
 
-FastAPI 预占位框架，当前仅保留四大类对外能力：知识库、文档、解析、检索。
+FastAPI 北向开放平台 API，对外提供四大类业务能力：知识库、文档、解析、检索（均已真实落地，进程内存储实现）。
+上层另有 Python SDK（`open-ikc-sdk`）与基于它的 MCP Server / CLI 封装，见「SDK / MCP / CLI 入口」。
 
 ## 启动命令
 
@@ -12,12 +13,6 @@ cd /home/open-ikc
 ```
 
 平台服务启动：
-
-```bash
-python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload
-```
-
-文档服务命令：
 
 ```bash
 python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload
@@ -37,6 +32,15 @@ bash scripts/start_open_platform.sh
 - 错误码目录: /api/error-codes
 - AUTHZ 集成设计文档: docs/开放平台统一认证鉴权集成_AUTHZ.md
 - AUTHN 集成设计文档: docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md
+- SDK 集成设计文档: docs/开放平台SDK集成设计.md
+- MCP 与 CLI 接口定义: docs/MCP与CLI接口定义.md
+
+## SDK / MCP / CLI 入口
+
+- **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`，导入 `open_ikc_sdk`），封装四大类能力为类型安全调用；使用说明见 [sdk/python/README.md](sdk/python/README.md)。
+- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），14 个工具；供 Claude 等 LLM 直接调用平台能力。
+- **CLI**：`ikc`（`python -m open_ikc_sdk.cli`），11 个子命令。
+- 完整能力映射 / 环境变量 / 工具清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
 
 ## 错误码与异常
 

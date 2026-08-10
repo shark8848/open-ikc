@@ -1,8 +1,8 @@
 # 开放平台 SDK 集成设计（open-ikc-sdk）
 
-> 版本：0.1（设计稿）
-> 状态：待评审
-> 适用范围：面向外部应用的集成客户端 SDK；与平台服务端通过 HTTP 协议解耦。
+> 版本：1.0.0
+> 状态：已发布（里程碑 M1-M5 全部落地）
+> 适用范围：面向外部应用的集成客户端 SDK；与平台服务端通过 HTTP 协议解耦。另含 MCP Server 与 CLI 上层封装（见 `docs/MCP与CLI接口定义.md`）。
 
 ## 1. 背景与目标
 
@@ -22,11 +22,11 @@
 
 | 维度 | 约定 |
 | --- | --- |
-| 写范围 | 仅 `sdk/`（新目录）与本文档；**不修改** `app/`、`tests/`（平台侧）、`pyproject.toml` |
+| 写范围 | 仅 `sdk/` 与本文档；**不修改** `app/`、`tests/`（平台侧）、根 `pyproject.toml` |
 | 依赖 | 仅第三方 `httpx`；不引入 fastapi / pydantic，不读平台内部模块 |
 | 命名 | 包名 `open-ikc-sdk`，导入名 `open_ikc_sdk`，与平台包 `open-ikc-api` 区分 |
 | 耦合面 | 仅 HTTP 协议：路径 `/api/v1/...`、统一响应壳、错误码、Header 约定（AGENTS.md §3） |
-| 进度解耦 | 平台占位接口（`501001`）在 SDK 表现为 `OpenIKCNotImplementedError`；SDK 按 V2 目标态字段编码，模型带未知字段透传以容忍字段演进 |
+| 进度解耦 | 平台四类能力均已真实落地；平台仍为占位/未实现的接口（`501001`）在 SDK 表现为 `OpenIKCNotImplementedError`；SDK 按 V2 目标态字段编码，模型带未知字段透传以容忍字段演进 |
 | 运行时契约 | 可选诊断方法 `fetch_catalog()` / `fetch_error_codes()`，以 `/api/catalog`、`/api/error-codes` 为运行时自检入口 |
 
 ## 3. 包结构与命名
@@ -34,22 +34,35 @@
 ```
 sdk/
   python/
-    pyproject.toml          # 独立打包：open-ikc-sdk，仅依赖 httpx
-    README.md               # SDK 使用说明（快速开始 + 示例）
+    pyproject.toml          # 独立打包：open-ikc-sdk，核心依赖 httpx；可选 mcp>=2.0 / typer>=0.15 / pytest
+    README.md               # SDK 使用说明（快速开始 + MCP / CLI + 联调冒烟）
     open_ikc_sdk/
-      __init__.py           # 导出 OpenIKCClient / AsyncOpenIKCClient / 异常 / 模型
+      __init__.py           # 导出 OpenIKCClient / AsyncOpenIKCClient / 异常 / 模型 / __version__
+      _version.py           # SDK 版本号（1.0.0，与平台 open-ikc-api 版本一致）
+      _bootstrap.py         # client_from_env：环境变量 -> 客户端 / token / CallerIdentity
       client.py             # 主客户端 + 四类领域子客户端 + raw 逃生口
+      async_client.py       # 异步客户端（httpx.AsyncClient）
       transport.py          # 同步/异步 HTTP 传输：超时、重试、连接池
       envelope.py           # 统一响应壳解析（errCode/errMsg/data/traceId）
       errors.py             # 异常层级 + 错误码映射表
       trace.py              # 23 位数字 traceId 生成/复用
-      headers.py            # 认证头 + AUTHZ 身份头构建
+      headers.py            # 认证头 + AUTHZ 身份头构建（CallerIdentity）
+      mcp/                  # MCP Server 封装（mcp 2.x MCPServer，stdio 默认）
+        server.py           # build_server：14 个工具定义
+        main.py             # python -m open_ikc_sdk.mcp 入口（--base-url/--token/--transport）
+      cli/                  # CLI 封装（typer）
+        __init__.py         # ikc app（11 个子命令 + 全局选项 + 退出码映射）
+        _render.py          # JSON / 表格渲染
+        __main__.py         # python -m open_ikc_sdk.cli 入口
       models/
         __init__.py
         knowledge_base.py
         document.py
         parse.py
         search.py
+    examples/
+      quickstart.py         # 同步全链路冒烟：创建库 -> 接入 -> 解析 -> 下载 -> 检索
+      async_quickstart.py   # 异步客户端示例
     tests/                  # SDK 自测（httpx.MockTransport，无需起服务）
       test_client.py
       test_envelope.py
@@ -57,11 +70,17 @@ sdk/
       test_trace.py
       test_retry.py
       test_models.py
+      test_bootstrap.py     # client_from_env 环境变量 -> 客户端 / token / 身份头
+      test_mcp_tools.py     # 14 个 MCP 工具逐一 MockTransport 断言（mcp 2.0 call_tool）
+      test_cli.py           # CLI 子命令解析 / --json / 退出码 / 下载落盘
 ```
+
+> 另有 `scripts/mcp_stdio_smoke.py`（仓库根 `scripts/`）：以官方 mcp 2.0 `ClientSession` 对运行中的平台做 stdio 端到端冒烟（initialize -> list_tools -> call_tool）。
 
 命名约定：
 
-- SDK 方法名用蛇形（`create_knowledge_base`），请求参数与响应字段**沿用平台 API 的 camelCase**（`kbName`、`kbId`、`docId`…），与接口文档 1:1 对应，避免大小写转换引入歧义。
+- SDK 方法按领域子客户端组织：`client.knowledge_bases.create/update/query/get`、`client.documents.ingest/...`、`client.parse.parse/...`、`client.search.query`；方法名用蛇形，请求参数与响应字段**沿用平台 API 的 camelCase**（`kbName`、`kbId`、`docId`…），与接口文档 1:1 对应，避免大小写转换引入歧义。
+- MCP 工具名用 camelCase（`kb_create`/`doc_ingest`…），与平台接口字段命名对齐；CLI 子命令用 kebab-case（`kb-create`/`doc-ingest`…）。
 - 数据模型用 `dataclass` + `from_dict()` 构造；未知字段收进 `extra: dict` 透传，不阻断解析。
 - 每个模型带 `to_dict()`，方便日志与二次加工。
 
@@ -207,9 +226,11 @@ print(kb.kbId, kb.createTime)
 
 | 方法 | 对应路由 | 关键参数 |
 | --- | --- | --- |
-| `query` | POST `/api/v1/knowledge-search/query` | `query`、`kbId`、`kbIds`、`ownerId`、`orgPath`（对齐平台当前 schema；`mode`/`topK`/`filters`/`withCitation` 等目标态参数已随平台检索域落地，SDK 如需透传可扩展 `query()` 签名） |
+| `query` | POST `/api/v1/knowledge-search/query` | `query`、`kbId`、`kbIds`、`ownerId`、`orgPath`（SDK 当前透传该 5 字段；平台检索域已额外支持 `mode`/`topK`/`filters`/`withCitation`，SDK 如需透传可扩展 `query()` 签名） |
 
 `kbId/kbIds/ownerId/orgPath` 同时是平台 AUTHZ 数据权限上下文（AGENTS.md §4.2），SDK 原样透传。
+
+> 检索域已随平台真实落地：进程内检索索引（`app/services/search_store.py`）+ 数据范围校验（个人库仅创建者、团队库需 `teamId`、企业库按 `orgId`/租户）+ AUTHZ 多库逐库授权。`mode=search` 返回证据列表、`mode=qa` 附带占位回答（真实问答引擎接入后替换）。
 
 ### 6.5 逃生口
 
@@ -278,13 +299,15 @@ async def main():
 | 发布 | 默认源码形态（`pip install sdk/python` 或拷贝包）；如需私有 index 再行配置，不发布公共 PyPI |
 | 文档同步 | SDK 字段变更时同步本设计文档与 `sdk/python/README.md` |
 
-## 13. 里程碑（设计评审后执行）
+## 13. 里程碑（已全部完成，v1.0.0）
 
-1. M1：骨架落地——包结构、transport、envelope、errors、trace、headers + 单测。
-2. M2：知识库域四方法 + 模型 + 测试（平台已真实实现，可直接联调）。
-3. M3：文档域三方法 + 模型 + 测试（平台已落地）。
-4. M4：解析/检索域方法 + 模型 + 测试（平台占位期以 `501001` 与 mock 验证）。
-5. M5：异步客户端、下载流支持、日志脱敏完善、README 与示例。
+1. M1 ✅ 骨架落地——包结构、transport、envelope、errors、trace、headers + 单测。
+2. M2 ✅ 知识库域四方法 + 模型 + 测试。
+3. M3 ✅ 文档域三方法 + 模型 + 测试。
+4. M4 ✅ 解析/检索域方法 + 模型 + 测试（平台已真实落地）。
+5. M5 ✅ 异步客户端、下载流支持、日志脱敏完善、README 与示例。
+6. M6 ✅ MCP Server 与 CLI 上层封装（14 工具 + 11 子命令，见 `docs/MCP与CLI接口定义.md`）。
+7. 发布 ✅ `pyproject.toml` 与 `_version.py` 统一 `1.0.0`（与平台 `open-ikc-api` 一致）；SDK 测试基线 130 passed。
 
 > 本设计稿仅定义 SDK 边界与协议，不涉及平台内部实现；若平台对外协议（路径、字段、错误码）调整，
 > 以 AGENTS.md 权威顺序（契约 > 代码 > V2 文档）为准同步本文档。

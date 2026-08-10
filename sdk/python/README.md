@@ -1,6 +1,6 @@
 # open-ikc-sdk
 
-OpenIKC 开放平台（知识库 / 文档 / 解析 / 检索）应用集成 SDK。
+OpenIKC 开放平台（知识库 / 文档 / 解析 / 检索）应用集成 SDK。**v1.0.0**。
 
 设计文档：`docs/开放平台SDK集成设计.md`（仓库根目录）。
 
@@ -62,7 +62,7 @@ asyncio.run(main())
 - [x] 知识库：`knowledge_bases.create / update / query / get`（M2）
 - [x] 文档：`documents.ingest / ingest_and_parse / get`（M3）
 - [x] 解析：`parse.parse / query_result / issue_download_ticket / download`（M4）
-- [x] 检索：`search.query`（M4；平台占位期调用返回 `OpenIKCNotImplementedError`）
+- [x] 检索：`search.query`（M4；平台已真实落地，关键词进程内检索 + 数据权限过滤）
 - [x] 异步客户端：`AsyncOpenIKCClient`（M5）
 
 ## MCP Server（LLM 工具调用）
@@ -81,8 +81,9 @@ python -m open_ikc_sdk.mcp --base-url http://127.0.0.1:18000 --token <token>
 ```
 
 - 工具清单（14 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `sys_catalog` / `sys_error_codes`。
-- 复杂结构参数（`source`、`parseStrategy`、`metadataSchema` 等）在 MCP 中为原生 object/array 类型（mcp>=2.0）。
-- 完整定义见 `docs/MCP与CLI接口定义.md`。
+- 基于 mcp 2.x 的 `MCPServer` API 实现（`list_tools` 异步、`server_info`/`is_error` 等 snake_case 字段），依赖 `mcp>=2.0`。
+- 复杂结构参数（`source`、`parseStrategy`、`metadataSchema` 等）在 MCP 中为原生 object/array 类型（mcp>=2.0 按 JSON Schema 校验并反序列化）。
+- 完整定义见 `docs/MCP与CLI接口定义.md`；端到端冒烟见下文「MCP stdio 端到端冒烟」。
 
 ## CLI（命令行）
 
@@ -119,11 +120,23 @@ python sdk/python/examples/quickstart.py
 python sdk/python/examples/async_quickstart.py
 ```
 
-冒烟脚本输出 `[1]`~`[8]` 步骤结果；检索接口当前为平台占位（`501001`），脚本会打印提示而非报错。
+冒烟脚本输出 `[1]`~`[8]` 步骤结果；检索接口已真实落地（关键词进程内检索），全链路真实返回。
+
+### MCP stdio 端到端冒烟
+
+需先启动平台服务（`bash scripts/start_open_platform.sh`）：
+
+```bash
+.venv/bin/python scripts/mcp_stdio_smoke.py [--token <token>]
+```
+
+以官方 mcp 2.0 `ClientSession` 走完整协议链路：`initialize -> list_tools（14 工具）-> call_tool(sys_catalog) -> call_tool(kb_create)`，验证 MCP Server 对真实平台的端到端可用性。
 
 ## 测试
 
 ```bash
 cd /home/open-ikc
-/home/ikc-log-center/.venv/bin/python -m pytest sdk/python/tests -q
+.venv/bin/python -m pytest sdk/python/tests -q
 ```
+
+SDK 全量测试基线：**130 passed**（含 `test_bootstrap.py` / `test_mcp_tools.py` / `test_cli.py`）。

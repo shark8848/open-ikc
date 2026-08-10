@@ -65,6 +65,28 @@ python -m open_ikc_sdk.mcp --transport sse
 - 错误：SDK `OpenIKCError` 子类，由 MCP 运行时转为工具错误；错误信息含 `errCode` / `errMsg` / `traceId`。
 - 客户端配置（Claude Desktop / Claude Code 等）：stdio 命令指向 `python -m open_ikc_sdk.mcp`，并注入上述环境变量。
 
+**MCP 客户端接入配置示例**（Claude Desktop `claude_desktop_config.json`）：
+
+```json
+{
+  "mcpServers": {
+    "open-ikc": {
+      "command": "/home/open-ikc/.venv/bin/python",
+      "args": ["-m", "open_ikc_sdk.mcp", "--transport", "stdio"],
+      "env": {
+        "OPEN_PLATFORM_BASE_URL": "http://127.0.0.1:18000",
+        "OPEN_PLATFORM_TOKEN": "<token>",
+        "OPEN_PLATFORM_USER_ID": "<user>",
+        "OPEN_PLATFORM_TENANT_ID": "<tenant>",
+        "OPEN_PLATFORM_ROLES": "km_reader"
+      }
+    }
+  }
+}
+```
+
+> 注意：`command` 需指向安装了 `open-ikc-sdk[mcp]` 的 Python 解释器；`env` 中的 token 与 AUTHZ 身份头用于平台鉴权，按环境注入。
+
 ### 2.3 CLI
 
 ```bash
@@ -206,8 +228,18 @@ ikc sys-error-codes
 
 ## 7. 验证
 
-- SDK 测试：`pytest tests/` 全部通过（原 91 + 新增 39 = **130 passed**）。
+- SDK 测试：`pytest sdk/python/tests -q` 全部通过（**130 passed**）。
 - 新增测试覆盖：
-  - `test_bootstrap.py`：`client_from_env` 环境变量 → 客户端 / token / 身份头组装。
-  - `test_mcp_tools.py`：14 个工具逐一断言请求路径 / body / 返回 JSON（httpx.MockTransport，不起服务）。
-  - `test_cli.py`：子命令解析、`--json` 输出、错误退出码映射、下载落盘。
+  - `test_bootstrap.py`：`client_from_env` 环境变量 → 客户端 / token / 身份头组装（7 例）。
+  - `test_mcp_tools.py`：14 个工具逐一断言请求路径 / body / 返回 JSON（httpx.MockTransport，不起服务，mcp 2.0 `call_tool` 异步调用）（18 例）。
+  - `test_cli.py`：子命令解析、`--json` 输出、错误退出码映射、下载落盘（13 例）。
+- **端到端冒烟**（真实平台，`scripts/mcp_stdio_smoke.py`）：以官方 mcp 2.0 `ClientSession + stdio_client` 连接 `python -m open_ikc_sdk.mcp --transport stdio`，验证
+  `initialize（server_info=open-ikc）→ list_tools（14 工具齐全）→ call_tool(sys_catalog) → call_tool(kb_create)` 全链路通过。
+  用法：先 `bash scripts/start_open_platform.sh` 启动平台，再 `.venv/bin/python scripts/mcp_stdio_smoke.py [--token <token>]`。
+
+## 8. MCP 2.0 适配要点（mcp>=2.0）
+
+- Server 用 `mcp.server.mcpserver.MCPServer`（替代 1.x `mcp.server.fastmcp.FastMCP`）；`list_tools` 为异步协程返回 `list[MCPTool]`，工具调用经 `call_tool(name, arguments)` 返回 `CallToolResult`。
+- mcp 2.x 协议字段为 **snake_case**：`InitializeResult.server_info`、`CallToolResult.is_error`（1.x/部分文档为 camelCase）。
+- 复杂结构参数（`source` / `parseStrategy` / `resultFormat` / `metadataSchema` / `tags` / `kbIds`）声明为原生 `object` / `array` 类型，由 mcp 2.0 按 JSON Schema 校验并反序列化（CLI 侧以 JSON 字符串接收）。
+- 依赖声明：`pyproject.toml` 可选依赖 `mcp = ["mcp>=2.0"]`。

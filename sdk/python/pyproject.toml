@@ -12,6 +12,12 @@ dependencies = ["httpx>=0.27,<1.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+# MCP / CLI 封装为可选依赖，核心 SDK 仅依赖 httpx
+mcp = ["mcp>=1.0"]
+cli = ["typer>=0.15"]
+
+[project.scripts]
+ikc = "open_ikc_sdk.cli:app"
 
 [tool.setuptools]
 package-dir = {"" = "."}

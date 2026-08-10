@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-"""MCP 工具测试：直接调用 build_server 产出的工具函数（不跑 stdio 传输），
-用 httpx.MockTransport 断言请求路径/body 与返回 JSON。"""
+"""MCP 工具测试（mcp>=2.0）：通过 server.call_tool 调用工具（httpx.MockTransport，不起服务），
+断言请求路径 / body 与返回 JSON。"""
 
+import asyncio
 import json
 
 import httpx
@@ -26,11 +27,28 @@ def make_client(handler) -> OpenIKCClient:
     )
 
 
-def make_tools(handler):
-    """返回 (server, tools_dict) —— tools_dict 收集所有已注册工具。"""
-    server = build_server(make_client(handler))
-    tools = {tool.name: tool.fn for tool in server._tool_manager.list_tools()}
-    return server, tools
+def make_server(handler):
+    """构造已装配工具的 server。"""
+    return build_server(make_client(handler))
+
+
+def call_tool(server, name: str, arguments: dict | None = None) -> dict:
+    """同步包装：await server.call_tool 并解析返回 JSON。"""
+    arguments = arguments or {}
+
+    async def _call():
+        result = await server.call_tool(name, arguments)
+        assert result.is_error is False, f"工具 {name} 返回错误: {result.content}"
+        text = result.content[0].text
+        return json.loads(text)
+
+    return asyncio.run(_call())
+
+
+async def list_tool_names(server):
+    """返回已注册工具名集合。"""
+    tools = await server.list_tools()
+    return {tool.name for tool in tools}
 
 
 # ---------- 知识库 ----------
@@ -44,8 +62,7 @@ def test_kb_create():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"kbId": "kb_10001", "kbName": "测试库"})
 
-    _, tools = make_tools(handler)
-    result = tools["kb_create"](kbName="测试库", kbType="personal")
+    result = call_tool(make_server(handler), "kb_create", {"kbName": "测试库", "kbType": "personal"})
     assert captured["path"] == "/api/v1/knowledge-bases/create"
     assert captured["body"]["kbName"] == "测试库"
     assert result["kbId"] == "kb_10001"
@@ -58,8 +75,7 @@ def test_kb_update():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"kbId": "kb_10001", "kbName": "新名称"})
 
-    _, tools = make_tools(handler)
-    result = tools["kb_update"](kbId="kb_10001", kbName="新名称")
+    result = call_tool(make_server(handler), "kb_update", {"kbId": "kb_10001", "kbName": "新名称"})
     assert captured["body"]["kbId"] == "kb_10001"
     assert captured["body"]["kbName"] == "新名称"
     assert result["kbName"] == "新名称"
@@ -73,8 +89,7 @@ def test_kb_query():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"total": 1, "page": 1, "pageSize": 20, "items": []})
 
-    _, tools = make_tools(handler)
-    result = tools["kb_query"](page=1, pageSize=10, keyword="知识")
+    result = call_tool(make_server(handler), "kb_query", {"page": 1, "pageSize": 10, "keyword": "知识"})
     assert captured["path"] == "/api/v1/knowledge-bases/query"
     assert captured["body"] == {"page": 1, "pageSize": 10, "keyword": "知识"}
     assert result["total"] == 1
@@ -87,8 +102,7 @@ def test_kb_get():
         captured["path"] = request.url.path
         return ok_response({"kbId": "kb_10001", "kbName": "测试库"})
 
-    _, tools = make_tools(handler)
-    result = tools["kb_get"](kbId="kb_10001")
+    result = call_tool(make_server(handler), "kb_get", {"kbId": "kb_10001"})
     assert captured["path"] == "/api/v1/knowledge-bases/kb_10001"
     assert result["kbId"] == "kb_10001"
 
@@ -104,11 +118,14 @@ def test_doc_ingest():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"ingestTaskId": "ing_10001", "docId": "doc_10001"})
 
-    _, tools = make_tools(handler)
-    result = tools["doc_ingest"](
-        kbId="kb_10001",
-        source='{"type": "url", "url": "https://example.com/a.pdf"}',
-        docTitle="示例文档",
+    result = call_tool(
+        make_server(handler),
+        "doc_ingest",
+        {
+            "kbId": "kb_10001",
+            "source": {"type": "url", "url": "https://example.com/a.pdf"},
+            "docTitle": "示例文档",
+        },
     )
     assert captured["path"] == "/api/v1/knowledge-documents/ingest"
     assert captured["body"]["source"]["type"] == "url"
@@ -120,9 +137,13 @@ def test_doc_ingest_invalid_tags():
     def handler(request: httpx.Request) -> httpx.Response:
         return ok_response({})
 
-    _, tools = make_tools(handler)
-    with pytest.raises(ValueError, match="tags"):
-        tools["doc_ingest"](kbId="kb_1", source='{"type":"url","url":"x"}', tags='{"not": "list"}')
+    server = make_server(handler)
+    with pytest.raises(Exception):
+        call_tool(
+            server,
+            "doc_ingest",
+            {"kbId": "kb_1", "source": {"type": "url", "url": "x"}, "tags": {"not": "list"}},
+        )
 
 
 def test_doc_ingest_and_parse():
@@ -133,11 +154,10 @@ def test_doc_ingest_and_parse():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"ingestTaskId": "ing_1", "parseTaskId": "parse_1", "executeMode": "async"})
 
-    _, tools = make_tools(handler)
-    result = tools["doc_ingest_and_parse"](
-        kbId="kb_10001",
-        source='{"type": "url", "url": "https://example.com/a.pdf"}',
-        executeMode="async",
+    result = call_tool(
+        make_server(handler),
+        "doc_ingest_and_parse",
+        {"kbId": "kb_10001", "source": {"type": "url", "url": "https://example.com/a.pdf"}, "executeMode": "async"},
     )
     assert captured["path"] == "/api/v1/knowledge-documents/ingest-and-parse"
     assert captured["body"]["executeMode"] == "async"
@@ -151,8 +171,7 @@ def test_doc_get():
         captured["path"] = request.url.path
         return ok_response({"docId": "doc_10001", "docTitle": "示例"})
 
-    _, tools = make_tools(handler)
-    result = tools["doc_get"](docId="doc_10001")
+    result = call_tool(make_server(handler), "doc_get", {"docId": "doc_10001"})
     assert captured["path"] == "/api/v1/knowledge-documents/doc_10001"
     assert result["docId"] == "doc_10001"
 
@@ -168,8 +187,11 @@ def test_parse_start():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"taskId": "parse_10001", "taskStatus": "QUEUED"})
 
-    _, tools = make_tools(handler)
-    result = tools["parse_start"](kbId="kb_10001", docId="doc_10001")
+    result = call_tool(
+        make_server(handler),
+        "parse_start",
+        {"kbId": "kb_10001", "docId": "doc_10001"},
+    )
     assert captured["path"] == "/api/v1/knowledge-documents/parse"
     assert captured["body"]["kbId"] == "kb_10001"
     assert captured["body"]["docId"] == "doc_10001"
@@ -184,8 +206,7 @@ def test_parse_query():
         captured["params"] = dict(request.url.params)
         return ok_response({"parseStatus": "SUCCEEDED", "pageCount": 5, "chunkCount": 20})
 
-    _, tools = make_tools(handler)
-    result = tools["parse_query"](docId="doc_10001")
+    result = call_tool(make_server(handler), "parse_query", {"docId": "doc_10001"})
     assert captured["path"] == "/api/v1/knowledge-documents/parse-result/query"
     assert captured["params"] == {"docId": "doc_10001"}
     assert result["parseStatus"] == "SUCCEEDED"
@@ -199,8 +220,7 @@ def test_parse_issue_ticket():
         captured["params"] = dict(request.url.params)
         return ok_response({"ticket": "tk_123", "expireAt": "2026-08-11T00:00:00Z"})
 
-    _, tools = make_tools(handler)
-    result = tools["parse_issue_ticket"](docId="doc_10001")
+    result = call_tool(make_server(handler), "parse_issue_ticket", {"docId": "doc_10001"})
     assert captured["path"] == "/api/v1/knowledge-documents/parse-result/issue-download-ticket"
     assert captured["params"] == {"docId": "doc_10001"}
     assert result["ticket"] == "tk_123"
@@ -213,8 +233,11 @@ def test_parse_download_metadata_json():
         captured["path"] = request.url.path
         return ok_response({"docId": "doc_10001", "downloadPath": "/tmp/result.json"})
 
-    _, tools = make_tools(handler)
-    result = tools["parse_download"](docId="doc_10001", ticket="tk_123")
+    result = call_tool(
+        make_server(handler),
+        "parse_download",
+        {"docId": "doc_10001", "ticket": "tk_123"},
+    )
     assert captured["path"] == "/api/v1/knowledge-documents/parse-result/download"
     assert result["downloadPath"] == "/tmp/result.json"
 
@@ -226,8 +249,11 @@ def test_parse_download_bytes_stream():
         captured["path"] = request.url.path
         return httpx.Response(200, content=b"file-bytes", headers={"Content-Type": "application/octet-stream"})
 
-    _, tools = make_tools(handler)
-    result = tools["parse_download"](docId="doc_10001", ticket="tk_123")
+    result = call_tool(
+        make_server(handler),
+        "parse_download",
+        {"docId": "doc_10001", "ticket": "tk_123"},
+    )
     assert captured["path"] == "/api/v1/knowledge-documents/parse-result/download"
     assert result["encoding"] == "base64"
     assert result["format"] == "bytes"
@@ -244,11 +270,10 @@ def test_search_query():
         captured["body"] = json.loads(request.content or b"{}")
         return ok_response({"answer": "回答", "results": [{"docId": "doc_1", "score": 0.9}]})
 
-    _, tools = make_tools(handler)
-    result = tools["search_query"](
-        query="产品能力？",
-        kbId="kb_10001",
-        kbIds='["kb_10001", "kb_10002"]',
+    result = call_tool(
+        make_server(handler),
+        "search_query",
+        {"query": "产品能力？", "kbId": "kb_10001", "kbIds": ["kb_10001", "kb_10002"]},
     )
     assert captured["path"] == "/api/v1/knowledge-search/query"
     assert captured["body"]["kbId"] == "kb_10001"
@@ -261,9 +286,9 @@ def test_search_query_invalid_kb_ids():
     def handler(request: httpx.Request) -> httpx.Response:
         return ok_response({})
 
-    _, tools = make_tools(handler)
-    with pytest.raises(ValueError, match="kbIds"):
-        tools["search_query"](query="q", kbIds='{"not": "list"}')
+    server = make_server(handler)
+    with pytest.raises(Exception):
+        call_tool(server, "search_query", {"query": "q", "kbIds": {"not": "list"}})
 
 
 # ---------- 系统 ----------
@@ -276,8 +301,7 @@ def test_sys_catalog():
         captured["path"] = request.url.path
         return httpx.Response(200, json={"apiCatalog": []})
 
-    _, tools = make_tools(handler)
-    result = tools["sys_catalog"]()
+    result = call_tool(make_server(handler), "sys_catalog")
     assert captured["path"] == "/api/catalog"
     assert "catalog" in result
 
@@ -289,8 +313,7 @@ def test_sys_error_codes():
         captured["path"] = request.url.path
         return httpx.Response(200, json={"errorCodes": []})
 
-    _, tools = make_tools(handler)
-    result = tools["sys_error_codes"]()
+    result = call_tool(make_server(handler), "sys_error_codes")
     assert captured["path"] == "/api/error-codes"
     assert "errorCodes" in result
 
@@ -315,5 +338,5 @@ def test_tool_inventory_matches_contract():
         "sys_catalog",
         "sys_error_codes",
     }
-    _, tools = make_tools(lambda request: ok_response({}))
-    assert set(tools) == EXPECTED
+    server = make_server(lambda request: ok_response({}))
+    assert asyncio.run(list_tool_names(server)) == EXPECTED

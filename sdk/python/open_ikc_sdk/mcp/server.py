@@ -16,7 +16,7 @@ import dataclasses
 import json
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from ..client import OpenIKCClient
 
@@ -37,25 +37,15 @@ def _model_to_dict(obj: Any) -> dict[str, Any]:
     raise TypeError(f"无法序列化模型: {type(obj).__name__}")
 
 
-def _parse_json_arg(value: str | None, field_name: str) -> dict | list | None:
-    """将工具入参中的 JSON 字符串解析为 dict/list；None 或空字符串返回 None。"""
-    if not value or not value.strip():
-        return None
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"{field_name} 不是合法 JSON: {exc.msg}") from exc
-
-
 def _json_dumps(data: dict[str, Any]) -> str:
     """紧凑 JSON 输出（ensure_ascii=False，便于 MCP 客户端展示中文）。"""
     return json.dumps(data, ensure_ascii=False, default=str)
 
 
-def build_server(client: OpenIKCClient) -> FastMCP:
+def build_server(client: OpenIKCClient) -> MCPServer:
     """基于已构造的 ``OpenIKCClient`` 装配 MCP Server；供测试直接调用工具函数。"""
 
-    mcp = FastMCP(SERVER_NAME, instructions=SERVER_INSTRUCTIONS)
+    mcp = MCPServer(SERVER_NAME, instructions=SERVER_INSTRUCTIONS)
 
     # ---------- 知识库 ----------
 
@@ -68,7 +58,7 @@ def build_server(client: OpenIKCClient) -> FastMCP:
         kbDesc: str = "",
         bizDomain: str = "general",
         visibility: str = "private",
-        metadataSchema: str | None = None,
+        metadataSchema: list | None = None,
     ) -> dict[str, Any]:
         """创建知识库。
 
@@ -80,9 +70,8 @@ def build_server(client: OpenIKCClient) -> FastMCP:
             kbDesc: 知识库描述。
             bizDomain: 业务领域，默认 general。
             visibility: 可见性：private / public。
-            metadataSchema: 元数据 Schema（JSON 字符串或省略）。
+            metadataSchema: 元数据 Schema 字段数组（每个字段含 name/type/required 等），可省略。
         """
-        schema = _parse_json_arg(metadataSchema, "metadataSchema")
         return _model_to_dict(
             client.knowledge_bases.create(
                 kbName=kbName,
@@ -92,7 +81,7 @@ def build_server(client: OpenIKCClient) -> FastMCP:
                 kbDesc=kbDesc,
                 bizDomain=bizDomain,
                 visibility=visibility,
-                metadataSchema=schema,
+                metadataSchema=metadataSchema,
             )
         )
 
@@ -105,14 +94,14 @@ def build_server(client: OpenIKCClient) -> FastMCP:
         orgId: str | None = None,
         kbDesc: str | None = None,
         visibility: str | None = None,
-        metadataSchema: str | None = None,
+        metadataSchema: list | None = None,
     ) -> dict[str, Any]:
         """局部更新知识库信息（缺省字段保留现有值）。
 
         Args:
             kbId: 知识库 ID（必填）。
             kbName / kbType / teamId / orgId / kbDesc / visibility: 需更新的字段，None 表示不更新。
-            metadataSchema: 元数据 Schema（JSON 字符串），None 表示不更新。
+            metadataSchema: 元数据 Schema 字段数组，None 表示不更新。
         """
         fields: dict[str, Any] = {}
         if kbName is not None:
@@ -128,7 +117,7 @@ def build_server(client: OpenIKCClient) -> FastMCP:
         if visibility is not None:
             fields["visibility"] = visibility
         if metadataSchema is not None:
-            fields["metadataSchema"] = _parse_json_arg(metadataSchema, "metadataSchema")
+            fields["metadataSchema"] = metadataSchema
         return _model_to_dict(client.knowledge_bases.update(kbId=kbId, **fields))
 
     @mcp.tool()
@@ -176,40 +165,37 @@ def build_server(client: OpenIKCClient) -> FastMCP:
     @mcp.tool()
     def doc_ingest(
         kbId: str,
-        source: str,
+        source: dict,
         reqId: str = "",
         teamId: str = "",
         orgId: str = "",
         docTitle: str = "",
-        tags: str | None = None,
-        metadata: str | None = None,
+        tags: list | None = None,
+        metadata: dict | None = None,
         orchestrationMode: str = "split",
     ) -> dict[str, Any]:
         """接入知识源到知识库（不解析）。
 
         Args:
             kbId: 目标知识库 ID（必填）。
-            source: 知识源描述（JSON 字符串），形如 {"type":"url","url":"..."}；type 支持 url/file/directory/archive。
+            source: 知识源描述对象，形如 {"type":"url","url":"..."}；type 支持 url/file/directory/archive。
             reqId: 请求幂等号，非空时 POST 允许重试。
             teamId / orgId: 知识库归属校验上下文。
             docTitle: 文档标题（缺省时平台推断）。
-            tags: 文档标签（JSON 字符串数组）。
-            metadata: 文档元数据（JSON 字符串对象）。
+            tags: 文档标签字符串数组。
+            metadata: 文档元数据对象。
             orchestrationMode: 编排模式，默认 split。
         """
-        tags_list = _parse_json_arg(tags, "tags")
-        if tags_list is not None and not isinstance(tags_list, list):
-            raise ValueError("tags 必须是 JSON 字符串数组")
         return _model_to_dict(
             client.documents.ingest(
                 kbId=kbId,
-                source=_parse_json_arg(source, "source") or {},
+                source=source or {},
                 reqId=reqId,
                 teamId=teamId,
                 orgId=orgId,
                 docTitle=docTitle,
-                tags=list(tags_list) if tags_list else None,
-                metadata=_parse_json_arg(metadata, "metadata"),
+                tags=tags,
+                metadata=metadata,
                 orchestrationMode=orchestrationMode,
             )
         )
@@ -217,49 +203,46 @@ def build_server(client: OpenIKCClient) -> FastMCP:
     @mcp.tool()
     def doc_ingest_and_parse(
         kbId: str,
-        source: str,
+        source: dict,
         reqId: str = "",
         teamId: str = "",
         orgId: str = "",
         docTitle: str = "",
-        tags: str | None = None,
-        metadata: str | None = None,
+        tags: list | None = None,
+        metadata: dict | None = None,
         orchestrationMode: str = "split",
-        parseStrategy: str | None = None,
-        resultFormat: str | None = None,
+        parseStrategy: dict | None = None,
+        resultFormat: dict | None = None,
         executeMode: str = "async",
     ) -> dict[str, Any]:
         """一体化接入并解析知识源。
 
         Args:
             kbId: 目标知识库 ID（必填）。
-            source: 知识源描述（JSON 字符串），同 doc_ingest。
+            source: 知识源描述对象，同 doc_ingest。
             reqId: 请求幂等号。
             teamId / orgId: 知识库归属校验上下文。
             docTitle: 文档标题。
-            tags: 文档标签（JSON 字符串数组）。
-            metadata: 文档元数据（JSON 字符串对象）。
+            tags: 文档标签字符串数组。
+            metadata: 文档元数据对象。
             orchestrationMode: 编排模式，默认 split。
-            parseStrategy: 解析策略（JSON 字符串）。
-            resultFormat: 结果格式（JSON 字符串）。
+            parseStrategy: 解析策略对象。
+            resultFormat: 结果格式对象。
             executeMode: async（默认）/ sync（内联返回解析结果）。
         """
-        tags_list = _parse_json_arg(tags, "tags")
-        if tags_list is not None and not isinstance(tags_list, list):
-            raise ValueError("tags 必须是 JSON 字符串数组")
         return _model_to_dict(
             client.documents.ingest_and_parse(
                 kbId=kbId,
-                source=_parse_json_arg(source, "source") or {},
+                source=source or {},
                 reqId=reqId,
                 teamId=teamId,
                 orgId=orgId,
                 docTitle=docTitle,
-                tags=list(tags_list) if tags_list else None,
-                metadata=_parse_json_arg(metadata, "metadata"),
+                tags=tags,
+                metadata=metadata,
                 orchestrationMode=orchestrationMode,
-                parseStrategy=_parse_json_arg(parseStrategy, "parseStrategy"),
-                resultFormat=_parse_json_arg(resultFormat, "resultFormat"),
+                parseStrategy=parseStrategy,
+                resultFormat=resultFormat,
                 executeMode=executeMode,
             )
         )
@@ -280,8 +263,8 @@ def build_server(client: OpenIKCClient) -> FastMCP:
         kbId: str,
         docId: str,
         reqId: str = "",
-        parseStrategy: str | None = None,
-        resultFormat: str | None = None,
+        parseStrategy: dict | None = None,
+        resultFormat: dict | None = None,
         executeMode: str = "async",
         parseMode: str | None = None,
         chunkStrategy: str | None = None,
@@ -293,8 +276,8 @@ def build_server(client: OpenIKCClient) -> FastMCP:
             kbId: 知识库 ID（必填）。
             docId: 文档 ID（必填）。
             reqId: 请求幂等号。
-            parseStrategy: 解析策略（JSON 字符串）。
-            resultFormat: 结果格式（JSON 字符串）。
+            parseStrategy: 解析策略对象。
+            resultFormat: 结果格式对象。
             executeMode: async（默认）/ sync。
             parseMode: 解析模式（透传）。
             chunkStrategy: 切分策略（透传）。
@@ -305,8 +288,8 @@ def build_server(client: OpenIKCClient) -> FastMCP:
                 kbId=kbId,
                 docId=docId,
                 reqId=reqId,
-                parseStrategy=_parse_json_arg(parseStrategy, "parseStrategy"),
-                resultFormat=_parse_json_arg(resultFormat, "resultFormat"),
+                parseStrategy=parseStrategy,
+                resultFormat=resultFormat,
                 executeMode=executeMode,
                 parseMode=parseMode,
                 chunkStrategy=chunkStrategy,
@@ -361,7 +344,7 @@ def build_server(client: OpenIKCClient) -> FastMCP:
     def search_query(
         query: str = "",
         kbId: str = "",
-        kbIds: str | None = None,
+        kbIds: list | None = None,
         ownerId: str = "",
         orgPath: str = "",
     ) -> dict[str, Any]:
@@ -370,18 +353,15 @@ def build_server(client: OpenIKCClient) -> FastMCP:
         Args:
             query: 检索问题或关键词。
             kbId: 目标知识库 ID（kbId / kbIds 至少提供一个）。
-            kbIds: 目标知识库 ID 列表（JSON 字符串数组）。
+            kbIds: 目标知识库 ID 字符串数组。
             ownerId: 资源所有者 ID（owner_only 场景判定）。
             orgPath: 组织路径，如 /集团/销售中心/华东。
         """
-        kb_ids_list = _parse_json_arg(kbIds, "kbIds")
-        if kb_ids_list is not None and not isinstance(kb_ids_list, list):
-            raise ValueError("kbIds 必须是 JSON 字符串数组")
         return _model_to_dict(
             client.search.query(
                 query=query,
                 kbId=kbId,
-                kbIds=list(kb_ids_list) if kb_ids_list else None,
+                kbIds=kbIds,
                 ownerId=ownerId,
                 orgPath=orgPath,
             )

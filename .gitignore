@@ -8,3 +8,6 @@ logs/
 *.swp
 .DS_Store
 *:Zone.Identifier
+*.egg-info/
+build/
+dist/

@@ -81,7 +81,7 @@ python -m open_ikc_sdk.mcp --base-url http://127.0.0.1:18000 --token <token>
 ```
 
 - 工具清单（14 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `sys_catalog` / `sys_error_codes`。
-- 复杂结构参数（`source`、`parseStrategy`、`metadataSchema` 等）以 JSON 字符串传入。
+- 复杂结构参数（`source`、`parseStrategy`、`metadataSchema` 等）在 MCP 中为原生 object/array 类型（mcp>=2.0）。
 - 完整定义见 `docs/MCP与CLI接口定义.md`。
 
 ## CLI（命令行）

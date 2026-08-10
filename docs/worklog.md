@@ -9,10 +9,12 @@
 ### 任务：MCP 与 CLI 对外接口定义 + 落地实现（SDK 上层封装）
 
 - 完成：新增 `sdk/python/open_ikc_sdk/_bootstrap.py`——`client_from_env` 客户端引导工厂，从环境变量读取 `OPEN_PLATFORM_BASE_URL`（默认 http://127.0.0.1:18000）/`OPEN_PLATFORM_TOKEN`/`OPEN_PLATFORM_TOKENS`（多 token 取第一个）/`OPEN_PLATFORM_USER_ID`/`OPEN_PLATFORM_TENANT_ID`/`OPEN_PLATFORM_ROLES`（组装 `CallerIdentity`），显式参数优先。
-- 完成：新增 `sdk/python/open_ikc_sdk/mcp/`——基于 `mcp.server.fastmcp.FastMCP`（官方 mcp SDK 内置，非额外 fastmcp 依赖）实现 stdio MCP Server，14 个工具与 SDK 领域方法一一对应（kb_create/kb_update/kb_query/kb_get、doc_ingest/doc_ingest_and_parse/doc_get、parse_start/parse_query/parse_issue_ticket/parse_download、search_query、sys_catalog/sys_error_codes）；复杂结构参数（source/parseStrategy/resultFormat/metadataSchema/tags/kbIds）以 JSON 字符串接收，封装层解析；`parse_download` 文件流落地后返回 base64 字节；`python -m open_ikc_sdk.mcp` 入口。
+- 完成：新增 `sdk/python/open_ikc_sdk/mcp/`——基于 `mcp.server.mcpserver.MCPServer`（mcp>=2.0）实现 stdio MCP Server，14 个工具与 SDK 领域方法一一对应（kb_create/kb_update/kb_query/kb_get、doc_ingest/doc_ingest_and_parse/doc_get、parse_start/parse_query/parse_issue_ticket/parse_download、search_query、sys_catalog/sys_error_codes）；复杂结构参数（source/parseStrategy/resultFormat/metadataSchema/tags/kbIds）声明为原生 object/array 类型（mcp 2.0 按 JSON Schema 校验并反序列化）；`parse_download` 文件流落地后返回 base64 字节；`python -m open_ikc_sdk.mcp` 入口。
 - 完成：新增 `sdk/python/open_ikc_sdk/cli/`——typer 实现，子命令分组（kb-create/update/list/get、doc-ingest/ingest-and-parse/get、parse-start/query/ticket/download、search-query、sys-catalog/error-codes），全局选项（--base-url/--token/--user-id/--tenant-id/--roles/--json/--debug），错误→退出码映射（100401→2/100403→3/100404→4/501001→5/传输错误→6/其他业务→1），`python -m open_ikc_sdk.cli` 入口 + pyproject `[project.scripts] ikc` 注册。
-- 完成：`sdk/python/pyproject.toml` 新增 `mcp = ["mcp>=1.0"]` 与 `cli = ["typer>=0.15"]` 可选依赖（核心 SDK 仍仅依赖 httpx）。
-- 测试：新增 `test_bootstrap.py`（7 例环境变量→客户端/token/身份头/透传/端到端请求头）、`test_mcp_tools.py`（15 例含 14 工具逐一 MockTransport 断言请求路径/body/返回 + 工具清单完整性）、`test_cli.py`（13 例含子命令解析/--json/表格渲染/退出码/下载落盘）；SDK 全量 **130 passed**（原 91 + 新增 39）。
+- 完成：`sdk/python/pyproject.toml` 新增 `mcp = ["mcp>=2.0"]` 与 `cli = ["typer>=0.15"]` 可选依赖（核心 SDK 仍仅依赖 httpx）。
+- 测试：新增 `test_bootstrap.py`（7 例环境变量→客户端/token/身份头/透传/端到端请求头）、`test_mcp_tools.py`（18 例含 14 工具逐一 MockTransport 断言请求路径/body/返回 + 工具清单完整性，mcp 2.0 `call_tool` 异步调用）、`test_cli.py`（13 例含子命令解析/--json/表格渲染/退出码/下载落盘）；SDK 全量 **130 passed**（原 91 + 新增 38）。
+- 环境：SDK 以 editable 安装进项目 `.venv`（`pip install -e "sdk/python[cli,mcp,dev]"`，mcp 2.0.0/typer 0.27.1/httpx 0.28.1/pytest 9.1.1）；发现 mcp 1.x 与 2.x 的 FastMCP/MCPServer API 不兼容，按用户决策适配 mcp 2.x（含 pyproject 依赖上修与测试重写）。
+- 验证：`python -m open_ikc_sdk.cli --help`、`ikc` 入口、`python -m open_ikc_sdk.mcp` 均可用；MCP stdio 实测 initialize + tools/list（14 工具）+ tools/call 返回正常。
 - 文档：新增 `docs/MCP与CLI接口定义.md`（能力映射表、环境变量、MCP 工具清单、CLI 子命令/退出码、鉴权与 AUTHZ 说明、边界）；`sdk/python/README.md` 补 MCP/CLI 使用小节。
 - 边界：不新增/修改任何平台 REST 路由、`catalog.py`、`app/`（仅 SDK 侧封装）；不暴露 reindex/task query 等未落地能力；平台侧 `pytest tests -q` 146 测试不受影响。
 - 下一步：真实平台服务冒烟（`python -m open_ikc_sdk.mcp` 与 CLI 命令对运行中的 18000 平台实测）；MCP 客户端（Claude Desktop 等）接入配置示例可补入 README。

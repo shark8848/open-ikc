@@ -26,11 +26,15 @@
 | 系统 | `fetch_catalog` | `sys_catalog` | `sys-catalog` |
 | 系统 | `fetch_error_codes` | `sys_error_codes` | `sys-error-codes` |
 
-> 复杂结构参数（`source`、`parseStrategy`、`resultFormat`、`metadataSchema`、`tags`、`kbIds`）在 MCP / CLI 中均以 **JSON 字符串** 接收，由封装层解析后透传 SDK。
+> 复杂结构参数（`source`、`parseStrategy`、`resultFormat`、`metadataSchema`、`tags`、`kbIds`）：
+> - **MCP**：声明为原生 `object` / `array` 类型（mcp>=2.0 由框架按 JSON Schema 校验并反序列化）。
+> - **CLI**：以 **JSON 字符串** 接收（命令行天然为字符串），由封装层解析后透传 SDK。
 
 ## 2. 运行与配置
 
 ### 2.1 环境变量（`open_ikc_sdk/_bootstrap.py`）
+
+> 依赖：MCP 需 `mcp>=2.0`（`pip install "sdk/python[mcp]"`）；CLI 需 `typer>=0.15`（`pip install "sdk/python[cli]"`）。安装后 `python -m open_ikc_sdk.mcp` 与 `ikc` 入口直接可用。
 
 | 环境变量 | 说明 | 默认值 |
 | --- | --- | --- |
@@ -108,7 +112,7 @@ ikc --help
 
 | 工具 | 参数 | 说明 |
 | --- | --- | --- |
-| `doc_ingest` | `kbId`(必填), `source`(JSON, 必填), `reqId`, `teamId`, `orgId`, `docTitle`, `tags`(JSON 数组), `metadata`(JSON), `orchestrationMode`="split" | 接入知识源（不解析） |
+| `doc_ingest` | `kbId`(必填), `source`(object, 必填), `reqId`, `teamId`, `orgId`, `docTitle`, `tags`(array), `metadata`(object), `orchestrationMode`="split" | 接入知识源（不解析） |
 | `doc_ingest_and_parse` | 同 `doc_ingest` + `parseStrategy`(JSON), `resultFormat`(JSON), `executeMode`="async" | 一体化接入并解析 |
 | `doc_get` | `docId`(必填) | 查询文档信息 |
 

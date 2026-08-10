@@ -6,6 +6,47 @@
 
 ## 2026-08-10
 
+### 任务：ikc-log-center SDK 改为 pip 安装模式接入
+
+- 背景：`app/core/app_factory.py`、`app/core/logging.py`、`app/core/trace.py` 已 import `log_center_sdk`，但 `pyproject.toml` 未声明该依赖，接入方式不显式。
+- 现状核查：open-ikc `.venv` 中 `ikc-log-center 1.4.9` 已是 pip 正常安装（site-packages，无 editable/direct_url），无 sys.path/PYTHONPATH 代码级残留；`dist/ikc_log_center-1.4.9-py3-none-any.whl` 存在于 `/home/ikc-log-center/dist/`。
+- 改动：`pyproject.toml` dependencies 声明 `ikc-log-center==1.4.9`（附本地 wheel 安装命令注释）；`README.md` 启动章节补充 pip 安装说明（`pip install /home/ikc-log-center/dist/ikc_log_center-1.4.9-py3-none-any.whl`）。
+- 验证：`.venv` 从本地 wheel `--force-reinstall` 重装成功且 import OK；`pytest tests -q` **179 passed** 无回归。
+- 下一步：无（改动已闭环）。
+
+### 任务：补齐 ikc-log-center 远程日志投递（集成完整性核查结论）
+
+- 核查结论：代码层（pip 安装 + `configure` + `TraceMiddleware` + `trace.py`）已接通，但 SDK 远程投递默认关闭（`LOG_CENTER_ENABLE` 默认 false），日志仅写本地 `logs/open_ikc_api.log`，**未送达日志中心服务端**——集成不完整。
+- 补充：两个启动脚本（`scripts/start_open_platform.sh`、`scripts/start_open_platform_auth_mode.sh`）导出 `LOG_CENTER_ENABLE=true`、`LOG_CENTER_URL=http://127.0.0.1:9315`（服务端 ingest 端点为 `POST /ingest`，当前未开 Bearer 认证）；`README.md` 补环境变量说明表。
+- 端到端验证：临时端口实例带 env 启动 → 请求 `/api/v1/knowledge-search/query`（带 23 位 traceId）→ 日志中心 9315 `/search?trace_id=...` 命中 4 条（request start/end，logger=`app.core.app_factory`，trace 关联正确）。
+- 备注：`app/core/logging.py` 的 `configure_logging()` 定义但无调用点（备用封装，app_factory 直接 `log_center_sdk.configure(...)` 遵循 env），不影响链路。
+
+### 任务：Java SDK（阶段 F）HTTP 400 根因修复 + 文档补齐
+
+### 任务：Java SDK（阶段 F）HTTP 400 根因修复 + 文档补齐
+
+- 问题：Java SDK 对真实平台（uvicorn/h11，18000）调用 KB query 返回 HTTP 400，测试内本地假平台（JDK HttpServer 支持 h2c）却通过。`Smoke` 失败：`OpenIKCProtocolException: HTTP 400 且响应不符合统一响应壳协议`，原始响应 `Invalid HTTP request received.`。
+- 根因：JDK `HttpClient` **默认带 HTTP/2 优先升级（h2c `Upgrade: h2c` 头）**，而 uvicorn + h11 不支持 upgrade——先收到 `Unsupported upgrade request.` 再被拒绝为 `Invalid HTTP request received.`（HTTP 400）。
+- 修复：`Transport.java` 的 `HttpClient.newBuilder()` 显式固定 `.version(HttpClient.Version.HTTP_1_1)`。
+- 验证：临时 `H1Probe.java` 对真实平台强制 HTTP/1.1 得 `200 / errCode=000000`；修复后 `mvn test` **24 例全绿**（4+7+13）；`Smoke` 对真实平台 `SMOKE OK`（fetchCatalog 4 类目 / fetchErrorCodes 15 码 / KB query 000000）。
+- 文档：新增 `docs/开放平台JavaSDK集成设计.md`（阶段 F 交付项之一，含 §8 连接关键约定——HTTP/1.1 必选）；新增 `sdk/java/README.md`（快速开始/异常层级/冒烟/重要约定）；修正 `Smoke.java` 注释中的主类名（`io.openikc.sdk.examples.Smoke`）。
+- 补充遗漏（对照计划逐项复查）：README 补 Java SDK 入口说明；`docs/MCP与CLI接口定义.md` 补 §9 管理 Portal 在线测试入口（`/admin/test/mcp|cli|whitelist`）；`OpenIKCClientTest` 新增 `doesNotSendH2CUpgradeHeader` 回归测试（14 例）——模拟 uvicorn/h11 对 `Upgrade: h2c` 返回 400，已实测移除 HTTP_1_1 后该测试会失败（回归保护有效）；`.gitignore` 补 `portal/*.tsbuildinfo`/`vite.config.js`/`vite.config.d.ts`、`sdk/java/target/`（编译产物原会误提交）；修复 `.venv` 中 mcp 被降级为 1.28.1 导致 SDK MCP 测试收集失败（升级回 mcp 2.0.0）。
+- 验证：Java SDK `mvn test` **25 例全绿**（+1 回归测试）；平台 `pytest tests -q` **179 passed**；SDK `pytest sdk/python/tests -q` **130 passed**；MCP stdio 端到端冒烟全链路通过（initialize→14 tools→sys_catalog→kb_create）；admin API 冒烟（带 token `000000`，不带 `100401`，未配置时 503 映射已在 handler 确认）。
+- 下一步：阶段 F 收尾提交（sdk/java + admin + portal + 相关 docs/tests + gitignore）。
+
+### 任务：管理 Portal 前端（阶段 E）——Vite 8 + React 18 + TS 四页管理台 + 后端静态挂载
+
+- 完成：新增 `portal/`（Vite 8.2.1 + React 18.3.1 + TypeScript 5.6，深色主题对齐 api_browser 风格）——`package.json`/`vite.config.ts`（base `/portal/`、dev proxy `/admin→127.0.0.1:18000`）/`tsconfig.json`/`index.html`。
+- 完成：`src/api/client.ts`（统一响应壳解包、admin token sessionStorage 管理、错误映射）+ `src/api/types.ts`（Overview/EndpointStat/TokenRecord/TestResultData 等强类型）。
+- 完成：四页 —— **Dashboard**（并发/总请求/错误率/活跃端点/活跃 token 卡片 + 最近请求表，10s 自动刷新）、**Tokens**（创建表单含过期/作用域、明文 token 一次性展示、撤销确认、含已撤销筛选）、**Endpoints**（端点维度 + token 维度统计，30/60/120 分钟窗口切换）、**TestLab**（MCP 冒烟 + CLI 白名单命令执行，公共 token/baseUrl 参数）。
+- 完成：`app_factory.py` 静态挂载 `/portal`（`portal/dist` 存在时）——新增 `_mount_portal()`；`middlewares.py` 的 `AUTH_EXEMPT_PREFIXES` 增加 `/portal`（静态壳无数据，数据全走受保护 `/admin/*`）；`api_browser.py` 增加「管理 Portal」入口链接。
+- 完成：`tests/conftest.py` 新增 autouse fixture 隔离 `OPEN_PLATFORM_DB_PATH`（临时 DB）——修复管理面 token/统计状态跨测试串扰（真实 DB 中已撤销 token 记录导致「未配置 token 时放行」测试误失败）。
+- 修复：**MCP/CLI 在线测试事件循环死锁**——`/admin/test/mcp`、`/admin/test/cli` 为 async 路由内同步 `subprocess.run`，子进程请求平台自身端点（`/api/catalog`）时平台事件循环被阻塞 → 互相等待直至 20s 超时。改用 `starlette.concurrency.run_in_threadpool` 放线程池执行，CLI 185ms / MCP 1.4s 通过。
+- 修复：`_MCP_SMOKE_SCRIPT` 中 `is_error={res.is_error}` 多余转义（raw string 双花括号不插值），修正后步骤输出 `is_error=False`。
+- 验证：`npm run build` 产出 dist（index 163KB / gzip 52KB）；平台 `pytest tests -q` **179 passed**（新增 portal 免鉴权断言 + conftest 隔离）；真实服务带 `OPEN_PLATFORM_ADMIN_TOKEN` 端到端验证：overview/whitelist/token 创建→业务调用 000000→撤销→100401/列表、MCP 冒烟（initialize→14 tools→call）、CLI sys-catalog 全通。
+- 说明：`/admin/*` 与 `/portal` 静态页均豁免业务 AUTHN，admin 接口由 `admin_required` 独立鉴权（未配置 `OPEN_PLATFORM_ADMIN_TOKEN` 时返回 503001）。
+- 下一步：提交 A–E 阶段（admin 后端 + portal 前端 + 修复）；阶段 F Java SDK（Maven，Java 17）待开工。
+
 ### 任务：MCP 与 CLI 对外接口定义 + 落地实现（SDK 上层封装）
 
 - 完成：新增 `sdk/python/open_ikc_sdk/_bootstrap.py`——`client_from_env` 客户端引导工厂，从环境变量读取 `OPEN_PLATFORM_BASE_URL`（默认 http://127.0.0.1:18000）/`OPEN_PLATFORM_TOKEN`/`OPEN_PLATFORM_TOKENS`（多 token 取第一个）/`OPEN_PLATFORM_USER_ID`/`OPEN_PLATFORM_TENANT_ID`/`OPEN_PLATFORM_ROLES`（组装 `CallerIdentity`），显式参数优先。

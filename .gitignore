@@ -11,3 +11,13 @@ logs/
 *.egg-info/
 build/
 dist/
+data/
+node_modules/
+portal/dist/
+# Vite/tsc 编译产物（源文件才是源码，tsconfig.json / vite.config.ts 之外的不提交）
+portal/*.tsbuildinfo
+portal/vite.config.js
+portal/vite.config.d.ts
+portal/tsconfig.tsbuildinfo
+# Maven 编译产物
+sdk/java/target/

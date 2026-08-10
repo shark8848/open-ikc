@@ -37,6 +37,7 @@ def render_api_browser_html() -> str:
             <h1>开放平台 API 浏览服务</h1>
             <p>当前仅保留四大类：知识库、文档、解析、检索。</p>
             <div class="links">
+              <a href="/portal/">管理 Portal</a>
               <a href="/docs">Swagger UI</a>
               <a href="/redoc">ReDoc</a>
               <a href="/openapi.json">OpenAPI JSON</a>

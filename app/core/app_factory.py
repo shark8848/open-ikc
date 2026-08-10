@@ -1,16 +1,23 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 import log_center_sdk
 from log_center_sdk.integrations.fastapi import TraceMiddleware
 
+from app.core.admin.monitor import build_monitor_middleware
 from app.core.exception_handlers import register_exception_handlers
 from app.core.middlewares import build_auth_middleware, build_framework_error_response_middleware, build_trace_middleware
 from app.core.system_routes import register_system_routes
+from app.routers.admin import router as admin_router
 from app.routers.document import router as document_router
 from app.routers.knowledge_base import router as knowledge_base_router
 from app.routers.parse import router as parse_router
 from app.routers.search import router as search_router
+
+_PORTAL_DIST = Path(__file__).resolve().parents[2] / "portal" / "dist"
 
 
 def create_app() -> FastAPI:
@@ -34,26 +41,44 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json",
     )
 
+    # 日志中心（ikc-log-center SDK，pip 安装模式接入，见 pyproject.toml 依赖声明）：
+    # - configure 初始化控制台 / 滚动文件 / 远程投递 handler；远程投递默认关闭，
+    #   由环境变量控制：LOG_CENTER_ENABLE=true 时异步发送至 LOG_CENTER_URL
+    #   （默认 http://127.0.0.1:9315，SDK 自动 POST {url}/ingest，见 scripts/start_open_platform.sh）；
+    # - TraceMiddleware 在请求入口绑定/复用 23 位 traceId，日志上下文自动携带，
+    #   便于在日志中心按链路检索（logger 名称与日志文件均带模块名 open_ikc_api）。
     log_center_sdk.configure(module_name="open_ikc_api")
     logger = log_center_sdk.get_logger(__name__)
 
+    # 日志中心 FastAPI 集成中间件：为每个请求建立 trace 上下文（含 traceId/requestId），
+    # 并透传 X-Trace-Id / X-Request-Id 响应头（与 app/core/trace.py 的 build_trace_headers 配合）。
     app.add_middleware(TraceMiddleware)
 
     app.include_router(knowledge_base_router)
     app.include_router(document_router)
     app.include_router(parse_router)
     app.include_router(search_router)
+    app.include_router(admin_router)
 
     # 注册顺序（后注册者更外层）：Trace 最外层先绑定/复用 traceId；
-    # 框架错误改写位于 AuthN 内层，确保未认证/业务响应不被改写。
+    # 框架错误改写位于 AuthN 内层，确保未认证/业务响应不被改写；
+    # 监控采集位于 AuthN 内层，可读取 request.state.identity 记录 token/身份维度。
     app.middleware("http")(build_framework_error_response_middleware(logger))
     app.middleware("http")(build_auth_middleware(logger))
+    app.middleware("http")(build_monitor_middleware(logger))
     app.middleware("http")(build_trace_middleware(logger))
 
     register_exception_handlers(app)
     register_system_routes(app)
+    _mount_portal(app)
     _apply_openapi_docs(app)
     return app
+
+
+def _mount_portal(app: FastAPI) -> None:
+    """若 portal 前端已构建，则将其静态挂载到 /portal（管理 Portal，自带独立 admin 鉴权）。"""
+    if _PORTAL_DIST.is_dir():
+        app.mount("/portal", StaticFiles(directory=str(_PORTAL_DIST), html=True), name="portal")
 
 
 def _apply_openapi_docs(app: FastAPI) -> None:

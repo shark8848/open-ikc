@@ -3,6 +3,10 @@ from __future__ import annotations
 import secrets
 import time
 
+# 日志中心 SDK（ikc-log-center，pip 安装模式接入）的 contextvars 承载 traceId/requestId：
+# - 请求入口由 TraceMiddleware（app_factory 注册）调用 set_trace_context 绑定；
+# - 日志记录的 TraceContextFilter 自动把当前 trace_id 附加到日志中，
+#   因此同一 traceId 的日志可在日志中心按链路聚合检索。
 from log_center_sdk.core import clear_trace_context, request_id_var, set_trace_context, trace_id_var
 
 

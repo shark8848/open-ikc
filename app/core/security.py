@@ -62,10 +62,52 @@ def is_token_valid(authorization: str | None) -> bool:
 
     valid_tokens = configured_tokens()
     if not valid_tokens:
-        # No server-side token configured: only enforce bearer token presence.
-        return True
+        # 无环境变量 token 时，检查管理面 SQLite 中是否有活跃 token。
+        db_tokens = _active_db_token_hashes()
+        if not db_tokens:
+            if not _db_has_any_token_record():
+                # 完全未配置 token：仅强制 Bearer token 存在。
+                return True
+            # 配置过 token 但全部撤销/过期：拒绝。
+            return False
+        return _db_token_in_set(request_token, db_tokens)
 
-    return any(secrets.compare_digest(request_token, valid) for valid in valid_tokens)
+    if any(secrets.compare_digest(request_token, valid) for valid in valid_tokens):
+        return True
+    # 环境变量未命中时，回退检查管理面 SQLite token。
+    return _db_token_in_set(request_token, _active_db_token_hashes())
+
+
+def _active_db_token_hashes() -> set[str]:
+    """惰性读取管理面 SQLite 活跃 token 哈希集合；模块不可用/异常时返回空集。"""
+    try:
+        from app.core.admin.token_store import active_token_set
+
+        return active_token_set()
+    except Exception:
+        return set()
+
+
+def _db_has_any_token_record() -> bool:
+    """管理面 SQLite 是否存在任何 token 记录（含已撤销/过期）。"""
+    try:
+        from app.core.admin.token_store import has_any_token_record
+
+        return has_any_token_record()
+    except Exception:
+        return False
+
+
+def _db_token_in_set(plain_token: str, token_hashes: set[str]) -> bool:
+    """明文 token 是否命中 DB 活跃集合；命中时更新 last_used_at。"""
+    if not token_hashes:
+        return False
+    try:
+        from app.core.admin.token_store import is_token_in_db
+
+        return is_token_in_db(plain_token)
+    except Exception:
+        return False
 
 
 def authenticate_request(request: Request) -> AuthResult | None:

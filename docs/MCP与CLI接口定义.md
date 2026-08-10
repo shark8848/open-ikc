@@ -243,3 +243,15 @@ ikc sys-error-codes
 - mcp 2.x 协议字段为 **snake_case**：`InitializeResult.server_info`、`CallToolResult.is_error`（1.x/部分文档为 camelCase）。
 - 复杂结构参数（`source` / `parseStrategy` / `resultFormat` / `metadataSchema` / `tags` / `kbIds`）声明为原生 `object` / `array` 类型，由 mcp 2.0 按 JSON Schema 校验并反序列化（CLI 侧以 JSON 字符串接收）。
 - 依赖声明：`pyproject.toml` 可选依赖 `mcp = ["mcp>=2.0"]`。
+
+## 9. 管理 Portal 在线测试入口
+
+管理 Portal（`/portal/`，TestLab 页）与后台管理接口（`/admin/test/*`）提供对 MCP / CLI 的**在线真实执行**：
+
+- `POST /admin/test/mcp`：subprocess 启动 `python -m open_ikc_sdk.mcp`（stdio），走
+  `initialize → list_tools（14 工具）→ call_tool(sys_catalog)` 四步冒烟，返回结构化步骤结果。
+- `POST /admin/test/cli`：body `{command, args}` 执行白名单 CLI 命令，捕获 stdout/stderr/退出码。
+- `GET /admin/test/whitelist`：返回当前允许的 CLI 命令白名单（只读命令：`kb-list` / `kb-get` / `sys-catalog` / `sys-error-codes` 等，禁止任意 shell）。
+- 安全约束：命令白名单 + 15s 超时；token 从请求上下文注入子进程环境变量，不落库；统一响应壳 `errCode=000000` 表示执行成功（非子进程退出码）。
+- 执行实现：`app/core/admin/mcp_cli_test.py`，subprocess 经 `starlette.concurrency.run_in_threadpool` 放线程池，避免阻塞平台事件循环。
+- 该能力属管理面（需 `OPEN_PLATFORM_ADMIN_TOKEN`），不进入业务 `catalog.py`。详见 `docs/管理Portal设计.md`。

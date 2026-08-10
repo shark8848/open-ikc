@@ -28,6 +28,7 @@ def reset_knowledge_base_store() -> None:
         "/docs",
         "/redoc",
         "/openapi.json",
+        "/portal/",
     ],
 )
 def test_system_routes_are_exempt_from_business_auth(path: str) -> None:
@@ -126,7 +127,7 @@ def test_api_docs_are_accessible_without_auth() -> None:
 
 
 def test_exempt_system_routes_tolerate_trailing_slash() -> None:
-    for path in ["/api-browser/", "/health/", "/api/catalog/", "/api/error-codes/", "/docs/"]:
+    for path in ["/api-browser/", "/health/", "/api/catalog/", "/api/error-codes/", "/docs/", "/portal/"]:
         response = client.get(path, follow_redirects=False)
         assert response.status_code in {200, 307}, path
         if "json" in response.headers.get("content-type", ""):

@@ -12,6 +12,24 @@ cd /home/open-ikc
 . .venv/bin/activate
 ```
 
+依赖安装（日志链路依赖 `ikc-log-center` SDK，按 pip 安装模式接入，不引用源码目录）：
+
+```bash
+pip install -e .
+# 日志中心 SDK 从本地 wheel 安装（版本与 pyproject.toml 声明一致）：
+pip install /home/ikc-log-center/dist/ikc_log_center-1.4.9-py3-none-any.whl
+```
+
+日志通过 `log_center_sdk` 统一输出，trace 上下文自动携带 `traceId`，可在日志中心按链路检索。
+
+日志中心远程投递环境变量（启动脚本已默认开启）：
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `LOG_CENTER_ENABLE` | `true` | 是否启用远程日志投递（异步发送至日志中心） |
+| `LOG_CENTER_URL` | `http://127.0.0.1:9315` | 日志中心服务端地址（SDK 自动 POST `{url}/ingest`） |
+| `LOG_CENTER_TOKEN` | 空 | 日志中心开启 Bearer 认证时填写 |
+
 平台服务启动：
 
 ```bash
@@ -29,18 +47,28 @@ bash scripts/start_open_platform.sh
 - Swagger UI: /docs
 - ReDoc: /redoc
 - API 浏览页: /api-browser
+- 管理 Portal: /portal/（token 管理、端点监控、MCP/CLI 在线测试；需 `OPEN_PLATFORM_ADMIN_TOKEN`）
 - 错误码目录: /api/error-codes
 - AUTHZ 集成设计文档: docs/开放平台统一认证鉴权集成_AUTHZ.md
 - AUTHN 集成设计文档: docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md
 - SDK 集成设计文档: docs/开放平台SDK集成设计.md
 - MCP 与 CLI 接口定义: docs/MCP与CLI接口定义.md
+- 管理 Portal 设计: docs/管理Portal设计.md
 
 ## SDK / MCP / CLI 入口
 
 - **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`，导入 `open_ikc_sdk`），封装四大类能力为类型安全调用；使用说明见 [sdk/python/README.md](sdk/python/README.md)。
+- **Java SDK**：`sdk/java/`（Maven，Java 17，零第三方依赖，`io.openikc:open-ikc-sdk:1.0.0`），同协议同错误码；使用说明见 [sdk/java/README.md](sdk/java/README.md)，设计见 [docs/开放平台JavaSDK集成设计.md](docs/开放平台JavaSDK集成设计.md)。
 - **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），14 个工具；供 Claude 等 LLM 直接调用平台能力。
 - **CLI**：`ikc`（`python -m open_ikc_sdk.cli`），11 个子命令。
 - 完整能力映射 / 环境变量 / 工具清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
+
+## 管理 Portal（/admin/*）
+
+- **管理面 ≠ 业务四类能力**：`/admin/*`（token 管理、监控统计、MCP/CLI 在线测试）是运维管理面，使用独立管理鉴权（`OPEN_PLATFORM_ADMIN_TOKEN`），不进入业务 catalog，不暴露内部流水线接口。
+- **Portal 前端**：`portal/`（Vite 8 + React 18 + TS），构建产物 `portal/dist` 由平台静态挂载在 `/portal`。访问 `/portal/` 需输入 `OPEN_PLATFORM_ADMIN_TOKEN`。
+- **启用管理面**：配置 `OPEN_PLATFORM_ADMIN_TOKEN` 环境变量；未配置时 `/admin/*` 返回 `503001`（默认关闭，避免暴露）。
+- **Token 存储**：SQLite（默认 `data/open_ikc_platform.db`，路径可经 `OPEN_PLATFORM_DB_PATH` 覆盖）；明文 token 仅在创建时返回一次，库中只存 sha256 哈希。
 
 ## 错误码与异常
 

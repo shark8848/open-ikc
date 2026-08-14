@@ -431,3 +431,9 @@
 - P1-2（启动脚本自动生成并打印 admin token，弱化「管理面默认关闭」）：既有问题，非本次引入，记入待办（README 已注明本地用途；生产建议显式配置）。
 - P1-3（redoc bundle 内仍远程拉取 logo）：既有离线化未竟事项，记入待办。
 - P2 项（admin 创建请求无 Pydantic 校验、`/` 重定向与挂载时机不一致、静态前缀字面量重复、admin traceId 为空、测试确定性、有效期选「今天」趋近 0）记入待办清单。
+
+### 任务：提交并推送（受阻）
+
+- 提交：`git commit` 完成——`c020600`（契约新增「每次任务完成自动推送仓库」，外部提交）+ 本次 `feat: Portal 改版（线性图标侧边栏、Toast/居中确认、Token 表单选择化）+ 管理面静态文档本地化与首页直达 Portal；测试 181 全绿`；本地 main 领先 github/main 2 个提交。
+- 推送受阻：`origin`（code.tiancloud.com）与 `github`（github.com）SSH 22 端口均被本地网关（198.18.0.58 / 198.18.0.35）关闭连接；HTTPS 443 连通正常（github.com 200），但仓库未配置 HTTPS 凭据（无 credential helper / .git-credentials）。
+- 待办：网络恢复（内网/VPN）后执行 `git push origin main`（或提供 GitHub PAT 走 HTTPS 推送）。

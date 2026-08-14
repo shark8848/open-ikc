@@ -4,6 +4,24 @@
 > 约定见 `AGENTS.md`「工作日志与每日继承」章节。按日期追加，每天一个条目。
 > 每个工作日 `17:30` 触发例行提交任务（约定见 `AGENTS.md` §8.1）。
 
+## 2026-08-14
+
+### 任务：契约文档核查与修补（管理面入契约 + 503001 注册 + 测试约定同步）
+
+- 背景：核查 `AGENTS.md` 契约与当前代码一致性，发现管理面（`/admin/*` + Portal）已落地（阶段 E/F）但契约完全未登记；`503001` 硬编码在 `exception_handlers.py` 未进错误码 registry；§6 测试约定过时。
+- 改动：`AGENTS.md` —— §2 目录树补 `core/admin/` 五模块、`routers/admin.py`、`static/docs/`、`portal/`、`data/`；§3.2 补业务路由 `query`/`{kb_id}` 与系统路由 `/docs/oauth2-redirect`/`/_static/docs`/`/portal`，新增 §3.2.1 管理面路由清单（10 条 + 不进入 catalog 的边界声明）；§3.3 补 `503001`；§3.4 补「新错误码必进 registry」；新增 §4.3 管理面独立鉴权（`OPEN_PLATFORM_ADMIN_TOKEN`、未配置默认关闭 `503001`、与业务 AUTHN 隔离）；§6 更新 conftest 描述（`isolate_admin_db` fixture）与测试命令（`.venv/bin/python`）。
+- 改动：`app/core/error_codes.py` —— 新增 `AdminErrorCodes`（`503001 管理面未启用`，level=admin），接入 `error_code_catalog()`；`exception_handlers.py` —— `AdminDisabledError` 处理器改用 `AdminErrorCodes.ADMIN_DISABLED.to_response()`，去掉硬编码字符串。
+- 改动：`README.md` 模块职责补第 8 条（`app/core/admin/` 管理面）；`tests/test_system_routes.py` 补关键错误码（含 503001）注册断言。
+- 验证：`pytest tests -q` **181 passed**（原 179 + 2 断言扩展）；`/api/error-codes` 含 `503001`（16 码）；未配置 `OPEN_PLATFORM_ADMIN_TOKEN` 时 `/admin/overview` 返回 HTTP 503 + `errCode=503001` + 23 位 traceId。
+- 下一步：契约与实现已对齐；待用户确认后按 §8.1 提交。
+
+### 任务：契约新增两条基础约定（日志中心基础化 + 任务完成自动推送）
+
+- 背景：用户要求把「接入 ikc-log-center」与「每次任务完成自动推送仓库」写入契约。
+- 改动：`AGENTS.md` —— 新增 §4.4 日志中心（ikc-log-center）基础契约（依赖只经 pyproject 声明 `ikc-log-center==1.4.9`、装配初始化 `log_center_sdk.configure` + `TraceMiddleware`、远程投递环境变量 `LOG_CENTER_ENABLE/URL/TOKEN`、新代码走 `get_logger(__name__)` 勿降级为 print/裸 logging、日志禁记密钥）；§8.1 例行提交改「commit + push」（移除「不 push」）；新增 §8.2 每次任务完成自动推送（收尾后自动 commit + push，默认 `github`，可选双远端，禁止半成品入库，用户说「不要推」时跳过）；§11-7 同步为「默认任务完成后自动 commit + push」。
+- 验证：契约编辑完成，未涉及行为代码改动，无需重跑测试。
+- 下一步：按 §8.2 本任务完成后自动 commit + push。
+
 ## 2026-08-10
 
 ### 任务：ikc-log-center SDK 改为 pip 安装模式接入
@@ -349,3 +367,59 @@
 - 提交：检索域重设计实现（search_store、强类型响应、数据权限过滤）入库；随后提交版本 bump 并打标签 `v1.0.0`。
 - 验证：发布前 `pytest tests -q` 平台 146 测试全绿。
 - 下一步：如需发布到远端，执行 `git push github main && git push github v1.0.0`（待用户确认）。
+
+## 2026-08-11
+
+### 任务：启用管理面（配置 OPEN_PLATFORM_ADMIN_TOKEN）
+
+- 问题：Portal 登录提示「管理面未启用：请配置 OPEN_PLATFORM_ADMIN_TOKEN 环境变量」；`/admin/overview` 返回 `503001`。
+- 根因：服务启动时未设置 `OPEN_PLATFORM_ADMIN_TOKEN`，`scripts/start_open_platform.sh` 也未配置（管理面默认关闭，避免暴露）。
+- 改动：`scripts/start_open_platform.sh` 未显式配置 `OPEN_PLATFORM_ADMIN_TOKEN` 时自动生成随机 token（`secrets.token_hex(16)`）并打印，显式配置则透传——不把凭证写死进仓库，本地开发开箱即用；README「启用管理面」补充启动脚本行为说明。
+- 验证：重启服务后 `/admin/overview` 带生成 token 返回 `000000`（含 activeTokens 等概览数据），无 token 返回 `100401`；服务正常运行于 18000。
+- 下一步：无（改动已闭环）；本轮 token 为启动时随机生成，重启后变化，Portal 登录以启动输出为准。
+
+### 任务：新增一键停止脚本（scripts/stop_open_platform.sh）
+
+- 新增：`scripts/stop_open_platform.sh`——与 `start_open_platform.sh` 配套，按进程匹配 `uvicorn app.main:app`（--reload 模式同时覆盖 reloader 与 worker），SIGTERM 优雅停止，最多等待 10 秒，残留时提示手动处理并退出 1。
+- 修复：初版用 `pgrep -f` 会误杀命令行含同模式字符串的调用链（验证时发现自身包装 shell 被 TERM）；改为 `ps -eo pid,comm,args` + awk 仅匹配进程名 python 系列，避免误杀。
+- 验证：stop → 无残留进程、端口 18000 关闭、exit 0；随后 start 脚本重新拉起服务验证恢复；README 启动章节补停止脚本说明。
+- 下一步：无（改动已闭环）。
+
+### 任务：Portal 调整——首页直达管理面，API/测试入口收拢到左侧栏
+
+- 后端：`app/core/system_routes.py` 首页 `/` 由 307→`/api-browser` 改为 307→`/portal/`（portal/dist 已构建时；未构建回退 `/api-browser`）。
+- 前端：`portal/` 左侧栏按分组导航——「管理」（总览/端点监控/Token 管理/在线测试）+「API 文档」（Swagger UI / ReDoc）；API 文档类页面以 iframe 内嵌展示（带标题栏 + 「新窗口打开」），样式新增 `nav-group-title` / `iframe-page`。
+- 调整：按用户要求移除侧边栏「API 浏览」入口（与 Swagger UI / ReDoc 重复）；后端 `/api-browser` 路由保留（系统路由、README/目录仍引用）。
+- 验证：`npm run build` 产物确认「API 浏览」已移除、Swagger UI/ReDoc 保留；`pytest tests -q` **180 passed**（新增首页重定向测试：307 → `/portal/`，未构建时 → `/api-browser`）；真实服务 `GET /` → 307 → `/portal/` 验证通过。
+- 下一步：无（改动已闭环）。
+
+## 2026-08-14
+
+### 任务：Portal 左侧菜单清新化改版（图标 + 布局 + 底部菜单）
+
+- 图标：`portal/src/components/icons.tsx` 新增 Lucide 风格线性 SVG 图标库（24x24、圆角线帽、stroke 1.8），替换原 emoji/字符图标——总览(grid)/端点监控(pulse)/Token 管理(key)/在线测试(flask)/Swagger UI(book-open)/ReDoc(file-text)/退出(log-out)，主题按钮用 moon/sun/contrast/leaf，风格对齐主流 AI 产品原生图标。
+- 布局：左侧栏 210→220px；导航分「工作台」「文档」两组并加分组小标题；菜单项带 28px 圆角图标底（hover 淡染主题色、active 实底强调色+光晕）；品牌区 logo 加大圆角+渐变光晕，恢复副标题「管理平台」。
+- 底部菜单（左下角）：显示样式改为 4 个纯图标主题按钮（带 title 提示）；新增「在线」状态点；退出登录改为整行图标按钮，hover 变错误红。
+- 说明：文档类入口（Swagger UI / ReDoc）由历史 iframe 内嵌改为 `target="_blank"` 新窗口打开（与 2026-08-11 日志中的旧描述不同，以当前实现为准）。
+- 验证：`npm run build`（tsc + vite）通过；`portal/dist` 为 gitignore 产物，不入库；后端无改动，未跑 pytest。
+- 审查：`scripts/review_with_claude.sh` 只读审查 `docs/code-review_2026-08-14.md`——无 P0/P1；P2-1（`app/core/static/docs/` 未入库）与 P2-2（system_routes 文档同步）均为既有问题，非本次引入，记录待办。
+- 下一步：浏览器打开 `/portal/` 复核视觉效果（本环境无无头浏览器）。
+
+### 任务：Token 管理逻辑与 UI 优化（图标操作 + 居中确认 + 右上角 Toast）
+
+- 反馈基建：新增 `portal/src/components/feedback.tsx`——`FeedbackProvider` + `useFeedback()`，统一提供右上角 Toast（5s 进度条动画后自动消失，可手动关闭，最多叠 3 条）与居中确认弹窗（Promise 化 `confirm()`，遮罩点击/Esc 取消，danger 红色确认，autoFocus）。
+- 接入：`App.tsx` 全局包一层 `FeedbackProvider`（Login 与 Layout 共用）；context value 用 `useMemo` 稳定化，避免 Toast 生命周期触发页面 `load()` 无限重载。
+- Token 页改造（`portal/src/pages/Tokens.tsx`）：
+  - 操作全部图标化：创建（+）、刷新（↻）、撤销（垃圾桶，hover 红色）、关闭/复制（×/复制图标），替换原文字按钮；`window.confirm` 移除，改走居中确认弹窗（含 token 名与「撤销后 100401、不可恢复」说明）。
+  - 逻辑优化：有效期正整数校验、创建中防重复提交、创建/撤销/复制/失败消息全部走右上角 Toast；明文 token 展示卡片化并新增一键复制；移除内联 ErrorBox/Banner 错误提示。
+- 图标：`icons.tsx` 新增 Plus/Refresh/Trash/Close/Check/Alert/Info/Copy 8 个线性图标。
+- 样式：`styles.css` 新增 icon-btn（含 primary/danger 变体）、toast-wrap/item/progress（5s keyframes）、modal-overlay/modal（居中、毛玻璃遮罩、缩放入场）、token-created 明文卡片。
+- 验证：`npm run build`（tsc + vite）通过；`portal/dist` 为 gitignore 产物不入库；后端无改动。
+- 下一步：浏览器打开 `/portal/` 复核（创建/撤销/Toast 动画）。
+
+### 任务：Token 创建表单优化（作用域选择 + 日历有效期）
+
+- 作用域：由自由文本输入改为预设多选 chips（`kb:read/write`、`doc:read/write`、`parse:read/write`、`search:query`，与四大能力对齐），选中态高亮 + 勾选角标；留空 = 不限。
+- 有效期：由秒数输入改为原生日期选择器（`min` 今天），并新增「永不过期」开关（勾选则禁用日期，等价于后端 `expires_in_seconds=None`）；选日期时按当日 23:59:59 换算秒数，早于今天的日期拦截并提示。
+- 样式：`styles.css` 新增 `scope-chips`/`scope-chip`（圆角胶囊多选）、`form-field-wide`（作用域独占一行）、`check-label`。
+- 验证：`npm run build`（tsc + vite）通过；后端无改动。

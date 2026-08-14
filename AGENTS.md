@@ -35,10 +35,17 @@ app/
     error_codes.py        # ErrorCode / AppException / 领域异常与错误码表
     exception_handlers.py # 全局异常 → 统一响应
     responses.py          # 成功/占位响应构造（含 traceId）
-    catalog.py            # 对外 API 目录（与路由保持一致）
+    catalog.py            # 对外业务 API 目录（与路由保持一致；不含 admin 管理面）
     system_routes.py      # /、/health、/api-browser、/api/catalog、/api/error-codes
     api_browser.py        # API 浏览页
     logging.py            # 日志封装
+    static/docs/          # 本地 swagger-ui / redoc 静态资源（/docs、/redoc 离线可用）
+    admin/                # 管理面（运维管理，独立鉴权，非业务五类，见 §3.2.1/§4.3）
+      auth.py             # admin_required 依赖 + OPEN_PLATFORM_ADMIN_TOKEN 校验
+      monitor.py          # 请求统计采集中间件（在线并发/明细）
+      stats.py            # SQLite 请求统计（明细/端点聚合/token 聚合）
+      token_store.py      # SQLite token 存储（明文一次性返回，库中存 sha256）
+      mcp_cli_test.py     # MCP/CLI 在线测试（白名单命令/工具执行）
     authz/                # 独立 AUTHZ 集成层（勿与 middleware 交叉耦合）
       schema.py           # 统一权限语义（身份、权限事实、授权请求、决策）
       adapters.py         # 外部权限 schema → 统一语义的适配器
@@ -47,10 +54,17 @@ app/
       bridge.py           # 业务桥接层（从 request/header 组装授权输入）
       runtime.py          # 开关（authz_enabled）与 authorize_or_raise
   routers/                # 薄路由：校验入参、鉴权桥接、调 service
+    admin.py              # 管理面路由（prefix=/admin，独立鉴权，见 §3.2.1）
+    knowledge_base.py     # 知识库四接口
+    document.py           # 文档三接口
+    parse.py              # 解析四接口
+    search.py             # 检索一接口
   schemas/                # Pydantic 请求/响应模型
-  services/               # 业务编排；当前多为占位
+  services/               # 业务编排 + 进程内存储
 docs/                     # 方案与 AUTHN/AUTHZ 设计（中文）
-scripts/                  # 启动脚本
+portal/                   # 管理 Portal 前端（Vite 8 + React 18 + TS），构建产物 portal/dist 静态挂载于 /portal
+data/                     # 运行时 SQLite 数据（默认 open_ikc_platform.db；gitignore，勿提交）
+scripts/                  # 启动/停止脚本
 tests/                    # pytest 测试
 logs/                     # 运行日志（gitignore，勿提交）
 ```
@@ -79,6 +93,8 @@ logs/                     # 运行日志（gitignore，勿提交）
 | --- | --- | --- |
 | 知识库 | POST | `/api/v1/knowledge-bases/create` |
 | 知识库 | POST | `/api/v1/knowledge-bases/update` |
+| 知识库 | POST | `/api/v1/knowledge-bases/query` |
+| 知识库 | GET | `/api/v1/knowledge-bases/{kb_id}` |
 | 文档 | POST | `/api/v1/knowledge-documents/ingest` |
 | 文档 | POST | `/api/v1/knowledge-documents/ingest-and-parse` |
 | 文档 | GET | `/api/v1/knowledge-documents/{doc_id}` |
@@ -88,7 +104,26 @@ logs/                     # 运行日志（gitignore，勿提交）
 | 解析 | GET | `/api/v1/knowledge-documents/parse-result/download` |
 | 检索 | POST | `/api/v1/knowledge-search/query` |
 
-系统路由（免业务鉴权或文档用途）：`/`、`/health`、`/docs`、`/redoc`、`/openapi.json`、`/api-browser`、`/api/catalog`、`/api/error-codes`。
+系统路由（免业务鉴权或文档用途）：`/`、`/health`、`/docs`、`/redoc`、`/docs/oauth2-redirect`、`/openapi.json`、`/_static/docs`（本地 swagger/redoc 静态资源）、`/api-browser`、`/api/catalog`、`/api/error-codes`、`/portal`（管理 Portal 静态壳，静态无数据）。
+
+#### 3.2.1 管理面路由（`/admin/*`，非业务五类）
+
+| 用途 | Method | Path |
+| --- | --- | --- |
+| 总览 | GET | `/admin/overview` |
+| 端点统计 | GET | `/admin/endpoints` |
+| 最近请求 | GET | `/admin/requests` |
+| Token 维度统计 | GET | `/admin/stats/token` |
+| 查询 token 列表 | GET | `/admin/tokens` |
+| 创建 token | POST | `/admin/tokens` |
+| 撤销 token | POST | `/admin/tokens/{token_id}/revoke` |
+| MCP 在线冒烟 | POST | `/admin/test/mcp` |
+| CLI 在线测试 | POST | `/admin/test/cli` |
+| 白名单查询 | GET | `/admin/test/whitelist` |
+
+- **管理面 ≠ 第五类业务能力**：`/admin/*` 是运维管理面（token 管理、监控、MCP/CLI 在线测试），**不进入 `app/core/catalog.py`、不占用 §1 四类业务能力，也不暴露内部流水线接口**。
+- **独立鉴权**：走 `admin_required` 依赖（`OPEN_PLATFORM_ADMIN_TOKEN`），与业务 AUTHN 完全隔离；未配置该环境变量时管理面默认关闭，`/admin/*` 返回 `503001`。详见 §4.3。
+- 新增 admin 路由时同步：`app/routers/admin.py`、必要时 README「管理 Portal」小节；**无需**同步 `catalog.py`（catalog 只登记对外业务目录）。
 
 ### 3.3 统一响应体
 
@@ -103,7 +138,7 @@ logs/                     # 运行日志（gitignore，勿提交）
 }
 ```
 
-- 成功：`000000`；参数错误：`100001`（含 FastAPI/Pydantic 校验，由全局处理器映射）；未认证：`100401`；无权限：`100403`；未实现占位：`501001`；系统错误：`999999`。
+- 成功：`000000`；参数错误：`100001`（含 FastAPI/Pydantic 校验，由全局处理器映射）；未认证：`100401`；无权限：`100403`；未实现占位：`501001`；系统错误：`999999`；管理面未启用：`503001`（admin 专属，见 §4.3）。
 
 ### 3.4 错误码与异常
 
@@ -114,7 +149,7 @@ logs/                     # 运行日志（gitignore，勿提交）
 5. 参数校验错误由全局校验异常处理器统一映射为 `100001`。
 6. 文档、解析、检索三个领域分别继承 `DocumentException`、`ParseException`、`SearchException`，保持同一条异常链路。
 7. 错误码通过 `BaseErrorCodes.get_by_code(...)` 或 `error_code_catalog()` 查表，便于日志、文档和调试统一定位。
-8. 线上可通过 `/api/error-codes` 获取当前注册的错误码目录。
+8. 线上可通过 `/api/error-codes` 获取当前注册的错误码目录；新错误码必须进 `error_code_catalog()` registry（admin 的 `503001` 也须经 `AdminErrorCodes` 注册，见 §5.2）。
 
 ### 3.5 Trace
 
@@ -142,6 +177,25 @@ logs/                     # 运行日志（gitignore，勿提交）
 - 数据权限上下文可注入：`kb_id` / `kb_ids`、`owner_id`、`org_path` 等；检索路由已把请求体 `kbId/kbIds`、`ownerId`、`orgPath` 注入授权上下文。
 - 新接入方优先「适配器 + 映射配置」（`MappingAuthzAdapter`），禁止在业务 service 里写第三方字段 if/else 丛林。
 
+### 4.3 管理面独立鉴权（admin，非业务五类）
+
+- 管理面路由（`/admin/*`，见 §3.2.1）使用独立管理 token：环境变量 `OPEN_PLATFORM_ADMIN_TOKEN`（单个）；请求需 `Authorization: Bearer <admin-token>`。
+- **未配置 `OPEN_PLATFORM_ADMIN_TOKEN` 时管理面默认关闭**：`/admin/*` 返回 `503001`（`AdminDisabledError` 由全局异常处理器映射，HTTP 503 + 统一响应壳），避免默认暴露。
+- **与业务 AUTHN/AUTHZ 完全隔离**：`/admin/*` 不进入业务 catalog、不占用四类业务能力；`/admin` 与 `/portal` 静态壳在 `AUTH_EXEMPT_PREFIXES` 豁免业务 AUTHN，但 admin 接口自身仍强制 `admin_required`（未配置或 token 错误时 `503001`/`100401`）。
+- 管理面自身请求不纳入业务监控统计（`request.state.skip_stats`），token 明文仅在创建时返回一次，库中只存 sha256 哈希（`app/core/admin/token_store.py`）。
+
+### 4.4 日志中心（ikc-log-center）基础契约
+
+> 日志是全仓库的**基础可观测设施**（可替代 AUTHN 作为贯穿链路），接入方式为 pip 安装模式，依赖声明在 `pyproject.toml`：`ikc-log-center==1.4.9`（本地 wheel 安装，勿改为源码目录引用）。
+
+1. **依赖只经 `pyproject.toml` 声明**；`log_center_sdk` 是唯一日志体系，勿随意替换。版本升级需同步 `README.md` 安装说明与启动脚本。
+2. **初始化在应用装配**：`app/core/app_factory.py` 调用 `log_center_sdk.configure(module_name="open_ikc_api")`，并挂载 `TraceMiddleware`（请求入口绑定/复用 23 位 traceId，日志上下文自动携带，透传 `X-Trace-Id` / `X-Request-Id` 响应头）。
+3. **远程投递由环境变量控制**（启动脚本已默认开启）：
+   - `LOG_CENTER_ENABLE=true` 时异步发送至 `LOG_CENTER_URL`（默认 `http://127.0.0.1:9315`，SDK 自动 POST `{url}/ingest`）；服务端开启 Bearer 认证时额外配置 `LOG_CENTER_TOKEN`。
+   - 本地默认也落盘 `logs/open_ikc_api.log`；`logs/` 不入库。
+4. **不降级为 print / 裸 logging**：新代码如需打日志，走 `log_center_sdk.get_logger(__name__)`（logger 名带模块名 `open_ikc_api`，便于日志中心按链路检索）。
+5. 日志禁止记录密钥与真实 token。
+
 ## 5. 代码风格与实现约定
 
 1. 文件首行：`from __future__ import annotations`。
@@ -154,13 +208,15 @@ logs/                     # 运行日志（gitignore，勿提交）
 
 ## 6. 测试约定
 
-- 测试位于 `tests/`，使用 pytest；每个测试文件自行创建 `TestClient(app)`（`conftest.py` 只负责把仓库根目录加入 `sys.path`）。
-- 项目 `.venv` 未安装 pytest/httpx，本环境用以下命令运行：
+- 测试位于 `tests/`，使用 pytest；每个测试文件自行创建 `TestClient(app)`。`tests/conftest.py` 除把仓库根目录加入 `sys.path` 外，另有 `isolate_admin_db` autouse fixture：把 `OPEN_PLATFORM_DB_PATH` 指向 `tmp_path` 临时 SQLite，隔离管理面 token/统计状态，避免跨测试串扰（admin 测试文件自行覆盖 `OPEN_PLATFORM_ADMIN_TOKEN`）。
+- 测试运行命令（项目 `.venv` 已装 pytest/httpx，二者皆可）：
   ```bash
-  cd /home/open-ikc && /home/ikc-log-center/.venv/bin/python -m pytest tests -q
+  cd /home/open-ikc && .venv/bin/python -m pytest tests -q
   ```
+  若 `.venv` 环境异常，回退 `/home/ikc-log-center/.venv/bin/python -m pytest tests -q`。
 - 测试启动应用会写 `logs/open_ikc_api.log`，需具备项目目录写权限。
-- 新增/修改行为必须补测试：鉴权免检路径、`MappingAuthzAdapter` 身份映射兜底、deny-overrides、数据权限条件（资源 ID 范围 / owner-only / org 路径 / 部门 / 租户）等。
+- 管理面测试在 `tests/test_admin_*.py`（api/stats/testlab/token 四文件），覆盖 `admin_required` 鉴权、未配置 token 时 `503001`、token 创建/撤销、MCP/CLI 白名单。
+- 新增/修改行为必须补测试：鉴权免检路径、`MappingAuthzAdapter` 身份映射兜底、deny-overrides、数据权限条件（资源 ID 范围 / owner-only / org 路径 / 部门 / 租户）、admin 管理面等；新增错误码进 registry 时补 `/api/error-codes` 断言。
 
 ## 7. Token 效率与协作约定
 
@@ -206,8 +262,16 @@ logs/                     # 运行日志（gitignore，勿提交）
 1. 每个工作日 `17:30`（以本机时间为准）执行例行提交任务；若该时刻任务进行中，则在当前任务收尾阶段完成提交；若当时无任务，则下次会话开工时先补做。
 2. 提交前准备：确认/补齐当天 `docs/worklog.md` 条目（完成情况、问题、下一步）；代码或行为有改动时先跑 `pytest tests -q` 确认通过。
 3. 提交范围：只 `git add` 与当天任务相关的文件；`.venv/`、`logs/`、`__pycache__/`、密钥与真实 token 一律不提交。
-4. commit 信息简洁说明当天改动（如 `feat: 完成 XX 并更新工作日志`），可引用 worklog 日期；默认仅本地 commit，**不 push**，除非用户明确要求。
+4. commit 信息简洁说明当天改动（如 `feat: 完成 XX 并更新工作日志`），可引用 worklog 日期。
 5. 当天无改动时：不创建空提交，在 worklog 中记录「当日无改动」。
+
+### 8.2 每次任务完成自动推送（默认契约）
+
+1. **任务收尾后自动 commit + push**（无需逐次询问）：任务完成且验收（测试全绿、worklog 已更新）后，`git add` 与任务相关的文件并 commit，commit 信息简洁说明改动（如 `feat: 完成 XX 并更新工作日志`），然后 **push 到远端**。
+2. **推送目标**：默认 `github`（`git push github main`）；同仓库另有 `origin`（`code.tiancloud.com`），需要双远端同步时执行 `git push github main && git push origin main`；远端落后时先 `pull --rebase` 再推。
+3. **必须遵守**：只在任务确实完成（测试通过、无未决问题）后推送；禁止半成品或失败状态入库；`.venv/`、`logs/`、`__pycache__/`、密钥与真实 token 一律不提交。
+4. **例外**：用户明确说「不要推/暂缓」时跳过；存在工作区未完成改动与任务无关时，先只提交任务相关文件，避免混入无关改动。
+5. 与 §11-7「仅在用户明确要求时 commit/push」不一致时，以本条约定的自动推送为准（本文件内 §11-7 相应更新）。
 
 ## 9. 功能落地工作流
 
@@ -241,7 +305,7 @@ Excel / 抽取 JSON 仅作历史接口盘点，**不得**未经评审直接扩�
 4. **不绕过异常体系**：不用裸 `HTTPException` 替代已有 `AppException` 链路（除非框架层必要且仍映射统一体）。
 5. **改路由必改 catalog**；改错误码必进 registry。
 6. **密钥与生产配置**：只用环境变量示例，不把真实凭证写入仓库。
-7. **提交**：仅在用户明确要求时 commit/push（用户已约定每日 17:30 例行提交，见 §8.1）；commit 信息简洁说明动机。
+7. **提交与推送**：默认**每次任务完成后自动 commit + push**（见 §8.2）；用户明确说「不要推」时跳过。commit 信息简洁说明动机。
 8. **优先最小改动**：占位项目以可运行骨架 + 清晰边界为先，避免过度设计。
 9. **权限不降级**：检索与读写必须可按调用方权限过滤；数据权限条件要可测试。
 10. 不确定产品语义时：先读 V2 精简方案与现有 router/service，再改；缺少决策时询问用户，不擅自定外部 API 形状。

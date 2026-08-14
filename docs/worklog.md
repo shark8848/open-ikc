@@ -453,3 +453,10 @@
 - 审查：`docs/code-review_2026-08-14.md` 更新版——无 P0；P1-1（管理面独立鉴权、禁止复用业务 token 为 admin token）已 README 声明；P1-2（`_lookup_token_scopes` 异常静默 fail-open）闭环：环境变量 token 短路不触 DB，DB 查询失败返回不可命中哨兵 → fail-closed 403 + 告警日志。
 - P2 闭环：`/admin/tokens` scope 格式校验（`resource:action`、支持 `*`、≤32 个、单元素 ≤64 字符）；前端有效期必须晚于今天；新测试 fixture 预置一条已撤销记录模拟生产常态，避免「未配置 token 放行」分支掩盖 scope 行为。
 - 验证：全量 **189 passed**（沙箱外运行，沙箱 seccomp 会卡死 anyio/TestClient）；`npm run build` 通过。
+
+### 任务：在线测试 token 明文显示切换按钮
+
+- `portal/src/pages/TestLab.tsx` 公共参数 token 输入框改为「输入框 + 内嵌眼睛图标按钮」：点击在 `password` / `text` 间切换显示明文，tooltip 随状态切换（显示明文/隐藏明文）。
+- 图标：`icons.tsx` 新增 `EyeIcon` / `EyeOffIcon`；样式：`styles.css` 新增 `field-with-action`（输入框右侧内嵌操作按钮）。
+- 顺带：TestLab 白名单加载错误由内联 ErrorBox 改为右上角 Toast（对齐全局消息约定）。
+- 验证：`npm run build` 通过；后端无改动。

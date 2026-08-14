@@ -934,6 +934,23 @@ textarea {
   color: var(--accent);
 }
 
+/* 输入框内嵌操作按钮（如显示/隐藏 token 明文） */
+.field-with-action {
+  position: relative;
+}
+.field-with-action input {
+  width: 100%;
+  padding-right: 38px;
+}
+.field-with-action .icon-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+}
+
 .scope-chips {
   display: flex;
   flex-wrap: wrap;

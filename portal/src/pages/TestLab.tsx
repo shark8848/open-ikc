@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
 import { adminApi } from '../api/client'
 import type { TestResultData, TestWhitelist } from '../api/types'
-import { ErrorBox } from '../components/ui'
+import { useFeedback } from '../components/feedback'
+import { EyeIcon, EyeOffIcon } from '../components/icons'
 import { formatMs } from '../utils/format'
 
 export function TestLab() {
   const [whitelist, setWhitelist] = useState<TestWhitelist | null>(null)
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   // 公共参数：token / baseUrl
   const [token, setToken] = useState('')
+  const [showToken, setShowToken] = useState(false)
   const [baseUrl, setBaseUrl] = useState('http://127.0.0.1:18000')
+  const { toast } = useFeedback()
 
   // MCP 冒烟
   const [mcpTool, setMcpTool] = useState('sys_catalog')
@@ -26,15 +28,14 @@ export function TestLab() {
 
   const loadWhitelist = useCallback(async () => {
     setLoading(true)
-    setError('')
     try {
       setWhitelist(await adminApi.testWhitelist())
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      toast.error(e instanceof Error ? e.message : String(e))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [toast])
 
   useEffect(() => {
     loadWhitelist()
@@ -145,15 +146,29 @@ export function TestLab() {
         命令受白名单限制，仅允许只读操作。
       </p>
 
-      {error ? <ErrorBox message={error} /> : null}
-
       {/* 公共参数 */}
       <div className="card">
         <div className="card-title">公共参数</div>
         <div className="form-row">
           <div className="form-field" style={{ flex: 1, minWidth: 200 }}>
             <label>接入 token（可选，业务 token）</label>
-            <input type="password" placeholder="留空则使用平台环境变量 token" value={token} onChange={(e) => setToken(e.target.value)} />
+            <div className="field-with-action">
+              <input
+                type={showToken ? 'text' : 'password'}
+                placeholder="留空则使用平台环境变量 token"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+              />
+              <button
+                type="button"
+                className="icon-btn"
+                title={showToken ? '隐藏明文' : '显示明文'}
+                aria-label={showToken ? '隐藏 token 明文' : '显示 token 明文'}
+                onClick={() => setShowToken((v) => !v)}
+              >
+                {showToken ? <EyeOffIcon size={15} /> : <EyeIcon size={15} />}
+              </button>
+            </div>
           </div>
           <div className="form-field" style={{ flex: 1, minWidth: 200 }}>
             <label>平台地址</label>

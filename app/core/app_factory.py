@@ -18,6 +18,9 @@ from app.routers.parse import router as parse_router
 from app.routers.search import router as search_router
 
 _PORTAL_DIST = Path(__file__).resolve().parents[2] / "portal" / "dist"
+# 本地静态文档资源根目录（swagger-ui / redoc），避免 /docs、/redoc 依赖外部 CDN
+_DOCS_STATIC_DIR = Path(__file__).resolve().parent / "static" / "docs"
+_DOCS_STATIC_PREFIX = "/_static/docs"
 
 
 def create_app() -> FastAPI:
@@ -36,8 +39,12 @@ def create_app() -> FastAPI:
             {"name": "解析", "description": "解析任务启动（async/sync）、进度查询与结果下载（一次性下载凭证）"},
             {"name": "检索", "description": "统一检索与问答（search 证据列表 / qa 带回答，按数据权限过滤）"},
         ],
-        docs_url="/docs",
-        redoc_url="/redoc",
+        # Swagger UI / ReDoc 均改为本地托管静态资源（app/core/static/docs/），
+        # 页面不再引用 jsdelivr / Google Fonts 等外部 CDN，离线环境可用。
+        # docs_url / redoc_url 置 None 关闭默认路由，改由 _register_local_docs_routes 注册
+        # 自定义 /docs、/redoc 路由（get_swagger_ui_html / get_redoc_html 指向本地静态资源）。
+        docs_url=None,
+        redoc_url=None,
         openapi_url="/openapi.json",
     )
 
@@ -71,6 +78,8 @@ def create_app() -> FastAPI:
     register_exception_handlers(app)
     register_system_routes(app)
     _mount_portal(app)
+    _mount_local_docs_static(app)
+    _register_local_docs_routes(app)
     _apply_openapi_docs(app)
     return app
 
@@ -79,6 +88,36 @@ def _mount_portal(app: FastAPI) -> None:
     """若 portal 前端已构建，则将其静态挂载到 /portal（管理 Portal，自带独立 admin 鉴权）。"""
     if _PORTAL_DIST.is_dir():
         app.mount("/portal", StaticFiles(directory=str(_PORTAL_DIST), html=True), name="portal")
+
+
+def _mount_local_docs_static(app: FastAPI) -> None:
+    """将本地 swagger-ui / redoc 静态资源挂载到 /_static/docs，供 /docs、/redoc 页面引用。"""
+    app.mount(_DOCS_STATIC_PREFIX, StaticFiles(directory=str(_DOCS_STATIC_DIR)), name="docs-static")
+
+
+def _register_local_docs_routes(app: FastAPI) -> None:
+    """注册 /docs、/redoc 与 oauth2-redirect 路由，页面资源全部指向本地静态目录。"""
+    from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
+
+    app.get("/docs", include_in_schema=False)(
+        lambda: get_swagger_ui_html(
+            openapi_url="/openapi.json",
+            title=f"{app.title} - Swagger UI",
+            swagger_js_url=f"{_DOCS_STATIC_PREFIX}/swagger-ui/swagger-ui-bundle.js",
+            swagger_css_url=f"{_DOCS_STATIC_PREFIX}/swagger-ui/swagger-ui.css",
+            swagger_favicon_url=f"{_DOCS_STATIC_PREFIX}/swagger-ui/favicon-32x32.png",
+        )
+    )
+    app.get("/redoc", include_in_schema=False)(
+        lambda: get_redoc_html(
+            openapi_url="/openapi.json",
+            title=f"{app.title} - ReDoc",
+            redoc_js_url=f"{_DOCS_STATIC_PREFIX}/redoc/redoc.standalone.js",
+            redoc_favicon_url=f"{_DOCS_STATIC_PREFIX}/swagger-ui/favicon-32x32.png",
+            with_google_fonts=False,
+        )
+    )
+    app.get("/docs/oauth2-redirect", include_in_schema=False)(get_swagger_ui_oauth2_redirect_html)
 
 
 def _apply_openapi_docs(app: FastAPI) -> None:

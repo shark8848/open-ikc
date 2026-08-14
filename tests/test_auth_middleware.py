@@ -126,6 +126,36 @@ def test_api_docs_are_accessible_without_auth() -> None:
     assert oauth_redirect.status_code == 200
 
 
+def test_api_docs_use_local_static_assets_no_external_cdn() -> None:
+    """/docs 与 /redoc 页面资源全部本地托管，不得引用任何外部域名，离线环境可用。"""
+    docs = client.get("/docs")
+    redoc = client.get("/redoc")
+    assert docs.status_code == 200 and redoc.status_code == 200
+
+    combined = (docs.text + redoc.text).lower()
+    # 页面引用的静态资源必须指向本地 /_static/docs 前缀
+    assert "/_static/docs/swagger-ui/swagger-ui-bundle.js" in combined
+    assert "/_static/docs/redoc/redoc.standalone.js" in combined
+    # 不得出现外部 CDN / 字体服务引用
+    for external in ("cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com", "unpkg.com"):
+        assert external not in combined
+
+    # 本地静态资源本身可访问且为免鉴权路径（不返回 100401 统一体，而是真实文件内容）
+    js = client.get("/_static/docs/swagger-ui/swagger-ui-bundle.js")
+    assert js.status_code == 200
+    assert "javascript" in js.headers.get("content-type", "")
+    assert b"SwaggerUIBundle" in js.content
+
+    redoc_js = client.get("/_static/docs/redoc/redoc.standalone.js")
+    assert redoc_js.status_code == 200
+    assert "javascript" in redoc_js.headers.get("content-type", "")
+    assert b"Redoc" in redoc_js.content
+
+    css = client.get("/_static/docs/swagger-ui/swagger-ui.css")
+    assert css.status_code == 200
+    assert css.headers.get("content-type", "").startswith("text/css")
+
+
 def test_exempt_system_routes_tolerate_trailing_slash() -> None:
     for path in ["/api-browser/", "/health/", "/api/catalog/", "/api/error-codes/", "/docs/", "/portal/"]:
         response = client.get(path, follow_redirects=False)

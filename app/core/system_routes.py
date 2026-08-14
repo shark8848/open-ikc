@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
@@ -10,10 +11,15 @@ from app.core.catalog import API_CATALOG
 from app.core.error_codes import error_code_catalog
 from app.core.trace import current_trace_id
 
+_PORTAL_DIST = Path(__file__).resolve().parents[2] / "portal" / "dist"
+
 
 def register_system_routes(app: FastAPI) -> None:
     @app.get("/", include_in_schema=False)
     async def root() -> RedirectResponse:
+        # 首页直达管理 Portal（已构建时）；未构建时回退 API 浏览页。
+        if _PORTAL_DIST.is_dir():
+            return RedirectResponse(url="/portal/")
         return RedirectResponse(url="/api-browser")
 
     @app.get("/health", include_in_schema=False)

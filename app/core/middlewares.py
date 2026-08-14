@@ -12,7 +12,7 @@ from app.core.security import authenticate_request, build_unauthorized_response
 from app.core.trace import bind_trace_context, build_trace_headers, clear_trace, normalize_trace_id
 
 
-AUTH_EXEMPT_PREFIXES = ("/docs", "/redoc", "/admin", "/portal")
+AUTH_EXEMPT_PREFIXES = ("/docs", "/redoc", "/admin", "/portal", "/_static/docs")
 AUTH_EXEMPT_PATHS = {
     "/",
     "/health",

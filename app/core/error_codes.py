@@ -98,6 +98,16 @@ class CommonErrorCodes(BaseErrorCodes):
     pass
 
 
+class AdminErrorCodes(BaseErrorCodes):
+    """管理面（/admin/*）专属错误码，见 AGENTS.md §4.3。"""
+
+    ADMIN_DISABLED = ErrorCode("503001", "管理面未启用", level="admin", description="未配置 OPEN_PLATFORM_ADMIN_TOKEN，管理面默认关闭")
+
+    @classmethod
+    def registry(cls) -> list[ErrorCode]:
+        return super().registry() + [cls.ADMIN_DISABLED]
+
+
 class KnowledgeBaseErrorCodes(BaseErrorCodes):
     CREATE_FAILED = ErrorCode("200001", "创建知识库失败", level="business", description="知识库创建业务处理失败")
     UPDATE_FAILED = ErrorCode("200002", "修改知识库失败", level="business", description="知识库更新业务处理失败")
@@ -149,6 +159,7 @@ def error_code_catalog() -> list[dict[str, str]]:
         + KnowledgeBaseErrorCodes.registry()
         + DocumentErrorCodes.registry()
         + ParseErrorCodes.registry()
+        + AdminErrorCodes.registry()
     ):
         if error_code.code in seen:
             continue

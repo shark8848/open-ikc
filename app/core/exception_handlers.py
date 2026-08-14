@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core.admin.auth import AdminDisabledError
-from app.core.error_codes import AppException, CommonErrorCodes, error_response
+from app.core.error_codes import AdminErrorCodes, AppException, CommonErrorCodes, error_response
 from app.core.trace import current_trace_id
 
 
@@ -28,13 +28,12 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(AdminDisabledError)
     async def admin_disabled_exception_handler(request: Request, exc: AdminDisabledError) -> JSONResponse:
+        # 503001 经 AdminErrorCodes 注册，/api/error-codes 可查；errMsg 保留原始说明
         return JSONResponse(
             status_code=503,
             content=jsonable_encoder(
                 {
-                    "errCode": "503001",
-                    "errMsg": str(exc),
-                    "data": {},
+                    **AdminErrorCodes.ADMIN_DISABLED.to_response(message=str(exc)),
                     "traceId": current_trace_id(),
                 }
             ),

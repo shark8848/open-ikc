@@ -423,3 +423,11 @@
 - 有效期：由秒数输入改为原生日期选择器（`min` 今天），并新增「永不过期」开关（勾选则禁用日期，等价于后端 `expires_in_seconds=None`）；选日期时按当日 23:59:59 换算秒数，早于今天的日期拦截并提示。
 - 样式：`styles.css` 新增 `scope-chips`/`scope-chip`（圆角胶囊多选）、`form-field-wide`（作用域独占一行）、`check-label`。
 - 验证：`npm run build`（tsc + vite）通过；后端无改动。
+
+### 任务：提交前只读审查与 P1 闭环
+
+- 重跑 `scripts/review_with_claude.sh`（上次 claude API 失败导致报告被清空，重试成功）：`docs/code-review_2026-08-14.md`，181 测试全绿。
+- P1-1（scopes 仅展示未生效，与本次 Token UI 相关）：闭环方案——UI 标注「预留 · 暂未生效」并加一行说明，避免运营误以为已授权；真正落地的运行时作用域校验属产品/安全决策，待用户确认后再做（见 §11.10）。
+- P1-2（启动脚本自动生成并打印 admin token，弱化「管理面默认关闭」）：既有问题，非本次引入，记入待办（README 已注明本地用途；生产建议显式配置）。
+- P1-3（redoc bundle 内仍远程拉取 logo）：既有离线化未竟事项，记入待办。
+- P2 项（admin 创建请求无 Pydantic 校验、`/` 重定向与挂载时机不一致、静态前缀字面量重复、admin traceId 为空、测试确定性、有效期选「今天」趋近 0）记入待办清单。

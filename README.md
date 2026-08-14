@@ -42,12 +42,19 @@ python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload
 bash scripts/start_open_platform.sh
 ```
 
+一键停止脚本（按进程匹配 `uvicorn app.main:app`，SIGTERM 优雅停止，最多等待 10 秒）：
+
+```bash
+bash scripts/stop_open_platform.sh
+```
+
 ## 文档入口
 
 - Swagger UI: /docs
 - ReDoc: /redoc
 - API 浏览页: /api-browser
-- 管理 Portal: /portal/（token 管理、端点监控、MCP/CLI 在线测试；需 `OPEN_PLATFORM_ADMIN_TOKEN`）
+- 说明：`/docs`、`/redoc` 页面及其静态资源（`/_static/docs/`）全部本地托管，不依赖外部 CDN，离线环境可用
+- 管理 Portal: /portal/（首页 `/` 直达；token 管理、端点监控、MCP/CLI 在线测试，侧边栏含 Swagger UI / ReDoc API 文档入口；需 `OPEN_PLATFORM_ADMIN_TOKEN`）
 - 错误码目录: /api/error-codes
 - AUTHZ 集成设计文档: docs/开放平台统一认证鉴权集成_AUTHZ.md
 - AUTHN 集成设计文档: docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md
@@ -67,7 +74,7 @@ bash scripts/start_open_platform.sh
 
 - **管理面 ≠ 业务四类能力**：`/admin/*`（token 管理、监控统计、MCP/CLI 在线测试）是运维管理面，使用独立管理鉴权（`OPEN_PLATFORM_ADMIN_TOKEN`），不进入业务 catalog，不暴露内部流水线接口。
 - **Portal 前端**：`portal/`（Vite 8 + React 18 + TS），构建产物 `portal/dist` 由平台静态挂载在 `/portal`。访问 `/portal/` 需输入 `OPEN_PLATFORM_ADMIN_TOKEN`。
-- **启用管理面**：配置 `OPEN_PLATFORM_ADMIN_TOKEN` 环境变量；未配置时 `/admin/*` 返回 `503001`（默认关闭，避免暴露）。
+- **启用管理面**：配置 `OPEN_PLATFORM_ADMIN_TOKEN` 环境变量；未配置时 `/admin/*` 返回 `503001`（默认关闭，避免暴露）。`bash scripts/start_open_platform.sh` 未配置时自动生成随机 token 并在启动输出打印（显式配置则透传），登录 Portal 以该 token 为准。
 - **Token 存储**：SQLite（默认 `data/open_ikc_platform.db`，路径可经 `OPEN_PLATFORM_DB_PATH` 覆盖）；明文 token 仅在创建时返回一次，库中只存 sha256 哈希。
 
 ## 错误码与异常
@@ -145,9 +152,10 @@ headers = {
 2. `app/core/app_factory.py`：应用装配（FastAPI 配置、SDK、路由、中间件、异常处理注册）。
 3. `app/core/middlewares.py`：Trace 与 Token 中间件。
 4. `app/core/security.py`：Token 提取、配置、校验、未认证响应构造。
-5. `app/core/exception_handlers.py`：全局异常处理注册。
+5. `app/core/exception_handlers.py`：全局异常处理注册（含管理面 `AdminDisabledError` → `503001`）。
 6. `app/core/system_routes.py`：系统路由（`/`、`/health`、`/api-browser`、`/api/catalog`、`/api/error-codes`）。
 7. `app/core/api_browser.py`：API 浏览页 HTML 渲染。
+8. `app/core/admin/`：管理面（独立 `OPEN_PLATFORM_ADMIN_TOKEN` 鉴权）——token 存储（SQLite）、请求监控统计、MCP/CLI 在线测试；路由见 `app/routers/admin.py`（`/admin/*`），不进入业务 catalog。
 
 ## 当前实现进度
 

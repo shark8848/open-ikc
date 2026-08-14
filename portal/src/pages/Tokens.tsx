@@ -3,6 +3,7 @@ import { adminApi } from '../api/client'
 import type { CreateTokenResult, TokenRecord } from '../api/types'
 import { useFeedback } from '../components/feedback'
 import {
+  CheckSquareIcon,
   CheckIcon,
   CopyIcon,
   PlusIcon,
@@ -13,12 +14,13 @@ import {
 import { Empty, Loading, StatusBadge } from '../components/ui'
 import { formatTs, formatRelative } from '../utils/format'
 
-/** 作用域预设：与开放平台四大能力对齐，可多选。 */
+/** 作用域预设：与开放平台四大能力运行时 resource:action 命名对齐，可多选。 */
 const SCOPE_OPTIONS: { value: string; label: string }[] = [
-  { value: 'kb:read', label: '知识库 · 读取' },
-  { value: 'kb:write', label: '知识库 · 写入' },
-  { value: 'doc:read', label: '文档 · 读取' },
-  { value: 'doc:write', label: '文档 · 写入' },
+  { value: 'knowledge_base:read', label: '知识库 · 读取' },
+  { value: 'knowledge_base:create', label: '知识库 · 创建' },
+  { value: 'knowledge_base:update', label: '知识库 · 修改' },
+  { value: 'document:read', label: '文档 · 读取' },
+  { value: 'document:write', label: '文档 · 写入' },
   { value: 'parse:read', label: '解析 · 读取' },
   { value: 'parse:write', label: '解析 · 写入' },
   { value: 'search:query', label: '检索 · 查询' },
@@ -67,13 +69,13 @@ export function Tokens() {
       return
     }
     let expiresInSeconds: number | undefined
-    if (!neverExpires && expiresAt) {
-      const dayEnd = new Date(`${expiresAt}T23:59:59`).getTime()
-      expiresInSeconds = Math.floor((dayEnd - Date.now()) / 1000)
-      if (expiresInSeconds <= 0) {
-        toast.error('有效期需晚于今天')
+    if (!neverExpires) {
+      if (!expiresAt || expiresAt <= todayLocal()) {
+        toast.error('请选择晚于今天的日期')
         return
       }
+      const dayEnd = new Date(`${expiresAt}T23:59:59`).getTime()
+      expiresInSeconds = Math.floor((dayEnd - Date.now()) / 1000)
     }
     if (creating) {
       return
@@ -132,6 +134,11 @@ export function Tokens() {
     setScopes((prev) => (prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]))
   }
 
+  function toggleAllScopes() {
+    const all = SCOPE_OPTIONS.map((opt) => opt.value)
+    setScopes((prev) => (prev.length === all.length ? [] : all))
+  }
+
   return (
     <>
       <h1 className="page-title">Token 管理</h1>
@@ -185,7 +192,19 @@ export function Tokens() {
             <input type="text" placeholder="可选，如 zhangsan" value={owner} onChange={(e) => setOwner(e.target.value)} />
           </div>
           <div className="form-field form-field-wide">
-            <label>作用域（预留 · 暂未生效，可多选）</label>
+            <div className="form-label-row">
+              <label>作用域（可多选，留空 = 不限）</label>
+              <button
+                type="button"
+                className="icon-btn scope-select-all"
+                title={scopes.length === SCOPE_OPTIONS.length ? '清空' : '全选'}
+                aria-label={scopes.length === SCOPE_OPTIONS.length ? '清空全部作用域' : '全选作用域'}
+                onClick={toggleAllScopes}
+              >
+                <CheckSquareIcon size={14} />
+                <span>{scopes.length === SCOPE_OPTIONS.length ? '清空' : '全选'}</span>
+              </button>
+            </div>
             <div className="scope-chips">
               {SCOPE_OPTIONS.map((opt) => (
                 <button
@@ -200,9 +219,6 @@ export function Tokens() {
                   {opt.label}
                 </button>
               ))}
-            </div>
-            <div className="muted" style={{ fontSize: 12 }}>
-              当前仅作记录展示，运行时暂未按作用域限制接口调用。
             </div>
           </div>
           <div className="form-field">

@@ -75,7 +75,7 @@ def test_create_and_revoke_token_flow() -> None:
         # 创建
         resp = client.post(
             "/admin/tokens",
-            json={"name": "ops-token", "owner": "ops", "scopes": ["read"], "expiresInSeconds": 3600},
+            json={"name": "ops-token", "owner": "ops", "scopes": ["knowledge_base:read"], "expiresInSeconds": 3600},
             headers=_admin_headers(),
         )
         assert resp.status_code == 200

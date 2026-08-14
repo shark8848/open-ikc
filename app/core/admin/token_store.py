@@ -220,6 +220,33 @@ def active_token_set() -> set[str]:
     return result
 
 
+def get_active_token_scopes(plain_token: str) -> list[str] | None:
+    """按明文 token 查询活跃记录的作用域；未命中（非 DB token）返回 None。
+
+    - None：token 不在 DB（环境变量 token），不做作用域限制；
+    - []：DB token 未配置作用域，视为不限；
+    - 非空列表：DB token 配置的作用域，运行时按 resource:action 校验。
+    """
+    token_hash = _hash_token(plain_token)
+    with _db_lock():
+        conn = _connect()
+        try:
+            _init_schema(conn)
+            now = _epoch_ms()
+            row = conn.execute(
+                "SELECT scopes FROM api_tokens WHERE token_hash = ? AND status = 'active'"
+                " AND (expires_at IS NULL OR expires_at > ?)",
+                (token_hash, now),
+            ).fetchone()
+            if row is None:
+                return None
+            if not row["scopes"]:
+                return []
+            return [item.strip() for item in row["scopes"].split(",") if item.strip()]
+        finally:
+            conn.close()
+
+
 def has_any_token_record() -> bool:
     """DB 中是否存在任何 token 记录（含已撤销）。
 

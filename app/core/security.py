@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import os
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Literal
 from urllib import parse, request
 
@@ -18,12 +19,15 @@ from app.core.trace import current_trace_id
 
 AuthMode = Literal["static", "gateway_header", "oidc_jwt", "oauth2_introspection"]
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass(frozen=True, slots=True)
 class AuthResult:
     identity: dict[str, Any]
     permissions: dict[str, Any]
     auth_system: str
+    token_scopes: list[str] = field(default_factory=list)
 
 
 def auth_mode() -> AuthMode:
@@ -110,13 +114,40 @@ def _db_token_in_set(plain_token: str, token_hashes: set[str]) -> bool:
         return False
 
 
+def _lookup_token_scopes(authorization: str | None) -> list[str]:
+    """查询 DB token 的作用域。
+
+    - 环境变量 token：返回空列表（不限），不触碰 DB；
+    - DB token 查询失败：返回不可命中的哨兵，使鉴权 fail-closed（拒绝），
+      避免「作用域查询异常时静默退化为不限」。
+    """
+    token = extract_bearer_token(authorization)
+    if token is None:
+        return []
+    if any(secrets.compare_digest(token, valid) for valid in configured_tokens()):
+        return []
+    try:
+        from app.core.admin.token_store import get_active_token_scopes
+
+        scopes = get_active_token_scopes(token)
+        return scopes if scopes is not None else []
+    except Exception:
+        logger.exception("token 作用域查询失败，按 fail-closed 拒绝：token=%s", token[:6])
+        return ["__scope_lookup_failed__"]
+
+
 def authenticate_request(request: Request) -> AuthResult | None:
     mode = auth_mode()
     if mode == "static":
         if not is_token_valid(request.headers.get("Authorization")):
             return None
         identity, permissions = _context_from_headers(request)
-        return AuthResult(identity=identity, permissions=permissions, auth_system=_resolve_auth_system(request))
+        return AuthResult(
+            identity=identity,
+            permissions=permissions,
+            auth_system=_resolve_auth_system(request),
+            token_scopes=_lookup_token_scopes(request.headers.get("Authorization")),
+        )
 
     if mode == "gateway_header":
         identity, permissions = _context_from_headers(request)

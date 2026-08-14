@@ -131,6 +131,7 @@ def build_auth_middleware(logger: logging.Logger):
             request.state.identity = auth_result.identity
             request.state.permissions = auth_result.permissions
             request.state.auth_system = auth_result.auth_system
+            request.state.token_scopes = auth_result.token_scopes
             return await call_next(request)
 
         logger.warning("request unauthorized %s %s", request.method, request.url.path)

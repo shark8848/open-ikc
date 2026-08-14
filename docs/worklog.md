@@ -437,3 +437,19 @@
 - 提交：`git commit` 完成——`c020600`（契约新增「每次任务完成自动推送仓库」，外部提交）+ 本次 `feat: Portal 改版（线性图标侧边栏、Toast/居中确认、Token 表单选择化）+ 管理面静态文档本地化与首页直达 Portal；测试 181 全绿`；本地 main 领先 github/main 2 个提交。
 - 推送受阻：`origin`（code.tiancloud.com）与 `github`（github.com）SSH 22 端口均被本地网关（198.18.0.58 / 198.18.0.35）关闭连接；HTTPS 443 连通正常（github.com 200），但仓库未配置 HTTPS 凭据（无 credential helper / .git-credentials）。
 - 待办：网络恢复（内网/VPN）后执行 `git push origin main`（或提供 GitHub PAT 走 HTTPS 推送）。
+
+### 任务：Token 作用域运行时强制生效 + 全选按钮
+
+- 后端链路：`token_store.get_active_token_scopes()` 按明文查活跃 token 作用域（None=环境变量 token 不限 / []=DB token 未配置不限）；`security.AuthResult` 增加 `token_scopes`，static 模式认证时注入；middleware 写入 `request.state.token_scopes`；`authz/runtime.authorize_or_raise` 前置 `_enforce_token_scopes`——DB token 调用必须命中 `resource:action`（支持 `*` 通配，如 `*:*`、`knowledge_base:*`），不命中抛 `100403`，不依赖 AUTHZ 策略开关。
+- 作用域命名：与运行时 `resource_type:action` 对齐（knowledge_base/document/parse/search × create/update/read/write/query）；前端 `SCOPE_OPTIONS` 由 `kb:read` 等简写改为 8 个规范预设（知识库读/建/改、文档读/写、解析读/写、检索查询）。
+- 前端：新增「全选/清空」图标按钮（CheckSquareIcon，全选时变为清空）；移除「预留 · 暂未生效」标注（已生效）；README 补充作用域生效说明。
+- 加固：`/admin/tokens` 创建入参校验（scopes 必须字符串数组、expiresInSeconds 必须正整数秒），闭环审查 P2-1 的脏数据问题；旧测试 `test_admin_api.py::test_create_and_revoke_token_flow` 的作用域 `read` 改为 `knowledge_base:read`（新语义下原断言被正确拒绝）。
+- 新增测试：`tests/test_token_scope_enforcement.py` 8 个（_scope_allows 通配矩阵、search 作用域放行检索拒绝建库、kb:read 拒绝建库与检索、kb:create 放行、`*:*` 放行、空作用域不限、环境变量 token 不限、admin 入参校验）。
+- 环境问题：本会话中沙箱 seccomp 会卡死 anyio/TestClient（最小 FastAPI 亦死锁），pytest 需在沙箱外运行（已保存白名单）；全量 **189 passed**（181 + 8）。
+- 下一步：跑 Claude 只读审查后提交（推送仍受 SSH 网关阻断，待网络恢复）。
+
+### 任务：作用域审查 P1/P2 闭环
+
+- 审查：`docs/code-review_2026-08-14.md` 更新版——无 P0；P1-1（管理面独立鉴权、禁止复用业务 token 为 admin token）已 README 声明；P1-2（`_lookup_token_scopes` 异常静默 fail-open）闭环：环境变量 token 短路不触 DB，DB 查询失败返回不可命中哨兵 → fail-closed 403 + 告警日志。
+- P2 闭环：`/admin/tokens` scope 格式校验（`resource:action`、支持 `*`、≤32 个、单元素 ≤64 字符）；前端有效期必须晚于今天；新测试 fixture 预置一条已撤销记录模拟生产常态，避免「未配置 token 放行」分支掩盖 scope 行为。
+- 验证：全量 **189 passed**（沙箱外运行，沙箱 seccomp 会卡死 anyio/TestClient）；`npm run build` 通过。

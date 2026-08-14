@@ -8,6 +8,7 @@ from fastapi import Request
 from app.core.authz.adapters import MappingAuthzAdapter
 from app.core.authz.bridge import AuthzBridge
 from app.core.authz.service import AuthIntegrationService
+from app.core.error_codes import AppException, CommonErrorCodes
 
 
 _bridge_singleton: AuthzBridge | None = None
@@ -36,6 +37,10 @@ def authorize_or_raise(
     resource_id: str = "*",
     context: dict[str, Any] | None = None,
 ) -> None:
+    # Token 作用域强制校验：DB token 配置了 scopes 时，调用必须命中
+    # 对应 `resource_type:action`（支持 * 通配），不依赖 AUTHZ 策略开关。
+    _enforce_token_scopes(request, action, resource_type)
+
     if not authz_enabled():
         return
 
@@ -50,6 +55,32 @@ def authorize_or_raise(
         context=context,
     )
     bridge.require_allowed(decision)
+
+
+def _enforce_token_scopes(request: Request, action: str, resource_type: str) -> None:
+    scopes = getattr(request.state, "token_scopes", None) or []
+    if not scopes:
+        return
+    if _scope_allows(scopes, resource_type, action):
+        return
+    raise AppException(
+        CommonErrorCodes.FORBIDDEN,
+        {
+            "reason": "token_scope_denied",
+            "resource_type": resource_type,
+            "action": action,
+        },
+        message="Token 作用域无权限访问",
+    )
+
+
+def _scope_allows(scopes: list[str], resource_type: str, action: str) -> bool:
+    """作用域匹配：`resource:action` 精确命中，两侧支持 `*` 通配（如 `*:*`、`kb:*`）。"""
+    for scope in scopes:
+        res, _, act = scope.strip().partition(":")
+        if (res == "*" or res == resource_type) and (act == "*" or act == action):
+            return True
+    return False
 
 
 def _register_builtin_adapters(service: AuthIntegrationService) -> None:

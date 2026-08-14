@@ -914,6 +914,26 @@ textarea {
   flex-basis: 100%;
 }
 
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.scope-select-all {
+  width: auto;
+  height: 26px;
+  padding: 0 9px;
+  gap: 5px;
+  font-size: 12px;
+  border-radius: 7px;
+}
+.scope-select-all:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .scope-chips {
   display: flex;
   flex-wrap: wrap;

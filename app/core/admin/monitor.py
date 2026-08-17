@@ -24,13 +24,15 @@ def build_monitor_middleware(logger: logging.Logger):
 
         start = time.monotonic()
         stats._concurrency.inc()
+        response = None
         try:
             response = await call_next(request)
             return response
         finally:
             stats._concurrency.dec()
-            duration_ms = int((time.monotonic() - start) * 1000)
-            _record(request, response.status_code, duration_ms)
+            if response is not None:
+                duration_ms = int((time.monotonic() - start) * 1000)
+                _record(request, response.status_code, duration_ms)
 
     return monitor_middleware
 

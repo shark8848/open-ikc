@@ -23,6 +23,7 @@ def reset_knowledge_base_store() -> None:
         "/",
         "/health",
         "/api-browser",
+        "/api-manual",
         "/api/catalog",
         "/api/error-codes",
         "/docs",
@@ -157,7 +158,7 @@ def test_api_docs_use_local_static_assets_no_external_cdn() -> None:
 
 
 def test_exempt_system_routes_tolerate_trailing_slash() -> None:
-    for path in ["/api-browser/", "/health/", "/api/catalog/", "/api/error-codes/", "/docs/", "/portal/"]:
+    for path in ["/api-browser/", "/api-manual/", "/health/", "/api/catalog/", "/api/error-codes/", "/docs/", "/portal/"]:
         response = client.get(path, follow_redirects=False)
         assert response.status_code in {200, 307}, path
         if "json" in response.headers.get("content-type", ""):

@@ -50,6 +50,18 @@ def test_system_routes_are_exempt_from_business_auth() -> None:
     } <= registered_codes
 
 
+def test_api_manual_page_renders_manual() -> None:
+    response = client.get("/api-manual")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    text = response.text
+    assert "开放平台 API 开发手册" in text
+    # 手册内容已同步检索优化后的新端点与错误码
+    assert "universal-search" in text
+    assert "deep-search" in text
+    assert "300001" in text
+
+
 def test_business_routes_still_require_authentication() -> None:
     response = client.post(
         "/api/v1/knowledge-bases/create",

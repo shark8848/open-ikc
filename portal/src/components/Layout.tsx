@@ -8,6 +8,7 @@ import {
 import { clearAdminToken } from '../api/client'
 import {
   BookOpenIcon,
+  BookMarkedIcon,
   ContrastIcon,
   FileTextIcon,
   FlaskIcon,
@@ -63,6 +64,7 @@ interface NavLink {
 const NAV_LINKS: NavLink[] = [
   { href: '/docs', label: 'Swagger UI', icon: BookOpenIcon },
   { href: '/redoc', label: 'ReDoc', icon: FileTextIcon },
+  { href: '/api-manual', label: '开发手册', icon: BookMarkedIcon },
 ]
 
 const THEME_ICONS: Record<ThemeKey, ComponentType<IconProps>> = {

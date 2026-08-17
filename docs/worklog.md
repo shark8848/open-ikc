@@ -499,3 +499,10 @@
 - P2 修复两项：P2-4（memory.mode=none 时不注入 memory，补测试）；P2-5（下游 status 字符串 "false" 也判失败，显式白名单语义）。
 - P2 待办：P2-1（steps 数值 `or 0` 替换 0 的语义等价问题）、P2-2（`snippet`/`score` 与真实后端字段差异）、P2-3（hybrid 权重硬编码可配置化）、P2-6（deep-search 501001 提示区分未配置/后端不支持，reason 附当前 backend）。
 - 验证：全量 **205 passed**（203 + P1-1/P2-4 两个回归用例）。
+
+### 任务：开发手册加入 Portal 侧边栏（文档区）
+
+- 后端：新增 `app/core/api_manual.py`，用 `markdown-it-py`（commonmark + table，已装 4.2.0，无新依赖安装）服务端渲染 `docs/API开发手册.md` 为 `/api-manual` 离线文档页（深色样式 + 表格/代码块，风格对齐 api_browser）；`/api-manual` 加入 system_routes 与 `AUTH_EXEMPT_PATHS`；`pyproject.toml` 声明 `markdown-it-py>=3.0,<5.0`。
+- 前端：`portal/src/components/icons.tsx` 新增 BookMarkedIcon；`Layout.tsx` 文档区新增「开发手册」链接（新标签打开 /api-manual）；`npm run build` 产物 portal/dist 已更新。
+- 顺手修复：`app/core/admin/monitor.py` 监控中间件在端点抛错时 `finally` 引用未赋值 `response` 的 UnboundLocalError（会掩盖真实异常）——改为 `response=None` 初始化，异常路径不记统计、原异常正常上抛。
+- 测试：新增 `test_api_manual_page_renders_manual`（200 + HTML 含手册标题/universal-search/deep-search/300001/table）；免鉴权参数化测试与尾斜杠测试补 `/api-manual`。全量 **207 passed**。

@@ -6,6 +6,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, RedirectResponse
 
+from app.core.api_manual import render_api_manual_html
 from app.core.api_browser import render_api_browser_html
 from app.core.catalog import API_CATALOG
 from app.core.error_codes import error_code_catalog
@@ -29,6 +30,10 @@ def register_system_routes(app: FastAPI) -> None:
     @app.get("/api-browser", include_in_schema=False, response_class=HTMLResponse)
     async def api_browser() -> HTMLResponse:
         return HTMLResponse(render_api_browser_html())
+
+    @app.get("/api-manual", include_in_schema=False, response_class=HTMLResponse)
+    async def api_manual() -> HTMLResponse:
+        return HTMLResponse(render_api_manual_html())
 
     @app.get("/api/catalog", include_in_schema=False)
     async def api_catalog() -> dict[str, Any]:

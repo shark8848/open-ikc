@@ -12,6 +12,7 @@ dependencies = [
   "uvicorn[standard]>=0.30,<1.0",
   "PyJWT[crypto]>=2.8,<3.0",
   "httpx>=0.27,<1.0",
+  "markdown-it-py>=3.0,<5.0",
   # 日志中心 SDK（ikc-log-center），本地 wheel 安装，勿改为源码目录引用：
   #   pip install /home/ikc-log-center/dist/ikc_log_center-1.4.9-py3-none-any.whl
   "ikc-log-center==1.4.9",

@@ -58,6 +58,14 @@ export const BookOpenIcon = createIcon(
   </>,
 )
 
+export const BookMarkedIcon = createIcon(
+  <>
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+    <path d="M10 6l2 1.5L14 6v5l-2-1.5L10 11Z" />
+  </>,
+)
+
 export const FileTextIcon = createIcon(
   <>
     <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />

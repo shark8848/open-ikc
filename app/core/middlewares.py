@@ -19,6 +19,7 @@ AUTH_EXEMPT_PATHS = {
     "/openapi.json",
     "/docs/oauth2-redirect",
     "/api-browser",
+    "/api-manual",
     "/api/catalog",
     "/api/error-codes",
 }

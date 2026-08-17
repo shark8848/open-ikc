@@ -469,6 +469,12 @@
 - 完成情况：手册内容与实现一致（知识库 4 / 文档 3 / 解析 4 / 检索 1；admin 10；错误码 16）。
 - 下一步：按需将手册同步至对外交付渠道；推送仍受 SSH 网关阻断（见前条待办）。
 
+### 任务：手册页顶部标题重复修复
+
+- 问题：`/api-manual` 服务端渲染页 hero 区块（标题+简介）与 markdown 正文首行 `# OpenIKC 开放平台 API 开发手册` 重复。
+- 改动：`app/core/api_manual.py` 删除 hero 的 `<h1>`/`<p>`，仅保留导航链接条（管理 Portal/Swagger UI/ReDoc/OpenAPI JSON/API 浏览），padding 收敛为 14px 24px。
+- 验证：`curl /api-manual` 页面唯一 `<h1>` 为 markdown 正文标题，无重复；标题保留于 `<title>`（浏览器标签页）。
+
 ### 任务：检索能力优化方案（普通检索 + 深度检索，对接 knowledge_transformer）
 
 - 产出：新增 `docs/检索能力优化方案_普通检索与深度检索.md`（297 行）。

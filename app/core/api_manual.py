@@ -32,10 +32,7 @@ def render_api_manual_html() -> str:
         <style>
           body {{ font-family: system-ui, sans-serif; margin: 0; background: #0b1020; color: #e8eefc; line-height: 1.7; }}
           .wrap {{ max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }}
-          .hero {{ background: linear-gradient(135deg, #182548, #0f1b34); border: 1px solid #263457; border-radius: 20px; padding: 28px 32px; }}
-          .hero h1 {{ margin: 0 0 8px; }}
-          .hero p {{ margin: 0; color: #a8b6d8; }}
-          .links {{ margin-top: 16px; }}
+          .hero {{ background: linear-gradient(135deg, #182548, #0f1b34); border: 1px solid #263457; border-radius: 20px; padding: 14px 24px; }}
           .links a {{ display: inline-block; margin-right: 16px; color: #8dc1ff; text-decoration: none; }}
           .links a:hover {{ text-decoration: underline; }}
           article {{ margin-top: 24px; padding: 8px 24px 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }}
@@ -56,8 +53,6 @@ def render_api_manual_html() -> str:
       <body>
         <div class="wrap">
           <div class="hero">
-            <h1>开放平台 API 开发手册</h1>
-            <p>接口定义、鉴权、SDK / MCP / CLI 接入与常见错误排查。</p>
             <div class="links">
               <a href="/portal/">管理 Portal</a>
               <a href="/docs">Swagger UI</a>

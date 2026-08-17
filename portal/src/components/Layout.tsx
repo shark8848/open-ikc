@@ -39,7 +39,7 @@ function applyTheme(theme: ThemeKey): void {
   else root.setAttribute('data-theme', theme)
 }
 
-export type PageKey = 'dashboard' | 'endpoints' | 'tokens' | 'testlab'
+export type PageKey = 'dashboard' | 'endpoints' | 'tokens' | 'testlab' | 'manual'
 
 interface NavItem {
   key: PageKey
@@ -52,6 +52,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'endpoints', label: '端点监控', icon: PulseIcon },
   { key: 'tokens', label: 'Token 管理', icon: KeyIcon },
   { key: 'testlab', label: '在线测试', icon: FlaskIcon },
+  { key: 'manual', label: '开发手册', icon: BookMarkedIcon },
 ]
 
 interface NavLink {
@@ -64,7 +65,6 @@ interface NavLink {
 const NAV_LINKS: NavLink[] = [
   { href: '/docs', label: 'Swagger UI', icon: BookOpenIcon },
   { href: '/redoc', label: 'ReDoc', icon: FileTextIcon },
-  { href: '/api-manual', label: '开发手册', icon: BookMarkedIcon },
 ]
 
 const THEME_ICONS: Record<ThemeKey, ComponentType<IconProps>> = {

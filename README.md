@@ -54,7 +54,7 @@ bash scripts/stop_open_platform.sh
 - ReDoc: /redoc
 - API 浏览页: /api-browser
 - 说明：`/docs`、`/redoc` 页面及其静态资源（`/_static/docs/`）全部本地托管，不依赖外部 CDN，离线环境可用
-- 管理 Portal: /portal/（首页 `/` 直达；token 管理、端点监控、MCP/CLI 在线测试，侧边栏含 Swagger UI / ReDoc / 开发手册文档入口；需 `OPEN_PLATFORM_ADMIN_TOKEN`）
+- 管理 Portal: /portal/（首页 `/` 直达；token 管理、端点监控、MCP/CLI 在线测试、开发手册，侧边栏工作台菜单含「开发手册」应用内页面、文档区含 Swagger UI / ReDoc 外部入口；需 `OPEN_PLATFORM_ADMIN_TOKEN`）
 - API 开发手册: /api-manual（服务端渲染 docs/API开发手册.md 的离线文档页，免业务鉴权，含表格/代码示例）
 - 错误码目录: /api/error-codes
 - AUTHZ 集成设计文档: docs/开放平台统一认证鉴权集成_AUTHZ.md

@@ -515,3 +515,8 @@
 - P2-2 待办（信息暴露）：`/api-manual` 免鉴权展示手册，其中 CLI 示例含本机路径（/home/open-ikc/.venv）——待手册对外交付时改为通用占位符或收紧访问。
 - P2-4（行为知悉）：监控中间件异常逃逸请求不再计入统计（修复副作用，可接受；如需异常痕迹后续降级记录 999999）。
 - 验证：全量 **208 passed**。
+
+### 任务：开发手册调整为左侧菜单栏项（应用内页面）
+
+- 按用户反馈「开发手册要增加到左侧菜单栏」：将开发手册从文档区外部链接改为左侧工作台菜单项（总览/端点监控/Token 管理/在线测试/开发手册），点击后在主内容区 iframe 内嵌 `/api-manual` 渲染页面；新增 `portal/src/pages/Manual.tsx` 与 `.manual-frame` 样式，`PageKey` 增加 `manual`，`NAV_ITEMS` 新增 BookMarkedIcon 项；文档区保留 Swagger UI / ReDoc 外部链接。
+- `npm run build` 通过（portal/dist 为构建产物不入库）；全量 **208 passed** 无回归。

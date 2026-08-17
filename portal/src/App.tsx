@@ -6,6 +6,7 @@ import { FeedbackProvider } from './components/feedback'
 import { Dashboard } from './pages/Dashboard'
 import { Endpoints } from './pages/Endpoints'
 import { Login } from './pages/Login'
+import { Manual } from './pages/Manual'
 import { TestLab } from './pages/TestLab'
 import { Tokens } from './pages/Tokens'
 
@@ -23,6 +24,7 @@ export default function App() {
           {page === 'endpoints' ? <Endpoints /> : null}
           {page === 'tokens' ? <Tokens /> : null}
           {page === 'testlab' ? <TestLab /> : null}
+          {page === 'manual' ? <Manual /> : null}
         </Layout>
       )}
     </FeedbackProvider>

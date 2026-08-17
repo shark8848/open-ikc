@@ -125,6 +125,15 @@ a:hover {
   min-width: 0;
 }
 
+.manual-frame {
+  width: 100%;
+  height: calc(100vh - 150px);
+  min-height: 480px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #0b1020;
+}
+
 .brand {
   display: flex;
   align-items: center;

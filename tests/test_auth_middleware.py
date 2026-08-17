@@ -168,7 +168,7 @@ def test_exempt_system_routes_tolerate_trailing_slash() -> None:
 def test_unauthorized_response_reuses_incoming_trace_header() -> None:
     incoming = "12345678901234567890123"
     response = client.get(
-        "/api/v1/knowledge-search/query",
+        "/api/v1/knowledge-search/universal-search",
         headers={"X-Request-Id": incoming},
     )
     assert response.status_code == 200

@@ -135,6 +135,14 @@ class ParseErrorCodes(BaseErrorCodes):
         return super().registry() + [cls.RESULT_NOT_READY, cls.TICKET_INVALID, cls.PARSE_FAILED]
 
 
+class SearchErrorCodes(BaseErrorCodes):
+    SEARCH_FAILED = ErrorCode("300001", "检索执行失败", level="business", description="下游检索引擎执行失败（超时/连接失败/返回非成功状态）")
+
+    @classmethod
+    def registry(cls) -> list[ErrorCode]:
+        return super().registry() + [cls.SEARCH_FAILED]
+
+
 def error_response(error: ErrorCode, data: Any | None = None, message: str | None = None) -> dict[str, Any]:
     return error.to_response(data, message)
 
@@ -159,6 +167,7 @@ def error_code_catalog() -> list[dict[str, str]]:
         + KnowledgeBaseErrorCodes.registry()
         + DocumentErrorCodes.registry()
         + ParseErrorCodes.registry()
+        + SearchErrorCodes.registry()
         + AdminErrorCodes.registry()
     ):
         if error_code.code in seen:
@@ -178,4 +187,3 @@ def get_error_code(code: str) -> ErrorCode | None:
                 description=error_code["description"],
             )
     return None
-

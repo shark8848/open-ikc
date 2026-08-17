@@ -12,7 +12,8 @@
 | 知识库 | `/api/v1/knowledge-bases` | 4 | 创建 / 修改 / 列表查询 / 详情 |
 | 文档 | `/api/v1/knowledge-documents` | 3 | 接入知识源 / 一体化接入解析 / 文档信息 |
 | 解析 | `/api/v1/knowledge-documents/parse*` | 4 | 启动解析 / 查询结果 / 签发下载凭证 / 下载 |
-| 检索 | `/api/v1/knowledge-search` | 1 | 统一检索问答 |
+| 检索 | `/api/v1/knowledge-search` | 2 | 普通检索（证据列表）/ 深度检索（Agentic 多轮 + 带引用回答） |
+| 合计 | — | 13 | 业务接口共 13 个（`/query` 为普通检索兼容别名，不计新增） |
 
 另有**管理面**（`/admin/*`，运维用途，独立鉴权）、**系统路由**（健康检查、API 目录、错误码目录、文档页），以及上层 **Python SDK / Java SDK / MCP Server / CLI** 四种接入方式。
 
@@ -91,7 +92,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 - 参数校验错误（Pydantic/FastAPI）由全局处理器映射为 HTTP 200 + `100001`；框架层 404/405 保留 HTTP 状态码，但仍为统一响应体。
 
-### 3.4 错误码表（当前注册 16 个，实时查询 `/api/error-codes`）
+### 3.4 错误码表（当前注册 17 个，实时查询 `/api/error-codes`）
 
 | errCode | errMsg | 层级 | 触发场景 |
 | --- | --- | --- | --- |
@@ -111,6 +112,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | `200003` | 解析结果尚未就绪 | business | 查询/下载时结果未就绪 |
 | `200004` | 下载凭证无效或已过期 | business | ticket 无效 |
 | `200011` | 解析失败 | business | 解析任务失败 |
+| `300001` | 检索执行失败 | business | 下游检索引擎执行失败（超时/连接失败/返回非成功状态） |
 
 ### 3.5 鉴权（AUTHZ，可选开启）
 
@@ -128,7 +130,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | 文档 ingest / ingest-and-parse | `write` | `document` | kbId |
 | 文档详情 | `read` | `document` | 所属 kbId |
 | 解析四接口 | `write` / `read` | `parse` | kbId（parse 启动）或 docId 所属 kbId |
-| 检索 | `query` | `search` | 逐 kbId 授权，任一拒绝整体拒绝 |
+| 检索（universal-search / deep-search / query 别名） | `query` | `search` | 逐 kbId 授权，任一拒绝整体拒绝 |
 
 > 另：**DB token 作用域运行时强制生效**（不依赖 AUTHZ 开关）——创建 token 时配置 `resource:action` 作用域（如 `knowledge_base:read`、`search:query`、`*:*`），调用未命中作用域的业务接口返回 `100403`；环境变量 token 不受作用域限制。作用域仅约束四类业务接口，管理面必须用独立 admin token。
 
@@ -263,7 +265,9 @@ Query 参数：`docId` + `ticket`（均必填）。凭证无效/过期 `200004`�
 
 ### 4.4 检索
 
-#### 4.4.1 统一检索问答 `POST /api/v1/knowledge-search/query`
+#### 4.4.1 普通检索 `POST /api/v1/knowledge-search/universal-search`
+
+> 兼容别名：`POST /api/v1/knowledge-search/query` 行为与之一致（deprecated），供既有调用方平滑迁移。
 
 请求体：
 
@@ -275,19 +279,96 @@ Query 参数：`docId` + `ticket`（均必填）。凭证无效/过期 `200004`�
 | `teamId` / `orgId` | string | 否 | team/enterprise 库建议传入 |
 | `ownerId` | string | 否 | 资源所有者 ID（owner_only 判定） |
 | `orgPath` | string | 否 | 组织路径，如 `/集团/销售中心/华东` |
-| `mode` | enum | 否 | `qa`（默认，带回答）/ `search`（仅证据） |
+| `mode` | enum | 否 | `qa`（默认，附简短回答）/ `search`（仅证据） |
+| `searchType` | enum | 否 | `fulltext` / `vector` / `hybrid`（默认 `hybrid`） |
+| `relNum` | int | 否 | 0–200，关联召回数量，默认 0 |
+| `useRerank` | bool | 否 | 是否启用重排，默认 false |
+| `score` | float | 否 | 分数阈值，低于阈值的证据不返回 |
 | `topK` | int | 否 | 1–100，默认 5 |
 | `filters` | object | 否 | 元数据过滤，如 `{"docType":"whitepaper"}` |
 | `withCitation` | bool | 否 | 是否返回引用，默认 true |
+| `index` | string | 否 | 目标索引名；缺省按知识库映射或下游 collocation 解析 |
+| `isOptimize` | bool | 否 | 是否开启查询优化（OpenAI 检索网关时生效），默认 false |
 
-响应 `data`：`{answer, total, results[]}`；`results[]` 元素：`{docId, docTitle, score, snippet, citation}`。
-实现说明：进程内关键词命中打分 + 元数据过滤 + topK 截断；`mode=qa` 的回答当前为占位（真实问答引擎接入后替换）；数据范围校验同知识库（个人库仅创建者、团队库需 teamId、企业库按 orgId/租户）；多库逐库 AUTHZ，任一拒绝整体 `100403`。
+响应 `data`：`{answer, qaNote, total, results[], searchType, usedConfig}`；`results[]` 元素：`{docId, docTitle, score, snippet, citation}`。
+
+- `mode=qa` 且下游不生成回答时，`answer` 为空串、`qaNote` 提示改用深度检索接口；`in_process` 占位后端保留占位回答。
+- `searchType` 为实际执行的检索类型；`usedConfig` 为下游实际生效配置摘要（可选）。
+- 后端开关：`OPEN_PLATFORM_SEARCH_BACKEND=in_process`（默认，进程内关键词索引，离线/测试用）`| ur`（普通检索走 universal_retriever `/retrieval/search/sync`）`| openai`（走 VectorSearchV2）；相关环境变量：`OPEN_PLATFORM_UR_BASE_URL`、`OPEN_PLATFORM_OPENAI_SEARCH_BASE_URL`、`OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS`、`OPEN_PLATFORM_KB_INDEX_MAP`。
+- 数据范围校验同知识库（个人库仅创建者、团队库需 teamId、企业库按 orgId/租户）；多库逐库 AUTHZ，任一拒绝整体 `100403`。
+
 > ⚠️ 检索索引需调用方显式注入，不随 ingest/parse 自动构建（真实索引引擎落地前）。
 
 ```bash
-curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/query \
+curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/universal-search \
   -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
-  -d '{"query":"产品核心能力","kbIds":["kb_10001"],"mode":"qa","topK":5,"withCitation":true}'
+  -d '{"query":"产品核心能力","kbIds":["kb_10001"],"mode":"qa","searchType":"hybrid","relNum":10,"useRerank":true,"topK":5,"withCitation":true}'
+```
+
+#### 4.4.2 深度检索 `POST /api/v1/knowledge-search/deep-search`
+
+Agentic 多轮深度检索：子查询规划、并行召回、反思与带引用回答；权限收敛与普通检索一致（逐库授权，任一拒绝整体 `100403`）。
+
+请求体：
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `query` | string | 否 | 复杂检索问题 |
+| `kbId` | string | 条件 | 与 `kbIds` 至少提供一个（否则 `100001`） |
+| `kbIds` | array | 条件 | 多库联合检索 |
+| `teamId` / `orgId` | string | 否 | team/enterprise 库建议传入 |
+| `ownerId` | string | 否 | 资源所有者 ID（owner_only 判定） |
+| `orgPath` | string | 否 | 组织路径，如 `/集团/销售中心/华东` |
+| `searchType` | enum | 否 | `fulltext` / `vector` / `hybrid`（默认 `hybrid`） |
+| `topK` | int | 否 | 1–100，默认 8（每轮召回窗口） |
+| `useRerank` | bool | 否 | 是否启用重排，默认 true |
+| `sessionId` | string | 否 | 会话 ID，用于下游记忆检索 |
+| `memory` | object | 否 | 调用方注入记忆，如 `{"mode":"caller","items":[]}`（mode 支持 caller / none） |
+| `deepSearch` | object | 否 | 深度检索流程控制（见下） |
+| `filters` | object | 否 | 元数据过滤 |
+| `responseSpec` | object | 否 | 返回增强控制，`include` 支持 `answer` / `citations` / `usedQueries` / `steps`（默认 `["answer","citations","usedQueries"]`） |
+
+`deepSearch` 子字段：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `maxSteps` | int | 最大检索轮数，默认 5（1–20） |
+| `recallTopnPolicy` | enum | 召回窗口策略：`fixed` / `adaptive`（默认 `adaptive`） |
+| `subQuery` | object | 子查询拆分：`{enabled, maxSubQueries, mergeStrategy}`；`mergeStrategy` 支持 `rrf` / `union` / `weighted_sum` |
+| `stopWhen` | object | 停止条件：`{minEvidence, minFinalScore, maxLatencyMs}` |
+
+响应 `data`：`{answer, total, results[], citations[], usedQueries[], steps[]}`；`results[]` 元素同普通检索；`citations[]` 元素：`{docId, docTitle, score, snippet, position[]}`；`steps[]` 元素：`{stage, query, docsCount, elapsedMs}`（`responseSpec.include` 含 `steps` 时返回）。
+
+- 后端：**仅 `OPEN_PLATFORM_SEARCH_BACKEND=openai` 可用**（走下游 `DeepSearch`），未配置返回 `501001`；超时由 `OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS` 控制；下游未启用 DeepSearch（403）同样映射 `501001`。
+
+```bash
+curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
+  -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
+  -d '{"query":"对比 2025 与 2026 产品白皮书的检索能力差异，并给出结论","kbIds":["kb_10001"],"searchType":"hybrid","topK":8,"useRerank":true,"deepSearch":{"maxSteps":5,"subQuery":{"enabled":true,"maxSubQueries":3}}}'
+```
+
+响应样例：
+
+```json
+{
+  "errCode": "000000",
+  "errMsg": "success",
+  "data": {
+    "answer": "综合证据，2025 版侧重……（带 [1][2] 引用编号作答）",
+    "total": 12,
+    "results": [
+      {"docId": "doc_10001", "docTitle": "2025 产品白皮书", "score": 0.92, "snippet": "……", "citation": {}}
+    ],
+    "citations": [
+      {"docId": "doc_10001", "docTitle": "2025 产品白皮书", "score": 0.92, "snippet": "……", "position": [82, 120]}
+    ],
+    "usedQueries": ["2025 白皮书检索能力", "2026 白皮书检索能力", "差异对比"],
+    "steps": [
+      {"stage": "plan", "query": "2025 白皮书检索能力", "docsCount": 6, "elapsedMs": 120.5}
+    ]
+  },
+  "traceId": "20260817000000000000001"
+}
 ```
 
 ## 5. 管理面接口（`/admin/*`，运维用途）
@@ -347,6 +428,7 @@ client.close()
 
 - 同步 `OpenIKCClient` / 异步 `AsyncOpenIKCClient`；异常体系按错误码映射（`OpenIKCApiException` 子类）。
 - 环境变量：`OPEN_PLATFORM_BASE_URL` / `OPEN_PLATFORM_TOKEN(S)` / `OPEN_PLATFORM_USER_ID` / `OPEN_PLATFORM_TENANT_ID` / `OPEN_PLATFORM_ROLES`；显式传参优先。
+- 检索：`client.search.query(...)` 普通检索（对应 `/universal-search`，`/query` 兼容别名亦可），参数 `query`、`kbId`/`kbIds`（至少一个）、`teamId`/`orgId`、`ownerId`、`orgPath`、`mode`、`searchType`、`relNum`、`useRerank`、`score`、`topK`、`filters`、`withCitation`、`index`、`isOptimize`；`client.search.deep_search(...)` 深度检索（对应 `/deep-search`，需后端 `openai`），参数 `query`、`kbId`/`kbIds`、`teamId`/`orgId`、`ownerId`、`orgPath`、`searchType`、`topK`、`useRerank`、`sessionId`、`memory`、`deepSearch`、`filters`、`responseSpec`。
 - 完整示例：`sdk/python/examples/quickstart.py`（同步全链路）、`sdk/python/examples/async_quickstart.py`。
 
 ### 7.2 Java SDK（`io.openikc:open-ikc-sdk:1.0.0`，Java 17+，零第三方依赖）
@@ -367,7 +449,7 @@ client.close();
 
 ## 8. MCP Server 接入
 
-MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），14 个工具与业务接口一一对应。
+MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），15 个工具与业务接口一一对应。
 
 ### 8.1 运行方式
 
@@ -401,7 +483,7 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 
 > `command` 需指向安装了 `open-ikc-sdk[mcp]` 的 Python 解释器；token 与身份头用于平台鉴权。
 
-### 8.3 工具清单与参数（14 个）
+### 8.3 工具清单与参数（15 个）
 
 **知识库**
 
@@ -442,7 +524,8 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 
 | 工具 | 参数 | 说明 |
 | --- | --- | --- |
-| `search_query` | `query`, `kbId`/`kbIds`(至少一个), `ownerId`, `orgPath` | 统一检索问答 |
+| `search_query` | `query`, `kbId`/`kbIds`(至少一个), `teamId`/`orgId`, `ownerId`, `orgPath`, `mode`, `searchType`, `relNum`, `useRerank`, `score`, `topK`, `filters`, `withCitation`, `index`, `isOptimize` | 普通检索（证据列表） |
+| `deep_search` | `query`, `kbId`/`kbIds`(至少一个), `teamId`/`orgId`, `ownerId`, `orgPath`, `searchType`, `topK`, `useRerank`, `sessionId`, `memory`, `deepSearch`, `filters`, `responseSpec` | 深度检索（Agentic 多轮 + 带引用回答） |
 
 > `kbId` / `kbIds` / `ownerId` / `orgPath` 同时是平台 AUTHZ 数据权限上下文，原样透传。
 
@@ -491,7 +574,7 @@ ikc --help                             # 安装后入口（pyproject 注册）
 | 5 | 平台占位未实现（501001） |
 | 6 | 传输层错误（连接 / 超时 / HTTP 状态） |
 
-### 9.4 子命令与示例（11 个）
+### 9.4 子命令与示例（15 个）
 
 **知识库**
 
@@ -522,7 +605,8 @@ ikc parse-download doc_10001 <ticket> --to-path ./result.json
 **检索**
 
 ```bash
-ikc search-query --query "产品能力" --kb-id kb_10001 --owner-id u100 --org-path /集团/销售中心/华东
+ikc search-query --query "产品能力" --kb-id kb_10001 --owner-id u100 --org-path /集团/销售中心/华东 --search-type hybrid --top-k 5
+ikc deep-search --query "对比 2025 与 2026 产品白皮书的检索能力差异" --kb-id kb_10001 --search-type hybrid --top-k 8 --use-rerank
 ```
 
 **系统**
@@ -543,6 +627,8 @@ ikc sys-error-codes
 | `503001` | 管理面未配置 `OPEN_PLATFORM_ADMIN_TOKEN`，重启时配置或使用脚本自动生成值 |
 | `200003` | 解析结果未就绪，轮询 `parse-result/query` 直到 `success` |
 | `200004` | 下载凭证过期/无效，重新 `issue-download-ticket` |
+| `300001` | 检索执行失败；确认 `OPEN_PLATFORM_SEARCH_BACKEND` 后端与下游（UR / OpenAI 检索网关）配置、网络与超时 |
+| `501001` | 占位未实现；深度检索需配置 `OPEN_PLATFORM_SEARCH_BACKEND=openai` 且下游 DeepSearch 可用 |
 | `100001` + HTTP 200 | 参数校验失败，检查必填/枚举/条件字段（如 `kbType=team` 缺 `teamId`、`source.type=url` 缺 `url`、检索缺 `kbId/kbIds`） |
 
 ## 11. 补充约定

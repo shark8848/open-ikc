@@ -1,13 +1,18 @@
 from fastapi import APIRouter, Request
 
 from app.core.authz.runtime import authorize_or_raise
-from app.schemas.search import SearchQueryRequest, SearchQueryResponse
+from app.schemas.search import (
+    DeepSearchQueryRequest,
+    DeepSearchQueryResponse,
+    SearchQueryRequest,
+    SearchQueryResponse,
+)
 from app.services.search import SearchService
 
 router = APIRouter(prefix="/api/v1/knowledge-search", tags=["检索"])
 
 
-def _resolve_kb_ids(payload: SearchQueryRequest) -> list[str]:
+def _resolve_kb_ids(payload) -> list[str]:
     values: list[str] = []
     if payload.kbId.strip():
         values.append(payload.kbId.strip())
@@ -28,17 +33,9 @@ def _request_identity(request: Request) -> dict[str, str]:
     return {"user_id": "", "tenant_id": ""}
 
 
-@router.post(
-    "/query",
-    summary="统一检索问答",
-    description="在知识库中执行统一检索与问答：search 模式返回证据列表，qa 模式附带回答（当前为占位生成）。kbId / kbIds 至少提供一个；检索结果按知识库类型与调用主体数据权限过滤：个人库仅创建者可检索，团队库需 teamId、企业库按 orgId 或调用主体租户收敛。多库检索逐库授权，任一库失败即整体拒绝。",
-    response_model=SearchQueryResponse,
-)
-async def query_knowledge(request: Request, payload: SearchQueryRequest | None = None) -> dict:
-    data = payload or SearchQueryRequest()
-    identity = _request_identity(request)
-    kb_ids = _resolve_kb_ids(data)
-    # 多库联合检索逐库授权：resource_id 恒为具体 kb_id，任一库授权失败即整体拒绝
+def _authorize_scope(request: Request, payload, identity: dict[str, str]) -> None:
+    """多库联合检索逐库授权：resource_id 恒为具体 kb_id，任一库授权失败即整体拒绝。"""
+    kb_ids = _resolve_kb_ids(payload)
     for kb_id in kb_ids:
         authorize_or_raise(
             request=request,
@@ -48,11 +45,50 @@ async def query_knowledge(request: Request, payload: SearchQueryRequest | None =
             context={
                 "kb_id": kb_id,
                 "kb_ids": kb_ids,
-                "owner_id": data.ownerId.strip() or identity["user_id"],
-                "org_path": data.orgPath.strip() or identity["tenant_id"],
-                "team_id": data.teamId.strip(),
-                "org_id": data.orgId.strip(),
-                "query": data.query,
+                "owner_id": payload.ownerId.strip() or identity["user_id"],
+                "org_path": payload.orgPath.strip() or identity["tenant_id"],
+                "team_id": payload.teamId.strip(),
+                "org_id": payload.orgId.strip(),
+                "query": payload.query,
             },
         )
+
+
+@router.post(
+    "/universal-search",
+    summary="普通检索",
+    description="在知识库中执行统一检索，返回证据列表（可选重排/关联召回/分数阈值）。kbId / kbIds 至少提供一个；检索结果按知识库类型与调用主体数据权限过滤：个人库仅创建者可检索，团队库需 teamId、企业库按 orgId 或调用主体租户收敛。多库检索逐库授权，任一库失败即整体拒绝。",
+    response_model=SearchQueryResponse,
+)
+async def universal_search(request: Request, payload: SearchQueryRequest | None = None) -> dict:
+    data = payload or SearchQueryRequest()
+    identity = _request_identity(request)
+    _authorize_scope(request, data, identity)
     return SearchService.query(data, owner_id=identity["user_id"], tenant_id=identity["tenant_id"])
+
+
+@router.post(
+    "/query",
+    summary="普通检索（兼容别名）",
+    description="普通检索兼容别名，行为与 /universal-search 一致，供既有调用方平滑迁移。",
+    response_model=SearchQueryResponse,
+    deprecated=True,
+)
+async def query_alias(request: Request, payload: SearchQueryRequest | None = None) -> dict:
+    data = payload or SearchQueryRequest()
+    identity = _request_identity(request)
+    _authorize_scope(request, data, identity)
+    return SearchService.query(data, owner_id=identity["user_id"], tenant_id=identity["tenant_id"])
+
+
+@router.post(
+    "/deep-search",
+    summary="深度检索",
+    description="Agentic 多轮深度检索：子查询规划、并行召回、反思与带引用回答。kbId / kbIds 至少提供一个；权限收敛与普通检索一致（逐库授权，任一库失败即整体拒绝）。依赖下游 DeepSearch 能力，未配置 OPEN_PLATFORM_SEARCH_BACKEND=openai 时返回 501001。",
+    response_model=DeepSearchQueryResponse,
+)
+async def deep_search(request: Request, payload: DeepSearchQueryRequest | None = None) -> dict:
+    data = payload or DeepSearchQueryRequest()
+    identity = _request_identity(request)
+    _authorize_scope(request, data, identity)
+    return SearchService.deep_query(data, owner_id=identity["user_id"], tenant_id=identity["tenant_id"])

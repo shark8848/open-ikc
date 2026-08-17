@@ -40,8 +40,22 @@ def _create_kb(headers: dict | None = None, **overrides) -> dict:
 
 
 def _search(payload: dict, headers: dict | None = None) -> dict:
-    response = client.post("/api/v1/knowledge-search/query", json=payload, headers=headers or AUTH)
+    response = client.post("/api/v1/knowledge-search/universal-search", json=payload, headers=headers or AUTH)
     return response.json()
+
+
+def test_query_alias_matches_universal_search() -> None:
+    kb = _create_kb()
+    _index_doc(kb["kbId"], keywords=["语义检索"])
+    body = _search({"query": "语义检索", "kbId": kb["kbId"]})
+    alias = client.post(
+        "/api/v1/knowledge-search/query",
+        json={"query": "语义检索", "kbId": kb["kbId"]},
+        headers=AUTH,
+    ).json()
+    assert body["errCode"] == "000000"
+    assert alias["errCode"] == "000000"
+    assert alias["data"]["results"] == body["data"]["results"]
 
 
 def _index_doc(

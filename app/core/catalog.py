@@ -78,8 +78,18 @@ API_CATALOG = [
         "routes": [
             {
                 "method": "POST",
+                "path": "/api/v1/knowledge-search/universal-search",
+                "summary": "普通检索（证据列表）",
+            },
+            {
+                "method": "POST",
+                "path": "/api/v1/knowledge-search/deep-search",
+                "summary": "深度检索（Agentic 多轮 + 带引用回答）",
+            },
+            {
+                "method": "POST",
                 "path": "/api/v1/knowledge-search/query",
-                "summary": "统一检索问答",
+                "summary": "普通检索兼容别名（指向 universal-search）",
             },
         ],
     },

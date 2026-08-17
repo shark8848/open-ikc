@@ -67,7 +67,7 @@ def _inject_kb() -> str:
 def _search(headers: dict[str, str]) -> dict:
     kb_id = _inject_kb()
     resp = client.post(
-        "/api/v1/knowledge-search/query",
+        "/api/v1/knowledge-search/universal-search",
         json={"query": "语义检索", "kbId": kb_id},
         headers=headers,
     )

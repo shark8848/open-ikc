@@ -166,7 +166,7 @@ headers = {
 4. 列表查询按调用方数据范围收敛：个人库仅本人、团队库需 `teamId`、企业库按 `orgId` 或调用主体租户。
 5. 文档域 `ingest` / `ingest-and-parse` / 查询文档信息（`GET /{doc_id}`）已真实落地：进程内文档存储（`app/services/document_store.py`）+ 知识库归属校验 + 幂等登记 + AUTHZ 接入；返回真实 `ing_`/`doc_` 任务与文档 ID。
 6. 解析域四接口已真实落地：`POST /parse`（async 返回 queued 任务、sync 返回内联结果）、`GET /parse-result/query`、`GET /parse-result/issue-download-ticket`、`GET /parse-result/download`；进程内解析任务/结果/凭证存储（`app/services/parse_store.py`）+ 文档归属与数据范围校验 + 幂等 + AUTHZ 接入；新增解析域错误码 `200003`/`200004`/`200011`。下载接口在真实结果存储落地前返回统一体（含下载说明）。
-7. 检索域 `POST /knowledge-search/query` 已真实落地：进程内检索索引（`app/services/search_store.py`，关键词命中打分 + 元数据过滤 + topK 截断）+ 知识库存在性与数据范围校验（个人库仅创建者可检索，团队库需 `teamId`、企业库按 `orgId` 或调用主体租户收敛）+ AUTHZ 接入（多库逐库授权，任一库失败整体拒绝）；`mode=search` 返回证据列表、`mode=qa` 附带占位回答（真实问答引擎接入后替换）。检索索引在真实索引引擎落地前由调用方显式注入，不随 ingest/parse 自动构建。
+7. 检索域已真实落地：`POST /knowledge-search/universal-search`（普通检索，返回证据列表，可配重排/关联召回/分数阈值，`searchType=fulltext|vector|hybrid`）与 `POST /knowledge-search/deep-search`（深度检索，Agentic 多轮 + 带引用回答，依赖下游 DeepSearch）。默认 `OPEN_PLATFORM_SEARCH_BACKEND=in_process` 时使用进程内检索索引（`app/services/search_store.py`，关键词命中打分 + 元数据过滤 + topK 截断）；配置 `ur`/`openai` 后普通检索分别对接 `universal_retriever /retrieval/search/sync` / `openai_search_service /VectorSearchV2`，深度检索对接 `/DeepSearch`（`app/services/search_client.py`）。两类检索均保持知识库存在性与数据范围校验（个人库仅创建者可检索，团队库需 `teamId`、企业库按 `orgId` 或调用主体租户收敛）+ AUTHZ 接入（多库逐库授权，任一库失败整体拒绝）；`POST /knowledge-search/query` 保留为普通检索兼容别名。
 
 ## 完成后自动审查（Claude Code）
 
@@ -229,7 +229,7 @@ bridge.require_allowed(decision)
 运行时接入（不修改 middleware）：
 
 1. 通过环境变量 `OPEN_PLATFORM_AUTHZ_ENABLED=true` 开启细粒度授权。
-2. `POST /api/v1/knowledge-bases/create`、`POST /api/v1/knowledge-bases/update`、`POST /api/v1/knowledge-search/query` 已接入 `authorize_or_raise(...)`。
+2. `POST /api/v1/knowledge-bases/create`、`POST /api/v1/knowledge-bases/update`、`POST /api/v1/knowledge-search/universal-search`、`POST /api/v1/knowledge-search/deep-search` 已接入 `authorize_or_raise(...)`。
 3. 默认适配器系统名为 `default`，可通过请求头 `X-Auth-System` 指定系统。
 4. 数字员工系统可直接使用 `X-Auth-System: digital_employee`，并按文档配置角色动作映射。
 5. 可通过请求头传入授权事实（示例）：

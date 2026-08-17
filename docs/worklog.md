@@ -478,3 +478,14 @@
 - 完成情况：方案文档已落盘，worklog 已更新；未改代码，未跑测试（无行为变更）。
 - 下一步：评审确认后按 schemas → services → routers → error_codes/catalog/docs → 测试落地。
 - 方案修订：按用户反馈「端点名称尽量与后端能力统一/靠齐」——普通检索端点定为 `POST /api/v1/knowledge-search/universal-search`（对齐 `UniversalSearch` / UR `/retrieval/search/sync`），深度检索定为 `POST /api/v1/knowledge-search/deep-search`（对齐 `DeepSearch`）；`/query` 降级为阶段一兼容别名；同步 catalog/AGENTS.md §3.2/测试路径的落地要求。
+### 任务：检索能力优化落地（普通检索 + 深度检索，对接 knowledge_transformer）
+
+- 方案已确认（前两条 worklog 任务），本次按 §9 落地：
+  - 端点：`POST /api/v1/knowledge-search/universal-search`（普通检索，对齐 UniversalSearch / UR /retrieval/search/sync）、`POST /api/v1/knowledge-search/deep-search`（深度检索，对齐 DeepSearch）；旧 `/query` 保留为兼容别名（deprecated）。
+  - schemas：`SearchQueryRequest` 扩展 searchType/relNum/useRerank/score/index/isOptimize，响应新增 qaNote/searchType/usedConfig；新增 `DeepSearchQueryRequest/DeepSearchQueryData/Response`（deepSearch 控制、memory、sessionId、citations/steps）。
+  - services：新增 `app/services/search_client.py`（httpx 下游适配：UR sync、OpenAI VectorSearchV2/DeepSearch；超时/重试/错误映射；kb→index 映射；trace 透传）；`SearchService.query` 按 `OPEN_PLATFORM_SEARCH_BACKEND=in_process|ur|openai` 分发，新增 `deep_query`（仅 openai 后端可用，否则 501001）；权限校验与逐 kb 授权保持不变。
+  - 错误码：注册 `300001` 检索执行失败（SearchErrorCodes，进 /api/error-codes）。
+  - 同步：catalog（3 条检索路由）、AGENTS.md §3.2、详细定义文档 D-01/D-02、整体方案 §3.4/下游映射表、README、pyproject（新增 httpx）、启动脚本（下游环境变量默认值）。
+  - 测试：新增 `tests/test_search_downstream.py` 13 个（UR/OpenAI 请求响应映射、深度检索映射、501001 分支、300001 错误映射、权限前置、错误码目录断言、参数校验）；现有测试路径切到新主端点并补 `/query` 别名用例。
+- 验证：全量 `203 passed`（189 + 14 新增）。
+- 下一步：docs/API开发手册.md 同步（子代理处理中）；Claude 只读审查（OPEN_PLATFORM_AUTO_REVIEW 未禁用时）；提交推送双远端。

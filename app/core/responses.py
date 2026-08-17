@@ -156,6 +156,31 @@ def search_query_response(
     answer: str,
     total: int,
     results: list[dict[str, Any]],
+    qa_note: str = "",
+    search_type: str = "hybrid",
+    used_config: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "answer": answer,
+            "qaNote": qa_note,
+            "total": total,
+            "results": results,
+            "searchType": search_type,
+            "usedConfig": used_config or {},
+        },
+    ))
+
+
+def deep_search_query_response(
+    *,
+    answer: str,
+    total: int,
+    results: list[dict[str, Any]],
+    citations: list[dict[str, Any]],
+    used_queries: list[str],
+    steps: list[dict[str, Any]],
 ) -> dict[str, Any]:
     return with_trace_id(error_response(
         CommonErrorCodes.SUCCESS,
@@ -163,5 +188,8 @@ def search_query_response(
             "answer": answer,
             "total": total,
             "results": results,
+            "citations": citations,
+            "usedQueries": used_queries,
+            "steps": steps,
         },
     ))

@@ -102,7 +102,9 @@ logs/                     # 运行日志（gitignore，勿提交）
 | 解析 | GET | `/api/v1/knowledge-documents/parse-result/query` |
 | 解析 | GET | `/api/v1/knowledge-documents/parse-result/issue-download-ticket` |
 | 解析 | GET | `/api/v1/knowledge-documents/parse-result/download` |
-| 检索 | POST | `/api/v1/knowledge-search/query` |
+| 检索 | POST | `/api/v1/knowledge-search/universal-search` |
+| 检索 | POST | `/api/v1/knowledge-search/deep-search` |
+| 检索 | POST | `/api/v1/knowledge-search/query`（兼容别名，指向 universal-search） |
 
 系统路由（免业务鉴权或文档用途）：`/`、`/health`、`/docs`、`/redoc`、`/docs/oauth2-redirect`、`/openapi.json`、`/_static/docs`（本地 swagger/redoc 静态资源）、`/api-browser`、`/api/catalog`、`/api/error-codes`、`/portal`（管理 Portal 静态壳，静态无数据）。
 

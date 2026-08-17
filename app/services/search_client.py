@@ -133,6 +133,7 @@ def openai_deep_search(payload: dict[str, Any], *, trace_id: str, timeout: float
         raise SearchException(
             CommonErrorCodes.NOT_IMPLEMENTED,
             {"field": "deepSearch", "reason": "下游 DeepSearch 未启用，请检查 OPENAI_SEARCH_ENABLE_DEEPSEARCH"},
+            message="深度检索未启用：下游 DeepSearch 关闭（OPENAI_SEARCH_ENABLE_DEEPSEARCH）",
         )
     _check_success("openai_search_service.deep_search", response.status_code, response.json())
     return response.json()

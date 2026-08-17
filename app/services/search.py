@@ -54,6 +54,18 @@ def _snippet(text: str, max_len: int = 160) -> str:
     return (content[:max_len] + "…") if len(content) > max_len else content
 
 
+def _pick_score(scores: dict[str, Any]) -> float:
+    """按优先级取下游证据分数：final > rerank > fused > vector > lexical > 0。"""
+    return float(
+        scores.get("final_score")
+        or scores.get("rerank_score")
+        or scores.get("fused_score")
+        or scores.get("vector_score")
+        or scores.get("lexical_score")
+        or 0.0
+    )
+
+
 def _citation_from_metadata(metadata: dict | None, *, with_citation: bool) -> dict:
     if not with_citation:
         return {}
@@ -69,15 +81,7 @@ def _citation_from_metadata(metadata: dict | None, *, with_citation: bool) -> di
 
 
 def _ur_doc_to_item(doc: dict, *, with_citation: bool) -> dict:
-    scores = doc.get("scores") or {}
-    score = (
-        scores.get("final_score")
-        or scores.get("rerank_score")
-        or scores.get("fused_score")
-        or scores.get("vector_score")
-        or scores.get("lexical_score")
-        or 0.0
-    )
+    score = _pick_score(doc.get("scores") or {})
     return {
         "docId": str(doc.get("id") or doc.get("doc_id") or ""),
         "docTitle": str(doc.get("title") or ""),
@@ -88,15 +92,7 @@ def _ur_doc_to_item(doc: dict, *, with_citation: bool) -> dict:
 
 
 def _doc_item_to_item(item: dict, *, with_citation: bool) -> dict:
-    scores = item.get("scores") or {}
-    score = (
-        scores.get("final_score")
-        or scores.get("rerank_score")
-        or scores.get("fused_score")
-        or scores.get("vector_score")
-        or scores.get("lexical_score")
-        or 0.0
-    )
+    score = _pick_score(item.get("scores") or {})
     return {
         "docId": str(item.get("primary_id") or item.get("knowledge_id") or item.get("file_id") or ""),
         "docTitle": str(item.get("title") or ""),
@@ -279,9 +275,9 @@ class SearchService:
                     "field": "deepSearch",
                     "reason": "深度检索需配置 OPEN_PLATFORM_SEARCH_BACKEND=openai 且下游 DeepSearch 可用",
                 },
+                message="深度检索未启用：需配置 OPEN_PLATFORM_SEARCH_BACKEND=openai 且下游 DeepSearch 可用",
             )
 
-        with_citation = True
         request: dict[str, Any] = {
             "user_id": owner_id or "anonymous",
             "org_id": tenant_id or None,
@@ -343,15 +339,13 @@ class SearchService:
             citation_item: dict[str, Any] = {
                 "docId": str(citation.get("id") or citation.get("knowledge_id") or citation.get("file_id") or ""),
                 "docTitle": str(citation.get("title") or ""),
-                "score": float((citation.get("scores") or {}).get("final_score") or 0.0),
+                "score": _pick_score(citation.get("scores") or {}),
                 "snippet": str(citation.get("snippet") or ""),
                 "position": [int(p) for p in position] if isinstance(position, list) else [],
             }
             if page is not None:
                 citation_item["page"] = int(page)
             citations.append(citation_item)
-
-        items = [_doc_item_to_item(item, with_citation=with_citation) for item in (body.get("data") or [])]
 
         steps: list[dict[str, Any]] = []
         include = request["responseSpec"].get("include") or []
@@ -369,8 +363,7 @@ class SearchService:
 
         return deep_search_query_response(
             answer=answer,
-            total=len(items),
-            results=items,
+            total=len(citations),
             citations=citations,
             used_queries=used_queries,
             steps=steps,

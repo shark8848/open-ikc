@@ -213,6 +213,7 @@ class SearchCitationItem(BaseModel):
     score: float = Field(0.0, description="相关性分值。")
     snippet: str = Field("", description="引用片段。")
     position: list[int] = Field(default_factory=list, description="引用位置（页码/坐标）。")
+    page: int | None = Field(None, description="引用页码（可选）。")
 
 
 class DeepSearchStepItem(BaseModel):
@@ -224,9 +225,8 @@ class DeepSearchStepItem(BaseModel):
 
 class DeepSearchQueryData(BaseModel):
     answer: str = Field("", description="最终回答（带证据编号引用）。")
-    total: int = Field(0, description="召回证据总数。")
-    results: list[SearchResultItemData] = Field(default_factory=list, description="召回明细列表。")
-    citations: list[SearchCitationItem] = Field(default_factory=list, description="回答引用列表。")
+    total: int = Field(0, description="回答引用证据总数。")
+    citations: list[SearchCitationItem] = Field(default_factory=list, description="回答引用证据列表（引用编号对应数组下标）。")
     usedQueries: list[str] = Field(default_factory=list, description="实际执行的子查询列表。")
     steps: list[DeepSearchStepItem] = Field(default_factory=list, description="Agent 步骤明细（可选）。")
 

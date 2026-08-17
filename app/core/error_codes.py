@@ -23,8 +23,8 @@ class ErrorCode:
 
     def to_dict(self) -> dict[str, str]:
         return {
-            "code": self.code,
-            "message": self.message,
+            "errCode": self.code,
+            "errMsg": self.message,
             "level": self.level,
             "description": self.description,
         }
@@ -102,10 +102,11 @@ class AdminErrorCodes(BaseErrorCodes):
     """管理面（/admin/*）专属错误码，见 AGENTS.md §4.3。"""
 
     ADMIN_DISABLED = ErrorCode("503001", "管理面未启用", level="admin", description="未配置 OPEN_PLATFORM_ADMIN_TOKEN，管理面默认关闭")
+    TEST_FAILED = ErrorCode("200020", "在线测试执行失败", level="admin", description="MCP / CLI 在线测试执行未通过")
 
     @classmethod
     def registry(cls) -> list[ErrorCode]:
-        return super().registry() + [cls.ADMIN_DISABLED]
+        return super().registry() + [cls.ADMIN_DISABLED, cls.TEST_FAILED]
 
 
 class KnowledgeBaseErrorCodes(BaseErrorCodes):
@@ -179,10 +180,10 @@ def error_code_catalog() -> list[dict[str, str]]:
 
 def get_error_code(code: str) -> ErrorCode | None:
     for error_code in error_code_catalog():
-        if error_code["code"] == code:
+        if error_code["errCode"] == code:
             return ErrorCode(
-                error_code["code"],
-                error_code["message"],
+                error_code["errCode"],
+                error_code["errMsg"],
                 level=error_code["level"],
                 description=error_code["description"],
             )

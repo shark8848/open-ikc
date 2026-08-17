@@ -244,7 +244,7 @@ def test_authz_parse_allowed_for_admin(monkeypatch) -> None:
 def test_error_codes_registered() -> None:
     from app.core.error_codes import error_code_catalog
 
-    codes = {item["code"] for item in error_code_catalog()}
+    codes = {item["errCode"] for item in error_code_catalog()}
     assert {"200003", "200004", "200011"} <= codes
 
 def test_parse_kb_id_mismatch_returns_invalid_params() -> None:

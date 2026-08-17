@@ -92,7 +92,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 - 参数校验错误（Pydantic/FastAPI）由全局处理器映射为 HTTP 200 + `100001`；框架层 404/405 保留 HTTP 状态码，但仍为统一响应体。
 
-### 3.4 错误码表（当前注册 17 个，实时查询 `/api/error-codes`）
+### 3.4 错误码表（当前注册 18 个，实时查询 `/api/error-codes`）
 
 | errCode | errMsg | 层级 | 触发场景 |
 | --- | --- | --- | --- |
@@ -113,6 +113,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | `200004` | 下载凭证无效或已过期 | business | ticket 无效 |
 | `200011` | 解析失败 | business | 解析任务失败 |
 | `300001` | 检索执行失败 | business | 下游检索引擎执行失败（超时/连接失败/返回非成功状态） |
+| `200020` | 在线测试执行失败 | admin | MCP / CLI 在线测试未通过 |
 
 ### 3.5 鉴权（AUTHZ，可选开启）
 
@@ -337,7 +338,7 @@ Agentic 多轮深度检索：子查询规划、并行召回、反思与带引用
 | `subQuery` | object | 子查询拆分：`{enabled, maxSubQueries, mergeStrategy}`；`mergeStrategy` 支持 `rrf` / `union` / `weighted_sum` |
 | `stopWhen` | object | 停止条件：`{minEvidence, minFinalScore, maxLatencyMs}` |
 
-响应 `data`：`{answer, total, results[], citations[], usedQueries[], steps[]}`；`results[]` 元素同普通检索；`citations[]` 元素：`{docId, docTitle, score, snippet, position[]}`；`steps[]` 元素：`{stage, query, docsCount, elapsedMs}`（`responseSpec.include` 含 `steps` 时返回）。
+响应 `data`：`{answer, total, citations[], usedQueries[], steps[]}`；`citations[]` 为唯一证据列表（引用编号 `[n]` 对应数组下标），元素：`{docId, docTitle, score, snippet, position[], page?}`；`steps[]` 元素：`{stage, query, docsCount, elapsedMs}`（`responseSpec.include` 含 `steps` 时返回）。
 
 - 后端：**仅 `OPEN_PLATFORM_SEARCH_BACKEND=openai` 可用**（走下游 `DeepSearch`），未配置返回 `501001`；超时由 `OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS` 控制；下游未启用 DeepSearch（403）同样映射 `501001`。
 
@@ -355,12 +356,10 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
   "errMsg": "success",
   "data": {
     "answer": "综合证据，2025 版侧重……（带 [1][2] 引用编号作答）",
-    "total": 12,
-    "results": [
-      {"docId": "doc_10001", "docTitle": "2025 产品白皮书", "score": 0.92, "snippet": "……", "citation": {}}
-    ],
+    "total": 2,
     "citations": [
-      {"docId": "doc_10001", "docTitle": "2025 产品白皮书", "score": 0.92, "snippet": "……", "position": [82, 120]}
+      {"docId": "doc_10001", "docTitle": "2025 产品白皮书", "score": 0.92, "snippet": "……", "position": [82, 120], "page": 3},
+      {"docId": "doc_10002", "docTitle": "2026 产品白皮书", "score": 0.9, "snippet": "……", "position": [10, 58], "page": 1}
     ],
     "usedQueries": ["2025 白皮书检索能力", "2026 白皮书检索能力", "差异对比"],
     "steps": [

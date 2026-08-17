@@ -177,7 +177,6 @@ def deep_search_query_response(
     *,
     answer: str,
     total: int,
-    results: list[dict[str, Any]],
     citations: list[dict[str, Any]],
     used_queries: list[str],
     steps: list[dict[str, Any]],
@@ -187,7 +186,6 @@ def deep_search_query_response(
         {
             "answer": answer,
             "total": total,
-            "results": results,
             "citations": citations,
             "usedQueries": used_queries,
             "steps": steps,

@@ -132,3 +132,13 @@ def test_whitelist_route() -> None:
     data = resp.json()["data"]
     assert "kb-list" in data["cli"]
     assert "sys_catalog" in data["mcpTools"]
+
+
+def test_admin_responses_carry_unified_trace_id() -> None:
+    """管理面响应壳必须携带 23 位 traceId（统一协议，禁止空串）。"""
+    with TestClient(app) as client:
+        resp = client.get("/admin/overview", headers=_admin_headers())
+    body = resp.json()
+    assert body["errCode"] == "000000"
+    assert body["errMsg"] == "success"
+    assert len(body["traceId"]) == 23

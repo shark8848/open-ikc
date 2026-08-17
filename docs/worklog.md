@@ -520,3 +520,18 @@
 
 - 按用户反馈「开发手册要增加到左侧菜单栏」：将开发手册从文档区外部链接改为左侧工作台菜单项（总览/端点监控/Token 管理/在线测试/开发手册），点击后在主内容区 iframe 内嵌 `/api-manual` 渲染页面；新增 `portal/src/pages/Manual.tsx` 与 `.manual-frame` 样式，`PageKey` 增加 `manual`，`NAV_ITEMS` 新增 BookMarkedIcon 项；文档区保留 Swagger UI / ReDoc 外部链接。
 - `npm run build` 通过（portal/dist 为构建产物不入库）；全量 **208 passed** 无回归。
+
+### 任务：错误码/错误信息命名一致性全面检查 + deep-search 响应去冗余
+
+- 用户要求：1）所有端点输出错误码/错误信息命名定义保持一致，彻底全面检查；2）deep-search 响应报文是否有冗余。
+- 错误码命名一致性修复：
+  - `app/core/error_codes.py`：`ErrorCode.to_dict()` 键名 `code`/`message` → `errCode`/`errMsg`（与统一响应壳一致，`/api/error-codes` 目录随之统一）；修复 `get_error_code()` 残留旧键名导致的 KeyError 隐患；新增 `AdminErrorCodes.TEST_FAILED = 200020 在线测试执行失败` 进 registry（原 MCP/CLI 测试失败借用 `200001 创建知识库失败`，语义错误）。
+  - `app/routers/admin.py`：10 个 admin 端点统一收敛到 `_ok(data)`/`_fail(error, message, data)` 响应壳，`traceId` 由空串改为 `current_trace_id()`（真实 23 位）；MCP/CLI 失败错误码改 `200020`。
+  - 全仓复查：routers/services/exception_handlers/security 均走 `error_response`/`to_response`/`AppException` 链路，无手写 `code`/`message` 旧命名残留（仅 search_client 对下游容错读取保留 `.get("code")` 兜底）。
+- deep-search 响应去冗余：
+  - 移除 `data.results[]`（与 `citations[]` 内容重叠且字段命名不一致 `citation` vs `position`）；`total` 改为 `len(citations)`；`citations[]` 增加可选 `page`（页码，与 `position` 页内坐标语义区分）；`usedQueries` 与可选 `steps[].query` 职责不同，保留。
+- 同步 `app/core/responses.py`、`app/schemas/search.py`、`docs/API开发手册.md`（错误码 18 个、deep-search 响应示例去掉 results）；OpenAPI（swagger/redoc 数据源）确认 `DeepSearchQueryData` 已无 `results`。
+- 验证：全量 **209 passed**（208 + 管理面统一响应壳 traceId 回归断言；沙箱内 TestClient 事件循环受限需沙箱外执行）。
+- 审查闭环（docs/code-review_2026-08-17-err-consistency.md）：无 P0/P1；P2-1 同步 `docs/开放平台接口详细定义_精简版_V2.md` deep-search 出参（去掉 results、total 语义、citations 补 page?）；P2-3 抽取 `_pick_score` 统一普通/深度检索分数兜底链（final→rerank→fused→vector→lexical→0）。
+- P2-2 待办：admin 错误码 `200020` 沿用业务 `2xxxxx` 码段（level=admin 语义隔离），后续业务域新码若冲突再为管理面划独立码段（如 `4xxxxx`）。
+- 下一步：提交推送双远端（§8.2）。

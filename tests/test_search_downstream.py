@@ -188,6 +188,7 @@ def test_deep_search_maps_request_and_response(fake_post, monkeypatch) -> None:
         "result": {"answer": "结论：[1]", "used_queries": ["白皮书 检索能力", "2025 检索能力"]},
         "citations": [
             {"id": "doc_deep_1", "title": "白皮书 2026", "snippet": "检索能力对比", "scores": {"final_score": 0.95}},
+            {"id": "doc_deep_2", "title": "白皮书 2025", "snippet": "差异对比", "scores": {"rerank_score": 0.82}},
         ],
         "data": [
             {"primary_id": "doc_deep_1", "title": "白皮书 2026", "content": "检索能力对比内容", "scores": {"final_score": 0.95}},
@@ -222,9 +223,13 @@ def test_deep_search_maps_request_and_response(fake_post, monkeypatch) -> None:
     data = body["data"]
     assert data["answer"] == "结论：[1]"
     assert data["usedQueries"] == ["白皮书 检索能力", "2025 检索能力"]
+    assert data["total"] == 2
     assert data["citations"][0]["docId"] == "doc_deep_1"
     assert data["citations"][0]["score"] == 0.95
-    assert data["results"][0]["docId"] == "doc_deep_1"
+    assert data["citations"][1]["docId"] == "doc_deep_2"
+    assert data["citations"][1]["score"] == 0.82
+    assert data["citations"][0]["position"] == []
+    assert "results" not in data
     assert data["steps"][0]["stage"] == "retrieve"
 
 
@@ -315,7 +320,7 @@ def test_downstream_permission_still_enforced_before_call(fake_post, monkeypatch
 
 def test_error_codes_catalog_contains_300001() -> None:
     body = client.get("/api/error-codes").json()
-    assert any(item["code"] == "300001" for item in body["data"])
+    assert any(item["errCode"] == "300001" for item in body["data"])
 
 
 def test_search_type_validation_rejects_unknown_value() -> None:

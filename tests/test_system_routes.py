@@ -43,7 +43,7 @@ def test_system_routes_are_exempt_from_business_auth() -> None:
     assert "data" in error_codes_body
     assert "traceId" in error_codes_body
     # 关键错误码必须注册（含管理面 503001）
-    registered_codes = {item["code"] for item in error_codes_body["data"]}
+    registered_codes = {item["errCode"] for item in error_codes_body["data"]}
     assert {
         "000000", "100001", "100401", "100403", "100404", "100405", "100409",
         "501001", "999999", "503001",

@@ -336,3 +336,68 @@ def test_rel_num_validation_rejects_out_of_range() -> None:
         headers=AUTH,
     ).json()
     assert body["errCode"] == "100001"
+
+
+def test_authz_context_owner_org_comes_from_identity(monkeypatch) -> None:
+    from app.routers import search as search_router
+    from app.schemas.search import SearchQueryRequest
+
+    captured: dict = {}
+
+    def _fake_authorize(request, *, action, resource_type, resource_id, context) -> None:
+        captured["action"] = action
+        captured["resource_type"] = resource_type
+        captured["resource_id"] = resource_id
+        captured["context"] = context
+
+    monkeypatch.setattr(search_router, "authorize_or_raise", _fake_authorize)
+
+    class _IdentityState:
+        identity = {"user_id": "alice", "tenant_id": "tenant_001"}
+
+    class _FakeRequest:
+        state = _IdentityState()
+
+    payload = SearchQueryRequest(
+        query="x",
+        kbId="kb_1",
+        ownerId="attacker",
+        orgPath="/集团/销售中心/华东",
+        teamId="team_x",
+        orgId="org_x",
+    )
+    search_router._authorize_scope(_FakeRequest(), payload, {"user_id": "alice", "tenant_id": "tenant_001"})
+
+    context = captured["context"]
+    assert context["owner_id"] == "alice"
+    assert context["org_path"] == "tenant_001"
+    assert context["team_id"] == "team_x"
+    assert context["org_id"] == "org_x"
+    assert context["kb_id"] == "kb_1"
+
+
+def test_deep_search_memory_none_mode_skips_injection(fake_post, monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_PLATFORM_SEARCH_BACKEND", "openai")
+    kb = _create_kb()
+    fake_post[0]["response"] = FakeResponse(json_body={
+        "errCode": "000000",
+        "errMsg": "ok",
+        "status": True,
+        "result": {"answer": "ok", "used_queries": []},
+        "citations": [],
+        "data": [],
+    })
+
+    body = client.post(
+        "/api/v1/knowledge-search/deep-search",
+        json={
+            "query": "深度问题",
+            "kbId": kb["kbId"],
+            "memory": {"mode": "none", "items": [{"type": "memo", "content": "不应注入"}]},
+        },
+        headers=AUTH,
+    ).json()
+
+    assert body["errCode"] == "000000"
+    _url, _headers, payload = fake_post[1][0]
+    assert "memory" not in payload

@@ -176,7 +176,7 @@ logs/                     # 运行日志（gitignore，勿提交）
 - 业务接入用 `authorize_or_raise(request, action, resource_type, ...)`，参考 `POST /api/v1/knowledge-search/query`；禁止把授权逻辑塞进 middleware。
 - 系统选择：请求头 `X-Auth-System` 或 `OPEN_PLATFORM_AUTH_SYSTEM`（内置 `default`、`digital_employee`）。
 - 常用身份头：`X-User-Id`、`X-Tenant-Id`、`X-User-Roles`、`X-User-Permissions`、`X-User-Deny-Permissions`。
-- 数据权限上下文可注入：`kb_id` / `kb_ids`、`owner_id`、`org_path` 等；检索路由已把请求体 `kbId/kbIds`、`ownerId`、`orgPath` 注入授权上下文。
+- 数据权限上下文可注入：`kb_id` / `kb_ids`、`owner_id`、`org_path`、`team_id`、`org_id` 等；**`owner_id`/`org_path` 一律取认证身份（`request.state.identity`），请求体 `ownerId`/`orgPath` 不作为授权依据（仅保留为兼容字段）**；`teamId`/`orgId` 作为业务范围声明从请求体读取（与授权身份分离）。
 - 新接入方优先「适配器 + 映射配置」（`MappingAuthzAdapter`），禁止在业务 service 里写第三方字段 if/else 丛林。
 
 ### 4.3 管理面独立鉴权（admin，非业务五类）

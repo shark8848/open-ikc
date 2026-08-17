@@ -489,3 +489,13 @@
   - 测试：新增 `tests/test_search_downstream.py` 13 个（UR/OpenAI 请求响应映射、深度检索映射、501001 分支、300001 错误映射、权限前置、错误码目录断言、参数校验）；现有测试路径切到新主端点并补 `/query` 别名用例。
 - 验证：全量 `203 passed`（189 + 14 新增）。
 - 下一步：docs/API开发手册.md 同步（子代理处理中）；Claude 只读审查（OPEN_PLATFORM_AUTO_REVIEW 未禁用时）；提交推送双远端。
+
+### 任务：Claude 只读审查闭环（检索优化提交 d09f17f）
+
+- 审查：`docs/code-review_2026-08-17.md`——无 P0；P1×3、P2×6。
+- P1-1（高，越权）：AUTHZ 上下文 `owner_id`/`org_path` 改为一律取认证身份（`request.state.identity`），请求体 `ownerId`/`orgPath` 不再作为授权依据（保留为兼容字段）；`teamId`/`orgId` 仍为业务范围声明。同步 AGENTS.md §4.2、README、设计文档；新增回归测试 `test_authz_context_owner_org_comes_from_identity`。
+- P1-2：经核对 `app/core/authz/runtime.py` 默认映射已含 `km_reader: search:query`，属审查误报，无需改动。
+- P1-3：深度检索与普通检索共享 `search:query` 作用域，README 明示（不单独设 scope，如需独立管控后续新增 `search:deep`）。
+- P2 修复两项：P2-4（memory.mode=none 时不注入 memory，补测试）；P2-5（下游 status 字符串 "false" 也判失败，显式白名单语义）。
+- P2 待办：P2-1（steps 数值 `or 0` 替换 0 的语义等价问题）、P2-2（`snippet`/`score` 与真实后端字段差异）、P2-3（hybrid 权重硬编码可配置化）、P2-6（deep-search 501001 提示区分未配置/后端不支持，reason 附当前 backend）。
+- 验证：全量 **205 passed**（203 + P1-1/P2-4 两个回归用例）。

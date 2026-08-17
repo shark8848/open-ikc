@@ -34,7 +34,11 @@ def _request_identity(request: Request) -> dict[str, str]:
 
 
 def _authorize_scope(request: Request, payload, identity: dict[str, str]) -> None:
-    """多库联合检索逐库授权：resource_id 恒为具体 kb_id，任一库授权失败即整体拒绝。"""
+    """多库联合检索逐库授权：resource_id 恒为具体 kb_id，任一库授权失败即整体拒绝。
+
+    AUTHZ 数据权限上下文中的 owner_id / org_path 一律取认证身份（request.state.identity），
+    请求体 ownerId / orgPath 不作为授权依据（仅保留为兼容字段），避免调用方注入他人身份绕过授权。
+    """
     kb_ids = _resolve_kb_ids(payload)
     for kb_id in kb_ids:
         authorize_or_raise(
@@ -45,8 +49,8 @@ def _authorize_scope(request: Request, payload, identity: dict[str, str]) -> Non
             context={
                 "kb_id": kb_id,
                 "kb_ids": kb_ids,
-                "owner_id": payload.ownerId.strip() or identity["user_id"],
-                "org_path": payload.orgPath.strip() or identity["tenant_id"],
+                "owner_id": identity["user_id"],
+                "org_path": identity["tenant_id"],
                 "team_id": payload.teamId.strip(),
                 "org_id": payload.orgId.strip(),
                 "query": payload.query,

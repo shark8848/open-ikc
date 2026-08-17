@@ -299,7 +299,11 @@ class SearchService:
             request["index"] = index
         if payload.sessionId.strip():
             request["session_id"] = payload.sessionId.strip()
-        if payload.memory is not None and getattr(payload.memory, "items", None):
+        if (
+            payload.memory is not None
+            and payload.memory.mode == "caller"
+            and getattr(payload.memory, "items", None)
+        ):
             request["memory"] = {"mode": "caller", "items": payload.memory.items}
         if payload.deepSearch is not None:
             ds = payload.deepSearch

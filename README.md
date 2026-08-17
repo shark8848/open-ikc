@@ -76,7 +76,7 @@ bash scripts/stop_open_platform.sh
 - **Portal 前端**：`portal/`（Vite 8 + React 18 + TS），构建产物 `portal/dist` 由平台静态挂载在 `/portal`。访问 `/portal/` 需输入 `OPEN_PLATFORM_ADMIN_TOKEN`。
 - **启用管理面**：配置 `OPEN_PLATFORM_ADMIN_TOKEN` 环境变量；未配置时 `/admin/*` 返回 `503001`（默认关闭，避免暴露）。`bash scripts/start_open_platform.sh` 未配置时自动生成随机 token 并在启动输出打印（显式配置则透传），登录 Portal 以该 token 为准。
 - **Token 存储**：SQLite（默认 `data/open_ikc_platform.db`，路径可经 `OPEN_PLATFORM_DB_PATH` 覆盖）；明文 token 仅在创建时返回一次，库中只存 sha256 哈希。
-- **Token 作用域**：创建 token 时可选配 `resource:action` 作用域（如 `knowledge_base:read`、`search:query`，支持 `*` 通配如 `*:*`）；**运行时强制生效**——DB token 调用未命中其作用域的接口返回 `100403`，不依赖 `OPEN_PLATFORM_AUTHZ_ENABLED` 开关；环境变量 token（`OPEN_PLATFORM_TOKEN`）不受作用域限制。作用域仅约束知识库/文档/解析/检索四类业务接口；**管理面（`/admin/*`）使用独立 `OPEN_PLATFORM_ADMIN_TOKEN` 鉴权，禁止复用业务 token 作为 admin token**。
+- **Token 作用域**：创建 token 时可选配 `resource:action` 作用域（如 `knowledge_base:read`、`search:query`，支持 `*` 通配如 `*:*`）；**运行时强制生效**——DB token 调用未命中其作用域的接口返回 `100403`，不依赖 `OPEN_PLATFORM_AUTHZ_ENABLED` 开关；环境变量 token（`OPEN_PLATFORM_TOKEN`）不受作用域限制。作用域仅约束知识库/文档/解析/检索四类业务接口；**深度检索与普通检索共享 `search:query` 作用域**（`deep-search` 不单独设 scope，如需独立管控可后续新增 `search:deep`）；**管理面（`/admin/*`）使用独立 `OPEN_PLATFORM_ADMIN_TOKEN` 鉴权，禁止复用业务 token 作为 admin token**。
 
 ## 错误码与异常
 
@@ -238,4 +238,4 @@ bridge.require_allowed(decision)
 	- `X-User-Roles`（如 `km_reader`）
 	- `X-User-Permissions`
 	- `X-User-Deny-Permissions`
-6. 检索路由会把请求体中的 `kbId/kbIds`、`ownerId`、`orgPath` 注入授权上下文，用于数据权限匹配。
+6. 检索路由会把请求体中的 `kbId/kbIds` 注入授权上下文用于数据权限匹配；**`owner_id`/`org_path` 取认证身份（`X-User-Id`/`X-Tenant-Id`），请求体 `ownerId`/`orgPath` 不作为授权依据（仅保留为兼容字段）**；`teamId`/`orgId` 作为业务范围声明从请求体读取。

@@ -90,7 +90,7 @@ def _check_success(provider: str, status_code: int, body: Any) -> None:
         _raise_failed(provider, "下游返回非 JSON 对象")
     err_code = str(body.get("errCode") or body.get("code") or "000000")
     status = body.get("status", True)
-    if err_code not in {"000000", "0"} or status is False:
+    if err_code not in {"000000", "0"} or status is False or str(status).lower() == "false":
         _raise_failed(provider, f"下游业务失败：{body.get('errMsg') or err_code}")
 
 

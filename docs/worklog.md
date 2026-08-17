@@ -468,3 +468,12 @@
 - 新增 `docs/API开发手册.md`（553 行）：基于当前代码（catalog/路由/schemas/error_codes）逐项核对后整理的完整开发手册——平台概述、快速开始、全局约定（AUTHN/traceId/统一响应体/16 个错误码/AUTHZ 动作映射与 token 作用域）、12 个业务接口详细定义（字段表 + curl 示例）、10 个管理面接口、系统路由、Python/Java SDK 接入、MCP Server（14 工具参数表 + 客户端配置示例）、CLI（11 子命令 + 全局选项 + 退出码 + 示例）、常见错误排查。
 - 完成情况：手册内容与实现一致（知识库 4 / 文档 3 / 解析 4 / 检索 1；admin 10；错误码 16）。
 - 下一步：按需将手册同步至对外交付渠道；推送仍受 SSH 网关阻断（见前条待办）。
+
+### 任务：检索能力优化方案（普通检索 + 深度检索，对接 knowledge_transformer）
+
+- 产出：新增 `docs/检索能力优化方案_普通检索与深度检索.md`（297 行）。
+- 调研：通读 `knowledge_transformer` 检索相关实现与文档——universal_retriever（`/retrieval/search/sync`，8096，fulltext/vector/hybrid + RRF + 可插拔后端）、openai_search_service（`VectorSearchV2/UniversalSearch` 基础检索、`DeepSearch` Agentic 多轮，8088，前缀 `/km/search-api/aiTools/openai/bsapi`）；`unified_retrieval_architecture_real_impl.md` 确认 openai_search_service 进程内调 universal_retriever 内核。
+- 方案要点：保留 `POST /api/v1/knowledge-search/query` 为普通检索（证据列表，可切 UR 或 VectorSearchV2），新增 `POST /api/v1/knowledge-search/deep-query` 深度检索（映射 DeepSearch）；服务层新增 `search_client.py`（httpx 下游适配 + 超时/重试/错误映射），`OPEN_PLATFORM_SEARCH_BACKEND=in_process|ur|openai` 开关；错误码注册 `300001` 检索执行失败；catalog/详细定义/README/启动脚本同步；测试计划含 mock 下游的 `test_search_downstream.py`。
+- 决策留待评审：接口形态（推荐双接口）、普通检索 qa 回答策略（推荐移除占位文案）、steps 暴露粒度、searchType 默认 hybrid、kb→index 映射方式。
+- 完成情况：方案文档已落盘，worklog 已更新；未改代码，未跑测试（无行为变更）。
+- 下一步：评审确认后按 schemas → services → routers → error_codes/catalog/docs → 测试落地。

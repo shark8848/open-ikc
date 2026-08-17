@@ -460,3 +460,11 @@
 - 图标：`icons.tsx` 新增 `EyeIcon` / `EyeOffIcon`；样式：`styles.css` 新增 `field-with-action`（输入框右侧内嵌操作按钮）。
 - 顺带：TestLab 白名单加载错误由内联 ErrorBox 改为右上角 Toast（对齐全局消息约定）。
 - 验证：`npm run build` 通过；后端无改动。
+
+## 2026-08-17
+
+### 任务：输出并落盘完整 API 开发手册（含 MCP/CLI 补充）
+
+- 新增 `docs/API开发手册.md`（553 行）：基于当前代码（catalog/路由/schemas/error_codes）逐项核对后整理的完整开发手册——平台概述、快速开始、全局约定（AUTHN/traceId/统一响应体/16 个错误码/AUTHZ 动作映射与 token 作用域）、12 个业务接口详细定义（字段表 + curl 示例）、10 个管理面接口、系统路由、Python/Java SDK 接入、MCP Server（14 工具参数表 + 客户端配置示例）、CLI（11 子命令 + 全局选项 + 退出码 + 示例）、常见错误排查。
+- 完成情况：手册内容与实现一致（知识库 4 / 文档 3 / 解析 4 / 检索 1；admin 10；错误码 16）。
+- 下一步：按需将手册同步至对外交付渠道；推送仍受 SSH 网关阻断（见前条待办）。

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+from functools import lru_cache
 from pathlib import Path
 
 from markdown_it import MarkdownIt
@@ -9,11 +11,17 @@ _MANUAL_PATH = Path(__file__).resolve().parents[2] / "docs" / "API开发手册.m
 _MD = MarkdownIt("commonmark", {"html": False}).enable("table")
 
 
+@lru_cache(maxsize=1)
+def _render_md(mtime_ns: int, size: int) -> str:
+    return _MD.render(_MANUAL_PATH.read_text(encoding="utf-8"))
+
+
 def render_api_manual_html() -> str:
     """将 docs/API开发手册.md 渲染为离线可用的中文文档页（服务端渲染，无外部依赖）。"""
     if not _MANUAL_PATH.exists():
         return "<!doctype html><html lang='zh-CN'><body><h1>开发手册缺失</h1></body></html>"
-    body = _MD.render(_MANUAL_PATH.read_text(encoding="utf-8"))
+    stat = _MANUAL_PATH.stat()
+    body = _render_md(stat.st_mtime_ns, stat.st_size)
     return f"""
     <!doctype html>
     <html lang="zh-CN">

@@ -32,7 +32,7 @@ def register_system_routes(app: FastAPI) -> None:
         return HTMLResponse(render_api_browser_html())
 
     @app.get("/api-manual", include_in_schema=False, response_class=HTMLResponse)
-    async def api_manual() -> HTMLResponse:
+    def api_manual() -> HTMLResponse:
         return HTMLResponse(render_api_manual_html())
 
     @app.get("/api/catalog", include_in_schema=False)

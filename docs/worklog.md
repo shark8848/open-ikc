@@ -506,3 +506,12 @@
 - 前端：`portal/src/components/icons.tsx` 新增 BookMarkedIcon；`Layout.tsx` 文档区新增「开发手册」链接（新标签打开 /api-manual）；`npm run build` 产物 portal/dist 已更新。
 - 顺手修复：`app/core/admin/monitor.py` 监控中间件在端点抛错时 `finally` 引用未赋值 `response` 的 UnboundLocalError（会掩盖真实异常）——改为 `response=None` 初始化，异常路径不记统计、原异常正常上抛。
 - 测试：新增 `test_api_manual_page_renders_manual`（200 + HTML 含手册标题/universal-search/deep-search/300001/table）；免鉴权参数化测试与尾斜杠测试补 `/api-manual`。全量 **207 passed**。
+
+### 任务：Portal 侧边栏改动审查闭环（fba9452）
+
+- 审查：`docs/code-review_2026-08-17-manual.md`——**通过，无 P0/P1**；P2×3 + 1 项行为知悉。
+- P2-1 闭环：新增 `test_monitor_exception_path_decrements_and_propagates`（call_next 抛异常 → 并发计数归零、原异常上抛、不落统计）。
+- P2-3 闭环：`/api-manual` 渲染结果按文件 mtime/size 缓存（lru_cache maxsize=1），路由改同步 `def` 交由 FastAPI 线程池执行，避免阻塞事件循环。
+- P2-2 待办（信息暴露）：`/api-manual` 免鉴权展示手册，其中 CLI 示例含本机路径（/home/open-ikc/.venv）——待手册对外交付时改为通用占位符或收紧访问。
+- P2-4（行为知悉）：监控中间件异常逃逸请求不再计入统计（修复副作用，可接受；如需异常痕迹后续降级记录 999999）。
+- 验证：全量 **208 passed**。

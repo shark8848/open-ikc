@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import asyncio
+import logging
+
 import pytest
 from fastapi.testclient import TestClient
 
 from app.core.admin import stats
+from app.core.admin import monitor
 from app.core.admin.token_store import _connect
 
 
@@ -33,6 +37,32 @@ def test_concurrency_counter() -> None:
     assert stats.current_concurrency() == 1
     stats._concurrency.dec()
     assert stats.current_concurrency() == 0
+
+
+def test_monitor_exception_path_decrements_and_propagates(monkeypatch) -> None:
+    """端点抛异常时：并发计数归零、原异常不被 UnboundLocalError 掩盖、不落统计。"""
+    middleware = monitor.build_monitor_middleware(logging.getLogger("test-monitor"))
+    recorded = {"called": False}
+
+    def _fail_record(*_args, **_kwargs) -> None:
+        recorded["called"] = True
+
+    monkeypatch.setattr(monitor, "_record", _fail_record)
+
+    class _State:
+        skip_stats = False
+
+    class _Request:
+        state = _State()
+
+    async def _call_next(_request) -> None:
+        raise RuntimeError("boom")
+
+    before = stats.current_concurrency()
+    with pytest.raises(RuntimeError, match="boom"):
+        asyncio.run(middleware(_Request(), _call_next))
+    assert stats.current_concurrency() == before
+    assert recorded["called"] is False
 
 
 def test_endpoint_stats_aggregation() -> None:

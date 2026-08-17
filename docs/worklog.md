@@ -477,3 +477,4 @@
 - 决策留待评审：接口形态（推荐双接口）、普通检索 qa 回答策略（推荐移除占位文案）、steps 暴露粒度、searchType 默认 hybrid、kb→index 映射方式。
 - 完成情况：方案文档已落盘，worklog 已更新；未改代码，未跑测试（无行为变更）。
 - 下一步：评审确认后按 schemas → services → routers → error_codes/catalog/docs → 测试落地。
+- 方案修订：按用户反馈「端点名称尽量与后端能力统一/靠齐」——普通检索端点定为 `POST /api/v1/knowledge-search/universal-search`（对齐 `UniversalSearch` / UR `/retrieval/search/sync`），深度检索定为 `POST /api/v1/knowledge-search/deep-search`（对齐 `DeepSearch`）；`/query` 降级为阶段一兼容别名；同步 catalog/AGENTS.md §3.2/测试路径的落地要求。

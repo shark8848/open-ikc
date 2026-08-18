@@ -82,7 +82,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | 能力 | 路由前缀 | 接口数 | 典型场景 |
 | --- | --- | --- | --- |
 | 知识库 | `/api/v1/knowledge-bases` | 4 | 组织与管理知识空间（个人/团队/企业），定义元数据模型 |
-| 文档 | `/api/v1/knowledge-documents` | 3 | 接入 URL / 文件 / 目录 / 压缩包为可解析文档 |
+| 文档 | `/api/v1/knowledge-documents` | 5 | 接入 URL / 文件 / 目录 / 压缩包为可解析文档；上传文档 7 天暂存并返回临时访问地址 |
 | 解析 | `/api/v1/knowledge-documents/parse*` | 5 | 解析为结构化结果，支持异步任务、凭证与下载；支持免知识库独立解析（`parse-direct`） |
 | 检索 | `/api/v1/knowledge-search` | 2 + 1 兼容别名 | 普通检索（证据列表）与深度检索（Agentic 多轮 + 带引用回答） |
 
@@ -185,6 +185,9 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | `OPEN_PLATFORM_KB_INDEX_MAP` | 空 | JSON 对象，显式映射 `kb_id -> index` |
 | `OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS` | `10` | 普通检索下游超时（秒） |
 | `OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS` | `60` | 深度检索下游超时（秒） |
+| `OPEN_PLATFORM_UPLOAD_DIR` | `data/uploads` | 文档暂存目录（`upload` 接口落盘位置，7 天 TTL） |
+| `OPEN_PLATFORM_UPLOAD_TTL_SECONDS` | `604800` | 暂存有效期秒数（默认 7 天），到期惰性清理 |
+| `OPEN_PLATFORM_UPLOAD_MAX_BYTES` | `104857600` | 单文件暂存大小上限（默认 100 MB） |
 
 ## 6. 协议约定
 
@@ -287,7 +290,7 @@ cd /home/open-ikc && .venv/bin/python -m pytest tests -q
 | 能力 | 状态 |
 | --- | --- |
 | 知识库 | 已落地：进程内存储 + 业务校验 + AUTHZ；创建返回真实 `kbId`，同名冲突 `100409`，个人/团队/企业库按数据范围收敛 |
-| 文档 | 已落地：`ingest` / `ingest-and-parse` / 详情查询，知识库归属校验 + 幂等登记 + AUTHZ |
+| 文档 | 已落地：`ingest` / `ingest-and-parse` / 详情查询 / 上传暂存（`upload`，7 天 TTL + 临时访问地址，惰性过期清理），知识库归属校验 + 幂等登记 + AUTHZ |
 | 解析 | 已落地：异步任务与内联结果、结果查询 / 下载凭证 / 下载，进程内任务与结果存储 + AUTHZ；`parse-direct` 免库独立解析（不建库、不登记文档，仅创建者可查询/下载） |
 | 检索 | 已落地：普通检索（`universal-search`，后端可切 `in_process` / `ur` / `openai`）+ 深度检索（`deep-search`，依赖下游 DeepSearch）；`/query` 为普通检索兼容别名 |
 

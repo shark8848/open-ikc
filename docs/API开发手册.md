@@ -272,6 +272,8 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 | `200001` | 创建知识库失败 | business | 知识库创建失败 |
 | `200002` | 修改知识库失败 | business | 知识库更新失败 |
 | `200010` | 接入知识源失败 | business | 文档接入失败 |
+| `200012` | 文档上传失败 | business | 文档暂存上传落盘失败 |
+| `200013` | 暂存文件不存在或已过期 | business | 暂存文件不存在、过期或已被清理 |
 | `200003` | 解析结果尚未就绪 | business | 查询/下载时结果未就绪 |
 | `200004` | 下载凭证无效或已过期 | business | ticket 无效 |
 | `200011` | 解析失败 | business | 解析任务失败 |
@@ -293,6 +295,8 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 | 知识库 query | `read` | `knowledge_base` | — |
 | 文档 ingest / ingest-and-parse | `write` | `document` | kbId |
 | 文档详情 | `read` | `document` | 所属 kbId |
+| 文档上传暂存（`upload`） | `write` | `document` | —（仅创建者可访问暂存文件） |
+| 访问暂存文件（`upload/{file_id}`） | `read` | `document` | —（创建者校验在业务层） |
 | 解析四接口 | `write` / `read` | `parse` | kbId（parse 启动）或 docId 所属 kbId |
 | 检索（universal-search / deep-search / query 别名） | `query` | `search` | 逐 kbId 授权，任一拒绝整体拒绝 |
 
@@ -415,6 +419,34 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 接口：`GET /api/v1/knowledge-documents/{doc_id}`
 
 路径参数 `doc_id` 必填。响应 `data`：`{docId, docTitle, kbId, sourceType, sourceUrl, objectKey, tags, metadata, status, ingestTime, updateTime}`。
+
+#### 6.2.4 上传文档（7 天暂存）
+
+接口：`POST /api/v1/knowledge-documents/upload`
+
+`multipart/form-data` 上传单个文档文件，平台暂存 **7 天**（默认，可用 `OPEN_PLATFORM_UPLOAD_TTL_SECONDS` 调整）并返回临时访问地址。暂存文件**不创建知识库、不登记文档**，仅提供临时存储与访问，适合「先上传、后接入/解析/分享」的编排。
+
+请求：
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `file` | file | ✅ | 待暂存的文档文件（`form-data` 字段） |
+
+支持扩展名：`pdf/doc/docx/xls/xlsx/ppt/pptx/txt/md/csv/html/htm/xml/json/yaml/yml/zip/rar/7z`；大小上限默认 100 MB（`OPEN_PLATFORM_UPLOAD_MAX_BYTES`）。类型不支持、空文件或超限返回 `100001`，落盘失败返回 `200012`。
+
+响应 `data`：`{fileId, fileName, fileSize, contentType, tempUrl, expiresAt, expiresInSeconds}`。
+
+- `fileId`：暂存文件 ID（`up_` 前缀，7 天内有效）
+- `tempUrl`：临时访问地址（相对路径，拼接 `baseUrl` 后带 `Bearer` 访问）
+- `expiresAt` / `expiresInSeconds`：过期时间（ISO8601 UTC）/ 剩余有效秒数（默认 604800）
+
+#### 6.2.5 访问暂存文档
+
+接口：`GET /api/v1/knowledge-documents/upload/{file_id}`
+
+按上传返回的 `fileId` 访问 7 天暂存文件内容（**二进制流**，`Content-Type` 与上传一致，`Content-Disposition` 携带原始文件名）。访问需携带 `Bearer`；仅创建者可访问（越权 `100403`），不存在返回 `100404`，过期或已清理返回 `200013`。
+
+> 该端点是业务接口中唯一返回二进制内容的端点（异常仍走统一响应壳）；适合下载后交由 `ingest`（`source.type=file` 的 `objectKey`/`fileToken`）或 `parse-direct` 消费。
 
 ### 6.3 解析
 

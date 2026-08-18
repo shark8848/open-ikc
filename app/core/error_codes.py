@@ -120,10 +120,12 @@ class KnowledgeBaseErrorCodes(BaseErrorCodes):
 
 class DocumentErrorCodes(BaseErrorCodes):
     INGEST_FAILED = ErrorCode("200010", "接入知识源失败", level="business", description="文档接入知识源业务处理失败")
+    UPLOAD_FAILED = ErrorCode("200012", "文档上传失败", level="business", description="文档暂存上传业务处理失败（落盘失败等）")
+    STAGED_FILE_EXPIRED = ErrorCode("200013", "暂存文件不存在或已过期", level="business", description="暂存文件不存在、已过期或已被清理")
 
     @classmethod
     def registry(cls) -> list[ErrorCode]:
-        return super().registry() + [cls.INGEST_FAILED]
+        return super().registry() + [cls.INGEST_FAILED, cls.UPLOAD_FAILED, cls.STAGED_FILE_EXPIRED]
 
 
 class ParseErrorCodes(BaseErrorCodes):

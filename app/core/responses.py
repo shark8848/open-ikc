@@ -171,6 +171,21 @@ def download_result_response(
     ))
 
 
+def document_upload_response(record: Any) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "fileId": record.file_id,
+            "fileName": record.file_name,
+            "fileSize": record.file_size,
+            "contentType": record.content_type,
+            "tempUrl": f"/api/v1/knowledge-documents/upload/{record.file_id}",
+            "expiresAt": record.expires_at,
+            "expiresInSeconds": record.expires_in,
+        },
+    ))
+
+
 def search_query_response(
     *,
     answer: str,

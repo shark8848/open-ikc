@@ -705,3 +705,16 @@
   - 平台全量 `pytest tests -q` **235 passed**（沙箱外执行）。
 - 环境注意：**Codex 沙箱内 pytest/TestClient 会死锁**（anyio portal 线程在 bwrap 沙箱内 select 挂起，最小 FastAPI TestClient 亦复现），跑 pytest 必须在沙箱外（escalated）。
 - 下一步：Portal 登录 admin token 统一使用 `test-admin-token`；提交推送（github）。
+
+### 任务：新增文档上传端点（7 天暂存 + 临时访问地址）（2026-08-18）
+
+- 需求：增加文档上传端点，提供 7 天暂存服务，返回临时访问地址。
+- 落地（文档能力域，不新增第五类能力）：
+  - `POST /api/v1/knowledge-documents/upload`：multipart/form-data 上传单文件，平台暂存 7 天（`OPEN_PLATFORM_UPLOAD_TTL_SECONDS` 默认 604800），返回 `{fileId, fileName, fileSize, contentType, tempUrl, expiresAt, expiresInSeconds}`；支持扩展名白名单（pdf/doc/docx/xls/xlsx/ppt/pptx/txt/md/csv/html/htm/xml/json/yaml/yml/zip/rar/7z），大小上限默认 100 MB（`OPEN_PLATFORM_UPLOAD_MAX_BYTES`）。
+  - `GET /api/v1/knowledge-documents/upload/{file_id}`：二进制流访问暂存文件（唯一非 JSON 业务端点），需 Bearer；仅创建者可访问（100403），不存在 100404，过期/清理 200013；过期惰性清理（上传/访问时触发）。
+  - 实现：`app/services/upload_store.py`（落盘 + JSON 侧车元数据 + TTL 清理）、`app/services/upload.py`、`app/core/responses.py::document_upload_response`、`app/schemas/document.py::DocumentUploadData/Response`、路由、catalog 同步；错误码新增 `200012`（上传失败）/`200013`（暂存文件过期）；pyproject 补 `python-multipart` 依赖声明。
+  - 设计决策：暂存文件归属调用方身份，仅创建者可访问（与 parse-direct 一致）；TTL 默认 7 天可配；上传不建库不登记文档。
+- 文档：README（能力表 文档 3→5、实现状态、环境变量）、`docs/API开发手册.md`（§5.4 错误码、§5.5 AUTHZ 动作表、§6.2.4/6.2.5）、`docs/开放平台接口详细定义_精简版_V2.md`（B-02.2）。
+- 验证：平台 `pytest tests -q` **249 passed**（新增 `tests/test_document_upload.py` 14 例）；`/tmp/manual_conformance.py` **67/67**（错误码 18→20，新增上传 5 例）；线上冒烟（18000）上传→临时访问→100401/100404/100001 全绿；`/api-manual` 与 `/openapi.json` 已含新增章节/路径。
+- 环境：期间发现用户侧 16:30 又启动了 `scripts/start_open_platform.sh` 实例（随机 admin token、未配业务 token，同上次根因），已按用户指定 token（4DvPz… + test-admin-token）重启 18000。
+- 下一步：MCP/CLI 暂未封装 upload（写操作 + 文件参数，按需补充）；提交推送（github）。

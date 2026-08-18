@@ -161,3 +161,17 @@ class DocumentInfoData(BaseModel):
 
 class DocumentInfoResponse(_DocumentEnvelope):
     data: DocumentInfoData = Field(..., description="业务数据。")
+
+
+class DocumentUploadData(BaseModel):
+    fileId: str = Field(..., description="暂存文件 ID，7 天内可用于访问临时地址。")
+    fileName: str = Field(..., description="暂存文件名（服务端清洗后的 basename）。")
+    fileSize: int = Field(..., description="文件大小（字节）。")
+    contentType: str = Field(..., description="文件 MIME 类型。")
+    tempUrl: str = Field(..., description="临时访问地址（相对路径，调用方拼接 baseUrl 后带 Bearer 访问）。")
+    expiresAt: str = Field(..., description="过期时间（ISO8601 UTC，默认 7 天）。")
+    expiresInSeconds: int = Field(..., description="剩余有效秒数（默认 604800，即 7 天）。")
+
+
+class DocumentUploadResponse(_DocumentEnvelope):
+    data: DocumentUploadData = Field(..., description="业务数据。")

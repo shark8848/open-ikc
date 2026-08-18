@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, File, Request, UploadFile
+from fastapi.responses import FileResponse
 
 from app.core.authz.runtime import authorize_or_raise
 from app.core.error_codes import CommonErrorCodes, DocumentException
@@ -10,10 +11,12 @@ from app.schemas.document import (
     DocumentIngestRequest,
     DocumentIngestResponse,
     DocumentInfoResponse,
+    DocumentUploadResponse,
 )
 from app.services.document import DocumentService
 from app.services.document_store import DocumentStore
 from app.services.knowledge_base import KnowledgeBaseService
+from app.services.upload import UploadService
 
 router = APIRouter(prefix="/api/v1/knowledge-documents", tags=["文档"])
 
@@ -121,3 +124,60 @@ async def get_document(request: Request, doc_id: str) -> dict:
         },
     )
     return DocumentService.get_document(doc_id, owner_id=identity["user_id"], tenant_id=identity["tenant_id"])
+
+
+@router.post(
+    "/upload",
+    summary="上传文档（7 天暂存）",
+    description="multipart/form-data 上传单个文档文件，平台暂存 7 天并返回临时访问地址。暂存文件不创建知识库、不登记文档，仅提供临时存储与访问；访问需携带 Bearer。",
+    response_model=DocumentUploadResponse,
+)
+async def upload_document(request: Request, file: UploadFile = File(..., description="待暂存的文档文件")) -> dict:
+    identity = _request_identity(request)
+    authorize_or_raise(
+        request=request,
+        action="write",
+        resource_type="document",
+        resource_id="",
+        context={
+            "kb_id": "",
+            "kb_type": "",
+            "owner_id": identity["user_id"],
+            "org_path": identity["tenant_id"],
+        },
+    )
+    content = await file.read()
+    return UploadService.upload_file(
+        content,
+        file_name=file.filename or "",
+        content_type=file.content_type or "application/octet-stream",
+        owner_id=identity["user_id"],
+        tenant_id=identity["tenant_id"],
+    )
+
+
+@router.get(
+    "/upload/{file_id}",
+    summary="访问暂存文档",
+    description="按上传返回的 fileId 访问 7 天暂存文件内容（二进制流）；仅创建者可访问，不存在返回 100404，过期返回 200013。",
+)
+async def access_staged_file(request: Request, file_id: str) -> FileResponse:
+    identity = _request_identity(request)
+    authorize_or_raise(
+        request=request,
+        action="read",
+        resource_type="document",
+        resource_id="",
+        context={
+            "kb_id": "",
+            "kb_type": "",
+            "owner_id": identity["user_id"],
+            "org_path": identity["tenant_id"],
+        },
+    )
+    path, record = UploadService.get_staged_file(file_id, owner_id=identity["user_id"])
+    return FileResponse(
+        path=path,
+        media_type=record.content_type or "application/octet-stream",
+        filename=record.file_name,
+    )

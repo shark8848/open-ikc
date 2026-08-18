@@ -44,6 +44,16 @@ API_CATALOG = [
                 "path": "/api/v1/knowledge-documents/{doc_id}",
                 "summary": "查询文档信息",
             },
+            {
+                "method": "POST",
+                "path": "/api/v1/knowledge-documents/upload",
+                "summary": "上传文档（7 天暂存）",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-documents/upload/{file_id}",
+                "summary": "访问暂存文档",
+            },
         ],
     },
     {

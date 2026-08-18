@@ -1,242 +1,298 @@
 # open-ikc-api
 
-FastAPI 北向开放平台 API，对外提供四大类业务能力：知识库、文档、解析、检索（均已真实落地，进程内存储实现）。
-上层另有 Python SDK（`open-ikc-sdk`）与基于它的 MCP Server / CLI 封装，见「SDK / MCP / CLI 入口」。
+> **北向开放平台 API**：面向外部开发者，以统一协议提供**知识库 / 文档 / 解析 / 检索**四大类业务能力。平台不开放内部流水线，开发者通过 REST、SDK、MCP 或 CLI 任意一种方式接入，即可在自己的产品中获得「可检索的企业知识」。
 
-## 启动命令
+| | |
+| --- | --- |
+| 语言 / 框架 | Python ≥ 3.12 · FastAPI |
+| 默认端口 | `18000` |
+| 协议 | HTTPS/HTTP + JSON，统一响应体 `errCode / errMsg / data / traceId` |
+| 认证 | `Authorization: Bearer <token>`（static / gateway_header / oidc_jwt / oauth2_introspection） |
+| 在线文档 | `/docs`（Swagger）· `/redoc` · `/api-manual`（开发手册） |
 
-先进入虚拟环境：
+## 目录
+
+- [1. 快速开始](#1-快速开始)
+- [2. 能力总览](#2-能力总览)
+- [3. 文档导航](#3-文档导航)
+- [4. SDK / MCP / CLI](#4-sdk--mcp--cli)
+- [5. 配置参考](#5-配置参考)
+- [6. 协议约定](#6-协议约定)
+- [7. 项目结构](#7-项目结构)
+- [8. 测试](#8-测试)
+- [9. 实现状态](#9-实现状态)
+- [10. 协作与审查](#10-协作与审查)
+
+## 1. 快速开始
+
+### 1.1 环境要求
+
+- Python ≥ 3.12；仓库已初始化虚拟环境 `.venv`（`/home/open-ikc/.venv`）。
+- 安装依赖（日志链路依赖 `ikc-log-center` SDK，采用 pip 安装模式，勿改为源码目录引用）：
 
 ```bash
 cd /home/open-ikc
 . .venv/bin/activate
-```
-
-依赖安装（日志链路依赖 `ikc-log-center` SDK，按 pip 安装模式接入，不引用源码目录）：
-
-```bash
 pip install -e .
-# 日志中心 SDK 从本地 wheel 安装（版本与 pyproject.toml 声明一致）：
 pip install /home/ikc-log-center/dist/ikc_log_center-1.4.9-py3-none-any.whl
 ```
 
-日志通过 `log_center_sdk` 统一输出，trace 上下文自动携带 `traceId`，可在日志中心按链路检索。
-
-日志中心远程投递环境变量（启动脚本已默认开启）：
-
-| 变量 | 默认值 | 说明 |
-| --- | --- | --- |
-| `LOG_CENTER_ENABLE` | `true` | 是否启用远程日志投递（异步发送至日志中心） |
-| `LOG_CENTER_URL` | `http://127.0.0.1:9315` | 日志中心服务端地址（SDK 自动 POST `{url}/ingest`） |
-| `LOG_CENTER_TOKEN` | 空 | 日志中心开启 Bearer 认证时填写 |
-
-平台服务启动：
+### 1.2 启动服务
 
 ```bash
 python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload
 ```
 
-一键启动脚本：
+或使用一键脚本（自动导出日志投递、检索后端等变量；未配置管理 token 时自动生成并打印）：
 
 ```bash
-bash scripts/start_open_platform.sh
+bash scripts/start_open_platform.sh   # 启动
+bash scripts/stop_open_platform.sh    # 停止（按进程匹配 SIGTERM 优雅停止，最多等待 10 秒）
 ```
 
-一键停止脚本（按进程匹配 `uvicorn app.main:app`，SIGTERM 优雅停止，最多等待 10 秒）：
+### 1.3 验证服务就绪
 
 ```bash
-bash scripts/stop_open_platform.sh
+curl -s http://127.0.0.1:18000/health
 ```
 
-## 文档入口
+期望 HTTP 200，无需 token。
 
-- Swagger UI: /docs
-- ReDoc: /redoc
-- API 浏览页: /api-browser
-- 说明：`/docs`、`/redoc` 页面及其静态资源（`/_static/docs/`）全部本地托管，不依赖外部 CDN，离线环境可用
-- 管理 Portal: /portal/（首页 `/` 直达；token 管理、端点监控、MCP/CLI 在线测试、开发手册，侧边栏工作台菜单含「开发手册」应用内页面、文档区含 Swagger UI / ReDoc 外部入口；需 `OPEN_PLATFORM_ADMIN_TOKEN`）
-- API 开发手册: /api-manual（服务端渲染 docs/API开发手册.md 的离线文档页，免业务鉴权，含表格/代码示例）
-- 错误码目录: /api/error-codes
-- AUTHZ 集成设计文档: docs/开放平台统一认证鉴权集成_AUTHZ.md
-- AUTHN 集成设计文档: docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md
-- SDK 集成设计文档: docs/开放平台SDK集成设计.md
-- MCP 与 CLI 接口定义: docs/MCP与CLI接口定义.md
-- 管理 Portal 设计: docs/管理Portal设计.md
+### 1.4 第一次业务调用
 
-## SDK / MCP / CLI 入口
+配置服务端 token 后调用「创建知识库」：
 
-- **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`，导入 `open_ikc_sdk`），封装四大类能力为类型安全调用；使用说明见 [sdk/python/README.md](sdk/python/README.md)。
-- **Java SDK**：`sdk/java/`（Maven，Java 17，零第三方依赖，`io.openikc:open-ikc-sdk:1.0.0`），同协议同错误码；使用说明见 [sdk/java/README.md](sdk/java/README.md)，设计见 [docs/开放平台JavaSDK集成设计.md](docs/开放平台JavaSDK集成设计.md)。
-- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），14 个工具；供 Claude 等 LLM 直接调用平台能力。
-- **CLI**：`ikc`（`python -m open_ikc_sdk.cli`），11 个子命令。
-- 完整能力映射 / 环境变量 / 工具清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
+```bash
+export OPEN_PLATFORM_TOKEN=your-token
+curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
+  -H "Authorization: Bearer your-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Id: 20260818000000000000001" \
+  -d '{"kbName":"产品知识库","kbType":"team","teamId":"team_01"}'
+```
 
-## 管理 Portal（/admin/*）
+响应 `errCode=000000` 即成功，`data.kbId` 为后续步骤的知识库 ID；每次响应都带 23 位数字 `traceId`。
 
-- **管理面 ≠ 业务四类能力**：`/admin/*`（token 管理、监控统计、MCP/CLI 在线测试）是运维管理面，使用独立管理鉴权（`OPEN_PLATFORM_ADMIN_TOKEN`），不进入业务 catalog，不暴露内部流水线接口。
-- **Portal 前端**：`portal/`（Vite 8 + React 18 + TS），构建产物 `portal/dist` 由平台静态挂载在 `/portal`。访问 `/portal/` 需输入 `OPEN_PLATFORM_ADMIN_TOKEN`。
-- **启用管理面**：配置 `OPEN_PLATFORM_ADMIN_TOKEN` 环境变量；未配置时 `/admin/*` 返回 `503001`（默认关闭，避免暴露）。`bash scripts/start_open_platform.sh` 未配置时自动生成随机 token 并在启动输出打印（显式配置则透传），登录 Portal 以该 token 为准。
-- **Token 存储**：SQLite（默认 `data/open_ikc_platform.db`，路径可经 `OPEN_PLATFORM_DB_PATH` 覆盖）；明文 token 仅在创建时返回一次，库中只存 sha256 哈希。
-- **Token 作用域**：创建 token 时可选配 `resource:action` 作用域（如 `knowledge_base:read`、`search:query`，支持 `*` 通配如 `*:*`）；**运行时强制生效**——DB token 调用未命中其作用域的接口返回 `100403`，不依赖 `OPEN_PLATFORM_AUTHZ_ENABLED` 开关；环境变量 token（`OPEN_PLATFORM_TOKEN`）不受作用域限制。作用域仅约束知识库/文档/解析/检索四类业务接口；**深度检索与普通检索共享 `search:query` 作用域**（`deep-search` 不单独设 scope，如需独立管控可后续新增 `search:deep`）；**管理面（`/admin/*`）使用独立 `OPEN_PLATFORM_ADMIN_TOKEN` 鉴权，禁止复用业务 token 作为 admin token**。
+> **下一步**：5 分钟全链路（建库 → 接入文档 → 解析轮询 → 检索）见 [API 开发手册 §2](docs/API开发手册.md)，进阶路线（换用 SDK/CLI、深度检索、生产认证、运维）见 §2.6。
 
-## 错误码与异常
+## 2. 能力总览
 
-1. 业务层优先抛 `AppException` 或其子类，例如 `KnowledgeBaseException`，用于表达不同领域/层级的异常边界。
-2. 推荐用 `error.as_exception(...)` 或 `exception_from_code(...)` 从错误码对象直接生成异常，避免业务层手写字符串。
-3. 子类只负责表达层级和边界，错误码对象负责承载默认消息、层级和说明。
-4. 应用层统一捕获异常并返回 `errCode`、`errMsg`、`data`。
-5. 参数校验错误由全局校验异常处理器统一映射为 `100001`。
-6. 文档、解析、检索三个领域后续可分别继承 `DocumentException`、`ParseException`、`SearchException`，保持同一条异常链路。
-7. 错误码推荐通过 `BaseErrorCodes.get_by_code(...)` 或 `error_code_catalog()` 查表，便于在日志、文档和调试中统一定位。
-8. 线上可直接访问 `/api/error-codes` 获取当前注册的错误码目录。
-9. 框架层未知路由/方法不允许（HTTP 404/405）同样映射统一响应体（`100404`/`100405` + `traceId`），保留 HTTP 状态码。
-10. `/docs` 不再声明实际不返回的 `422`；校验类错误运行时统一返回 HTTP 200 + `100001`。
+平台刻意收敛能力面，只对外暴露四类业务能力：
 
-## TraceID
+| 能力 | 路由前缀 | 接口数 | 典型场景 |
+| --- | --- | --- | --- |
+| 知识库 | `/api/v1/knowledge-bases` | 4 | 组织与管理知识空间（个人/团队/企业），定义元数据模型 |
+| 文档 | `/api/v1/knowledge-documents` | 3 | 接入 URL / 文件 / 目录 / 压缩包为可解析文档 |
+| 解析 | `/api/v1/knowledge-documents/parse*` | 4 | 解析为结构化结果，支持异步任务、凭证与下载 |
+| 检索 | `/api/v1/knowledge-search` | 2 + 1 兼容别名 | 普通检索（证据列表）与深度检索（Agentic 多轮 + 带引用回答） |
 
-1. 所有请求都会注入 23 位纯数字 `traceId`，优先读取请求头 `X-Request-Id`、`X-Trace-Id`、`traceId`、`trace_id`。
-2. 响应头会回写 `X-Request-Id` 和 `X-Trace-Id`，响应体顶层会带 `traceId`。
-3. 日志上下文通过 `ikc-log-center` 的 SDK 绑定，便于在日志中心按 trace 链路检索。
+另有：
 
-## TraceID 与日志
+- **管理面** `/admin/*`：token 管理、端点监控、MCP/CLI 在线测试，独立 admin 鉴权，不进入业务 catalog。
+- **系统路由**：`/health`、`/api/catalog`、`/api/error-codes`、文档页等，免业务鉴权。
 
-1. 所有请求都会在入口生成或透传 `traceId`，并写入 `X-Request-Id` 与 `X-Trace-Id` 响应头。
-2. 日志上下文会自动携带当前请求的 `traceId`，便于串联 `ikc-log-center` 风格的链路日志。
-3. 若调用方传入 `X-Request-Id`，服务端会优先复用；否则按 23 位数字规则生成。
-4. 调用下游接口时应透传同一组追踪头，可复用 `build_trace_headers()`。
-5. 未认证（`100401`）响应同样复用调用方传入的 `X-Request-Id` / `X-Trace-Id`，缺失时生成 23 位数字 `traceId`。
+**接入方式选型**：
 
-下游透传示例：
+| 方式 | 适合谁 | 起步成本 | 入口 |
+| --- | --- | --- | --- |
+| REST | 任何语言、curl/Postman 调试、需全量字段控制 | 最低 | §1.4 / 手册 §6 |
+| Python SDK | Python 应用（FastAPI/Django/脚本），类型安全 + 异常映射 | 低 | §4 |
+| Java SDK | Java 17+ 后端服务，零第三方依赖 | 低 | §4 |
+| MCP Server | Claude Desktop / Cursor 等 AI 客户端（14 个工具） | 低 | §4 |
+| CLI | 运维脚本、快速验证、CI 冒烟（14 个子命令） | 最低 | §4 |
+
+## 3. 文档导航
+
+### 3.1 在线入口（服务启动后）
+
+| 入口 | 路径 | 说明 |
+| --- | --- | --- |
+| API 开发手册 | `/api-manual` | 服务端渲染的开发者手册（免鉴权，含快速开始 / 接口参考 / 错误排查） |
+| Swagger UI | `/docs` | OpenAPI 交互式调试；页面与静态资源本地托管，离线可用 |
+| ReDoc | `/redoc` | OpenAPI 阅读视图 |
+| API 浏览页 | `/api-browser` | 平台能力浏览 |
+| 业务 API 目录 | `/api/catalog` | 对外业务接口实时目录（与路由保持一致） |
+| 错误码目录 | `/api/error-codes` | 当前注册错误码实时查询 |
+| 管理 Portal | `/portal/` | token 管理、端点监控、MCP/CLI 在线测试、开发手册应用内页面（需 `OPEN_PLATFORM_ADMIN_TOKEN`） |
+
+### 3.2 仓库文档（docs/）
+
+| 主题 | 文件 |
+| --- | --- |
+| 实现契约（强制约定） | 根目录 `AGENTS.md` |
+| 接口整体方案（V2 精简） | `docs/开放平台接口整体方案_V2_精简.md` |
+| 接口详细定义（V2 精简） | `docs/开放平台接口详细定义_精简版_V2.md` |
+| 认证集成（AUTHN / OAuth2 / SSO） | `docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md` |
+| 鉴权集成（AUTHZ） | `docs/开放平台统一认证鉴权集成_AUTHZ.md` |
+| SDK 集成设计 | `docs/开放平台SDK集成设计.md`、`docs/开放平台JavaSDK集成设计.md` |
+| MCP / CLI 接口定义 | `docs/MCP与CLI接口定义.md` |
+| 管理 Portal 设计 | `docs/管理Portal设计.md` |
+| 工作日志（跨天上下文） | `docs/worklog.md` |
+
+> 权威顺序：`AGENTS.md` 与当前代码 > `docs/` 设计文档；接口定义以 `/api/catalog`、`/openapi.json` 实时为准。
+
+## 4. SDK / MCP / CLI
+
+- **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`），四大能力类型安全封装：同步/异步客户端、异常映射、trace 透传、MCP/CLI 同源；[sdk/python/README.md](sdk/python/README.md)。
+- **Java SDK**：`sdk/java/`（Maven，Java 17，零第三方依赖，`io.openikc:open-ikc-sdk:1.0.0`），同协议同错误码；[sdk/java/README.md](sdk/java/README.md)，设计见 [docs/开放平台JavaSDK集成设计.md](docs/开放平台JavaSDK集成设计.md)。
+- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），14 个工具，供 Claude 等 LLM 直接调用平台能力。
+- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），14 个子命令，全局选项 + 退出码约定。
+- 完整能力映射 / 环境变量 / 工具与命令清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
+
+## 5. 配置参考
+
+### 5.1 认证（AUTHN）
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `OPEN_PLATFORM_TOKEN` | 空 | 服务端静态 token（单值） |
+| `OPEN_PLATFORM_TOKENS` | 空 | 多 token，逗号分隔 |
+| `OPEN_PLATFORM_AUTH_MODE` | `static` | `static` / `gateway_header` / `oidc_jwt` / `oauth2_introspection` |
+| `OPEN_PLATFORM_GATEWAY_REQUIRE_BEARER` | `false` | `gateway_header` 模式下是否仍强制 Bearer 存在 |
+| `OPEN_PLATFORM_AUTH_HEADER_*` | `X-User-Id` 等 | gateway_header 身份头名：`USER_ID`/`TENANT_ID`/`ROLES`/`SCOPES`/`PERMISSIONS`/`DENY_PERMISSIONS` |
+| `OPEN_PLATFORM_AUTH_CLAIM_*` | `sub` 等 | oidc_jwt 的 JWT claim 键名：`USER_ID`/`TENANT_ID`/`ROLES`/`SCOPES`/`PERMISSIONS`/`DENY_PERMISSIONS`/`SYSTEM` |
+| `OPEN_PLATFORM_OIDC_ISSUER` / `_AUDIENCE` / `_JWKS_URL` / `_ALGORITHMS` | — | oidc_jwt 验签配置（算法默认 `RS256`） |
+| `OPEN_PLATFORM_OAUTH2_INTROSPECTION_URL` / `_CLIENT_ID` / `_CLIENT_SECRET` / `_TIMEOUT_SECONDS` | — | oauth2_introspection 配置 |
+
+> ⚠️ **部署安全边界**：`static` 模式直接采信身份头，**仅限内网/测试**；生产必须使用 `gateway_header`（可信网关剥离/覆盖客户端伪造头）或 `oidc_jwt` / `oauth2_introspection`（服务端验签 token 派生身份）。
+
+### 5.2 鉴权（AUTHZ）
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `OPEN_PLATFORM_AUTHZ_ENABLED` | `false` | 开启细粒度授权；deny-overrides，无命中默认拒绝（`100403`） |
+| `OPEN_PLATFORM_AUTH_SYSTEM` | `default` | 授权系统选择（`default` / `digital_employee`），可被请求头 `X-Auth-System` 覆盖 |
+| `OPEN_PLATFORM_DEFAULT_ROLE_ACTION_MAPPING` / `OPEN_PLATFORM_DE_ROLE_ACTION_MAPPING` | 内置 | 角色 → `resource:action` 动作映射 |
+
+### 5.3 管理面
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `OPEN_PLATFORM_ADMIN_TOKEN` | 空 | 管理面独立 token；**未配置时 `/admin/*` 默认关闭（`503001`）**；启动脚本未配置时自动生成随机值并打印 |
+| `OPEN_PLATFORM_DB_PATH` | `data/open_ikc_platform.db` | 管理面 SQLite（token 哈希、请求统计）路径 |
+
+### 5.4 日志与检索
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `LOG_CENTER_ENABLE` | `true` | 远程日志投递开关（SDK 异步 POST `{url}/ingest`） |
+| `LOG_CENTER_URL` | `http://127.0.0.1:9315` | 日志中心服务端地址 |
+| `LOG_CENTER_TOKEN` | 空 | 日志中心开启 Bearer 认证时的 token |
+| `OPEN_PLATFORM_SEARCH_BACKEND` | `in_process` | `in_process`（内置检索索引）/ `ur`（universal_retriever）/ `openai`（openai 检索网关） |
+| `OPEN_PLATFORM_UR_BASE_URL` | `http://127.0.0.1:8096` | `ur` 后端地址 |
+| `OPEN_PLATFORM_OPENAI_SEARCH_BASE_URL` | `http://127.0.0.1:8088/...` | `openai` 后端地址 |
+| `OPEN_PLATFORM_KB_INDEX_MAP` | 空 | JSON 对象，显式映射 `kb_id -> index` |
+| `OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS` | `10` | 普通检索下游超时（秒） |
+| `OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS` | `60` | 深度检索下游超时（秒） |
+
+## 6. 协议约定
+
+### 6.1 统一响应体
+
+所有业务响应（成功与失败）统一结构：
+
+```json
+{
+  "errCode": "000000",
+  "errMsg": "success",
+  "data": {},
+  "traceId": "23位数字"
+}
+```
+
+- 成功 `000000`；参数错误 `100001`（含 FastAPI/Pydantic 校验，返回 HTTP 200）；未认证 `100401`；无权限 `100403`；资源不存在 `100404`；方法不允许 `100405`；资源冲突 `100409`；未实现占位 `501001`；系统错误 `999999`；管理面未启用 `503001`。
+- 完整错误码目录实时查询 `/api/error-codes`。
+
+### 6.2 错误码与异常
+
+1. 业务层优先抛 `AppException` 子类（`KnowledgeBaseException` / `DocumentException` / `ParseException` / `SearchException`），用领域异常表达层级与边界。
+2. 推荐用 `error.as_exception(...)` / `exception_from_code(...)` 从错误码对象生成异常，避免业务层手写字符串；错误码经 `BaseErrorCodes.get_by_code(...)` / `error_code_catalog()` 查表。
+3. 应用层统一捕获异常并返回统一响应壳；框架层未知路由/方法（HTTP 404/405）同样映射 `100404`/`100405` + traceId，保留 HTTP 状态码。
+4. 新错误码必须进入 `error_code_catalog()` registry，并在 `/api/error-codes` 可见。
+
+### 6.3 认证（AUTHN）
+
+1. 每次请求必须携带 `Authorization: Bearer <token>`；缺失或格式错误统一返回 `100401` + traceId。
+2. 未配置 token 环境变量时，服务端仍强制 Bearer 存在但不做值比对。
+3. 系统路径免业务鉴权：`/docs`、`/redoc`、`/openapi.json`、`/api-manual`、`/api/catalog`、`/api/error-codes`、`/health`、`/admin`、`/portal`（见 `app/core/middlewares.py` 的 `AUTH_EXEMPT_PATHS` / `AUTH_EXEMPT_PREFIXES`）。
+4. 认证中间件把身份写入 `request.state.identity` 与 `request.state.permissions`，供 AUTHZ bridge 复用；模式细节见 [AUTHN 设计文档](docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md)。
+
+### 6.4 TraceID 与日志
+
+1. 每个请求注入 23 位纯数字 `traceId`，优先复用请求头 `X-Request-Id` / `X-Trace-Id` / `traceId` / `trace_id`。
+2. 响应头回写 `X-Request-Id` 与 `X-Trace-Id`；未认证响应同样携带。
+3. 日志经 `ikc-log-center`（`log_center_sdk.get_logger(__name__)`）统一输出，日志上下文自动携带 traceId，可跨链路检索；调用下游时透传同一组追踪头：
 
 ```python
 from app.core.trace import build_trace_headers
 
 headers = {
-	"Authorization": "Bearer xxx",
-	**build_trace_headers(),
+    "Authorization": "Bearer xxx",
+    **build_trace_headers(),
 }
 # requests.post(url, json=payload, headers=headers, timeout=5)
 ```
 
-## 鉴权要求
+### 6.5 鉴权（AUTHZ）
 
-1. 开放平台要求每次请求都携带 `Authorization: Bearer <token>`。
-2. 若未携带或格式错误，接口统一返回 `100401`，并返回当前请求 `traceId`。
-3. 可通过环境变量配置服务端 token：
-	- `OPEN_PLATFORM_TOKEN`：单个 token
-	- `OPEN_PLATFORM_TOKENS`：多个 token，逗号分隔
-4. 若未配置上述环境变量，服务端仍会强制要求 Bearer token 存在，但不做值比对。
-5. API 文档端点 `/docs`、`/redoc`、`/openapi.json` 及其子路径（含尾斜杠写法）免 token 校验，便于接口浏览。
+- 开启 `OPEN_PLATFORM_AUTHZ_ENABLED=true` 后生效；策略 **deny-overrides**，无命中默认拒绝（`100403` + traceId）。
+- 业务接入用 `authorize_or_raise(request, action, resource_type, ...)`（参考 `POST /api/v1/knowledge-search/query`）；授权逻辑不进 middleware。
+- 授权事实经请求头注入：`X-User-Id`、`X-Tenant-Id`、`X-User-Roles`、`X-User-Permissions`、`X-User-Deny-Permissions`（头名可经 `OPEN_PLATFORM_AUTH_HEADER_*` 定制）。
+- 数据权限上下文：`kb_id`/`kb_ids` 从请求体注入；**`owner_id`/`org_path` 一律取认证身份（`request.state.identity`），请求体 `ownerId`/`orgPath` 不作为授权依据**；`teamId`/`orgId` 作为业务范围声明读取。
+- 新接入方优先「适配器 + 映射配置」（`MappingAuthzAdapter`），避免在业务 service 里写第三方字段 if/else；详见 [AUTHZ 设计文档](docs/开放平台统一认证鉴权集成_AUTHZ.md)。
 
-## 认证模式（OAuth2 / SSO）
+## 7. 项目结构
 
-1. 通过 `OPEN_PLATFORM_AUTH_MODE` 切换认证模式：
-	- `static`：兼容当前 Bearer token 模式
-	- `gateway_header`：企业网关注入身份头
-	- `oidc_jwt`：本地 JWKS 验签 JWT
-	- `oauth2_introspection`：远程 introspection 校验 token
-2. 认证中间件会把身份写入 `request.state.identity` 和 `request.state.permissions`，供 AUTHZ bridge 复用。
-3. 具体流程图和配置清单见 `docs/开放平台统一认证集成_AUTHN_OAUTH2_SSO.md`。
-
-> ⚠️ **部署安全边界**：`static` 模式直接采信 `X-User-Id/X-User-Roles` 等身份头，**仅限内网/测试环境**；
-> 生产必须使用 `gateway_header`（由可信网关完成认证并剥离/覆盖客户端伪造头）或 `oidc_jwt`/`oauth2_introspection`（服务端验签 token 派生身份）。
-
-## 访问地址
-
-- 平台服务: http://127.0.0.1:18000
-- Swagger UI: http://127.0.0.1:18000/docs
-- ReDoc: http://127.0.0.1:18000/redoc
-- API 浏览页: http://127.0.0.1:18000/api-browser
-
-## 模块职责（当前重构）
-
-1. `app/main.py`：应用入口，仅创建 `app` 实例。
-2. `app/core/app_factory.py`：应用装配（FastAPI 配置、SDK、路由、中间件、异常处理注册）。
-3. `app/core/middlewares.py`：Trace 与 Token 中间件。
-4. `app/core/security.py`：Token 提取、配置、校验、未认证响应构造。
-5. `app/core/exception_handlers.py`：全局异常处理注册（含管理面 `AdminDisabledError` → `503001`）。
-6. `app/core/system_routes.py`：系统路由（`/`、`/health`、`/api-browser`、`/api/catalog`、`/api/error-codes`）。
-7. `app/core/api_browser.py`：API 浏览页 HTML 渲染。
-8. `app/core/admin/`：管理面（独立 `OPEN_PLATFORM_ADMIN_TOKEN` 鉴权）——token 存储（SQLite）、请求监控统计、MCP/CLI 在线测试；路由见 `app/routers/admin.py`（`/admin/*`），不进入业务 catalog。
-
-## 当前实现进度
-
-1. 知识库 `create` / `update` / `query` / `{kb_id}` 已真实落地：进程内存储（`app/services/knowledge_base_store.py`）+ 业务校验 + AUTHZ 接入。
-2. 创建返回真实 `kbId`（`kb_` + 17 位数字）与 UTC 时间；同范围（personal 按 owner、team 按 teamId、enterprise 按 orgId/租户）`kbName` 重复返回 `100409`。
-3. 更新需知识库存在（否则 `100404`）；个人库仅创建者可修改/访问（否则 `100403`）；企业库无法识别组织授权时返回 `100403`。
-4. 列表查询按调用方数据范围收敛：个人库仅本人、团队库需 `teamId`、企业库按 `orgId` 或调用主体租户。
-5. 文档域 `ingest` / `ingest-and-parse` / 查询文档信息（`GET /{doc_id}`）已真实落地：进程内文档存储（`app/services/document_store.py`）+ 知识库归属校验 + 幂等登记 + AUTHZ 接入；返回真实 `ing_`/`doc_` 任务与文档 ID。
-6. 解析域四接口已真实落地：`POST /parse`（async 返回 queued 任务、sync 返回内联结果）、`GET /parse-result/query`、`GET /parse-result/issue-download-ticket`、`GET /parse-result/download`；进程内解析任务/结果/凭证存储（`app/services/parse_store.py`）+ 文档归属与数据范围校验 + 幂等 + AUTHZ 接入；新增解析域错误码 `200003`/`200004`/`200011`。下载接口在真实结果存储落地前返回统一体（含下载说明）。
-7. 检索域已真实落地：`POST /knowledge-search/universal-search`（普通检索，返回证据列表，可配重排/关联召回/分数阈值，`searchType=fulltext|vector|hybrid`）与 `POST /knowledge-search/deep-search`（深度检索，Agentic 多轮 + 带引用回答，依赖下游 DeepSearch）。默认 `OPEN_PLATFORM_SEARCH_BACKEND=in_process` 时使用进程内检索索引（`app/services/search_store.py`，关键词命中打分 + 元数据过滤 + topK 截断）；配置 `ur`/`openai` 后普通检索分别对接 `universal_retriever /retrieval/search/sync` / `openai_search_service /VectorSearchV2`，深度检索对接 `/DeepSearch`（`app/services/search_client.py`）。两类检索均保持知识库存在性与数据范围校验（个人库仅创建者可检索，团队库需 `teamId`、企业库按 `orgId` 或调用主体租户收敛）+ AUTHZ 接入（多库逐库授权，任一库失败整体拒绝）；`POST /knowledge-search/query` 保留为普通检索兼容别名。
-
-## 完成后自动审查（Claude Code）
-
-任务收尾且测试通过后，可运行 `scripts/review_with_claude.sh` 自动调用 Claude Code headless（`claude -p`）对当前改动做只读代码+安全审查，报告输出到 `docs/code-review_<日期>.md`（默认审查未提交改动，工作区干净时回退最近一次提交）。
-
-- 审查 prompt 强制只读，不修改文件，可与并行开发安全共存。
-- 环境变量 `OPEN_PLATFORM_AUTO_REVIEW=false` 可跳过自动审查；`CLAUDE_BIN` 可覆盖 claude 可执行文件路径。
-- 约定详见 `AGENTS.md` §13。
-
-## 统一认证鉴权集成层（独立）
-
-为适配“两个系统权限 schema 差异明显”的场景，新增了独立的统一认证鉴权集成层，不与现有 middleware 的 trace/token 逻辑交叉。
-
-1. `app/core/authz/schema.py`：统一权限语义模型（身份、权限事实、授权请求、授权决策）。
-2. `app/core/authz/adapters.py`：外部系统权限 schema -> 统一语义的适配器。
-3. `app/core/authz/policy.py`：统一策略引擎（deny-overrides）。
-4. `app/core/authz/service.py`：统一服务门面（注册适配器并执行授权）。
-5. `app/core/authz/bridge.py`：业务桥接层（按请求上下文/Header 组装授权输入，不侵入 middleware）。
-6. 数据权限已支持条件约束：资源 ID 范围、owner-only、组织路径、部门、租户集合。
-7. 运行时内置两个适配系统：`default` 与 `digital_employee`（通过 `X-Auth-System` 或 `OPEN_PLATFORM_AUTH_SYSTEM` 选择）。
-
-示例：
-
-```python
-from app.core.authz import AuthIntegrationService, AuthorizationRequest, MappingAuthzAdapter
-
-service = AuthIntegrationService()
-service.register_adapter(
-	"system_a",
-	MappingAuthzAdapter(
-		"system_a",
-		identity_mapping={"user_id": "uid", "tenant_id": "tenant", "roles": "roles"},
-		role_action_mapping={"km_reader": ["search:query"], "km_admin": ["*:*"]},
-	),
-)
-
-decision = service.authorize(
-	system_name="system_a",
-	raw_identity={"uid": "u100", "tenant": "t1", "roles": ["km_reader"]},
-	raw_permissions={"roles": ["km_reader"], "permissions": []},
-	request=AuthorizationRequest(action="query", resource_type="search"),
-)
+```
+app/
+  main.py                 # 应用入口，仅 create_app()
+  core/
+    app_factory.py        # FastAPI 装配：路由、中间件、异常、SDK
+    middlewares.py        # Trace + AuthN 中间件
+    security.py           # Token / OAuth2 / OIDC 认证实现
+    trace.py              # traceId 生成、绑定、透传头
+    error_codes.py        # ErrorCode / AppException / 错误码 registry
+    exception_handlers.py # 全局异常 → 统一响应
+    responses.py          # 成功/占位响应构造
+    catalog.py            # 对外业务 API 目录（与路由一致）
+    system_routes.py      # /、/health、/api-browser、/api/catalog、/api/error-codes
+    api_browser.py        # API 浏览页
+    admin/                # 管理面：auth / monitor / stats / token_store / mcp_cli_test
+    authz/                # 独立 AUTHZ 集成层：schema / adapters / policy / service / bridge / runtime
+  routers/                # 薄路由：admin / knowledge_base / document / parse / search
+  schemas/                # Pydantic 请求/响应模型
+  services/               # 业务编排 + 进程内存储
+portal/                   # 管理 Portal 前端（Vite 8 + React 18 + TS），产物静态挂载于 /portal
+sdk/                      # python/（open-ikc-sdk）、java/（io.openikc:open-ikc-sdk）
+scripts/                  # 启动/停止脚本
+tests/                    # pytest 测试
+docs/                     # 方案与 AUTHN/AUTHZ 设计（中文）
 ```
 
-业务桥接示例（独立于 middleware）：
+分层职责：`routers/*` 只做参数校验、鉴权桥接、调 service；`services/*` 做业务规则与编排、抛领域异常；`schemas/*` 只定义模型、无副作用；`core/*` 提供横切能力；`core/authz/*` 独立于 middleware。
 
-```python
-from app.core.authz import AuthIntegrationService, AuthzBridge
+## 8. 测试
 
-bridge = AuthzBridge(AuthIntegrationService())
-decision = bridge.authorize_request(
-	request=request,
-	system_name="system_a",
-	action="query",
-	resource_type="search",
-)
-bridge.require_allowed(decision)
+```bash
+cd /home/open-ikc && .venv/bin/python -m pytest tests -q
 ```
 
-运行时接入（不修改 middleware）：
+- 每个测试文件自建 `TestClient(app)`；`tests/conftest.py` 的 `isolate_admin_db` fixture 隔离管理面 SQLite，避免跨测试串扰。
+- 管理面测试在 `tests/test_admin_*.py`；鉴权免检路径、AUTHZ（deny-overrides、数据权限条件）、错误码 registry 均有对应用例。
+- 新增/修改行为必须补测试，约定见 `AGENTS.md` §6。
 
-1. 通过环境变量 `OPEN_PLATFORM_AUTHZ_ENABLED=true` 开启细粒度授权。
-2. `POST /api/v1/knowledge-bases/create`、`POST /api/v1/knowledge-bases/update`、`POST /api/v1/knowledge-search/universal-search`、`POST /api/v1/knowledge-search/deep-search` 已接入 `authorize_or_raise(...)`。
-3. 默认适配器系统名为 `default`，可通过请求头 `X-Auth-System` 指定系统。
-4. 数字员工系统可直接使用 `X-Auth-System: digital_employee`，并按文档配置角色动作映射。
-5. 可通过请求头传入授权事实（示例）：
-	- `X-User-Id`
-	- `X-Tenant-Id`
-	- `X-User-Roles`（如 `km_reader`）
-	- `X-User-Permissions`
-	- `X-User-Deny-Permissions`
-6. 检索路由会把请求体中的 `kbId/kbIds` 注入授权上下文用于数据权限匹配；**`owner_id`/`org_path` 取认证身份（`X-User-Id`/`X-Tenant-Id`），请求体 `ownerId`/`orgPath` 不作为授权依据（仅保留为兼容字段）**；`teamId`/`orgId` 作为业务范围声明从请求体读取。
+## 9. 实现状态
+
+| 能力 | 状态 |
+| --- | --- |
+| 知识库 | 已落地：进程内存储 + 业务校验 + AUTHZ；创建返回真实 `kbId`，同名冲突 `100409`，个人/团队/企业库按数据范围收敛 |
+| 文档 | 已落地：`ingest` / `ingest-and-parse` / 详情查询，知识库归属校验 + 幂等登记 + AUTHZ |
+| 解析 | 已落地：异步任务与内联结果、结果查询 / 下载凭证 / 下载，进程内任务与结果存储 + AUTHZ |
+| 检索 | 已落地：普通检索（`universal-search`，后端可切 `in_process` / `ur` / `openai`）+ 深度检索（`deep-search`，依赖下游 DeepSearch）；`/query` 为普通检索兼容别名 |
+
+## 10. 协作与审查
+
+- **实现契约**：见根目录 `AGENTS.md`（能力边界、路由清单、协议、分层、测试与提交约定，所有自动化协作者强制遵守）。
+- **自动审查**：行为有改动且测试通过后，可运行 `scripts/review_with_claude.sh` 调用 Claude Code headless 做只读代码+安全审查，报告输出 `docs/code-review_<日期>.md`；`OPEN_PLATFORM_AUTO_REVIEW=false` 可跳过。
+- **工作日志**：`docs/worklog.md` 按日期记录任务、决策与下一步；跨天/跨会话开工先读最近条目。
+- **提交约定**：任务收尾且测试通过后自动 commit + push（默认推送 `github`，见 `AGENTS.md` §8.2）；不提交 `.venv/`、`logs/`、`__pycache__/`、密钥与真实 token。

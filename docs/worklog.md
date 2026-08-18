@@ -582,4 +582,4 @@
   - 修复原问题：删除重复小节（TraceID 出现两遍）；「当前实现进度」冗长列表收敛为状态表；「错误码与异常」过时表述修正（领域异常已全部落地）；认证/鉴权长代码示例收敛为要点 + 文档链接；CLI 子命令数 11 → 14。
 - 事实修正（代码核实）：MCP 实际注册 14 个工具（`sdk/python/open_ikc_sdk/mcp/server.py`，无 deep_search 工具）、CLI 14 个子命令（无 deep-search 子命令）；同步修正 `docs/API开发手册.md` §1.3/§10/§11 的「15 个」与 deep-search 示例（SDK `client.search.deep_search(...)` 仍存在，仅 MCP/CLI 未封装）。
 - 验证：全量 `pytest tests -q` **209 passed**（沙箱外执行；沙箱内 TestClient 事件循环受限，全量测试无法在沙箱内跑完）。
-- 下一步：已提交推送。
+- 下一步：已提交推送。github 已同步（48ca9fe..b7a6a6c）；origin（code.tiancloud.com）被环境网络代理拦截（解析到 198.18.0.67，22/443 均关闭），待网络恢复后补推 `git push origin main`。

@@ -60,6 +60,10 @@ def test_api_manual_page_renders_manual() -> None:
     assert "universal-search" in text
     assert "deep-search" in text
     assert "300001" in text
+    # 手册页带导航目录（侧边 TOC + 标题锚点）
+    assert 'class="toc"' in text
+    assert 'href="#sec-1"' in text
+    assert "目录" in text
 
 
 def test_business_routes_still_require_authentication() -> None:

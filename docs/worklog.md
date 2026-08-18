@@ -556,3 +556,11 @@
   - 因 markdown-it 渲染关闭 HTML（html: false），LangChain 的 Card/Callout 组件以表格/引用块等效实现；H1 标题保留（tests/test_system_routes.py 断言依赖）。
 - 验证：全量 `pytest tests -q` **209 passed**；`/api-manual` 渲染正常（唯一 H1、13 个 h2、24 张表格、50771 字节）。
 - 下一步：按 §8.2 提交推送（docs/API开发手册.md + worklog）。
+
+### 任务：/api-manual 手册页增加导航目录（TOC）
+
+- 用户要求：手册页带上导航目录（参考 LangChain 文档页左侧目录形态）。
+- 改动：`app/core/api_manual.py` —— 解析 markdown tokens 为 h2/h3 注入锚点 id（`sec-N`），生成侧边目录 `<nav class="toc">`（h2 一级、h3 缩进二级，共 42 项）；布局改 flex：左侧 sticky 目录（桌面，宽 250px，独立滚动）+ 右侧正文，`<900px` 时目录置顶限高 320px；标题 `scroll-margin-top` 保证锚点跳转不被遮挡。零新增依赖，`lru_cache`（mtime/size）机制不变。
+- 测试：`tests/test_system_routes.py` 手册渲染用例补 TOC 断言（`class="toc"`、`href="#sec-1"`、目录字样）；全量 **209 passed**。
+- 验证：线上 `/api-manual` 200 且含 TOC；Browser 子代理实测点击「2. 快速开始」跳转 `#sec-6` 滚动到位（scrollY=1964，标题位于视口顶部）。
+- 下一步：已提交推送；服务如需热更新请重启（lru_cache 以 mtime/size 失效，`--reload` 下自动生效）。

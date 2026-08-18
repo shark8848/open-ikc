@@ -22,12 +22,12 @@ def _heading_plain_text(inline: Token) -> str:
 
 
 def _render_with_toc(markdown_text: str) -> tuple[str, list[dict[str, str]]]:
-    """渲染 markdown，并为 h2/h3 标题注入锚点 id；返回 (body_html, 目录项)。"""
+    """渲染 markdown，并为 h2/h3/h4 标题注入锚点 id；返回 (body_html, 目录项)。"""
     tokens = _MD.parse(markdown_text)
     toc_items: list[dict[str, str]] = []
     seq = 0
     for tok in tokens:
-        if tok.type == "heading_open" and tok.tag in ("h2", "h3"):
+        if tok.type == "heading_open" and tok.tag in ("h2", "h3", "h4"):
             seq += 1
             anchor = f"sec-{seq}"
             tok.attrSet("id", anchor)
@@ -40,12 +40,12 @@ def _render_with_toc(markdown_text: str) -> tuple[str, list[dict[str, str]]]:
 
 
 def _render_toc_html(items: list[dict[str, str]]) -> str:
-    """生成侧边目录导航（h2 一级、h3 缩进二级）。"""
+    """生成侧边目录导航（h2 一级、h3 缩进二级、h4 缩进三级）。"""
     if not items:
         return ""
     lis: list[str] = []
     for item in items:
-        cls = "toc-h2" if item["tag"] == "h2" else "toc-h3"
+        cls = f"toc-{item['tag']}"
         anchor = item["id"]
         text = item["text"]
         lis.append(f'<li class="{cls}"><a href="#{anchor}">{text}</a></li>')
@@ -86,6 +86,7 @@ def render_api_manual_html() -> str:
           .toc a {{ color: #9db4d8; text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }}
           .toc a:hover {{ color: #8dc1ff; background: rgba(141,193,255,0.1); }}
           .toc .toc-h3 {{ padding-left: 14px; font-size: 0.8rem; }}
+          .toc .toc-h4 {{ padding-left: 28px; font-size: 0.78rem; color: #8ba1c5; }}
           article {{ flex: 1; min-width: 0; margin-top: 0; padding: 8px 24px 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }}
           article h2, article h3 {{ scroll-margin-top: 24px; }}
           @media (max-width: 900px) {{

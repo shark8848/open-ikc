@@ -124,11 +124,62 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/universal-search 
 
 验证点：`data.results` 返回命中证据列表（`mode=qa` 时附带 `answer` 摘要）。至此，你的应用已经可以通过一个接口检索知识库内容。
 
-### 2.6 下一步
+### 2.6 下一步：从演示到生产
 
-- 换更省事的接入方式：CLI（§11）或 Python SDK（§9.1）里跑同样的流程
-- 需要深度问答（多轮规划 + 带引用编号的回答）→ 用 deep-search（§6.4），需配置 `OPEN_PLATFORM_SEARCH_BACKEND=openai`
-- 想要可视化运维 → 打开管理 Portal（`/portal`，需 admin token）
+你已经完成一次完整的「建库 → 入库 → 解析 → 检索」闭环。按你的场景选择以下进阶路线：
+
+#### 2.6.1 路线 A：换用 SDK 或 CLI 接入（正式开发推荐）
+
+curl 适合验证连通性；正式开发建议用 SDK（错误码自动映射为异常、类型提示、自动透传 traceId），或 CLI（运维/脚本）。
+
+Python SDK 最小示例（完整示例见 §9.1）：
+
+```python
+from open_ikc_sdk import OpenIKCClient
+
+client = OpenIKCClient(base_url="http://127.0.0.1:18000", token="<token>")
+try:
+    result = client.search.query(query="产品核心能力", kbId="kb_…")
+    for item in result.results:
+        print(item.docId, item.score, item.snippet)
+finally:
+    client.close()
+```
+
+CLI 等价命令（完整子命令见 §11.4）：
+
+```bash
+ikc search-query --query "产品核心能力" --kb-id kb_… --json
+```
+
+#### 2.6.2 路线 B：升级深度检索（带引用编号的综合回答）
+
+普通检索（universal-search）返回证据列表；需要**多轮规划 + 综合回答 + 引用编号**时使用 deep-search（§6.4）。
+
+前置条件：`OPEN_PLATFORM_SEARCH_BACKEND=openai` 且下游 DeepSearch 可用，否则返回 `501001`。
+
+```bash
+curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
+  -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
+  -d '{"query":"对比 2025 与 2026 产品白皮书的检索能力差异","kbIds":["kb_…"],"deepSearch":{"maxSteps":5}}'
+```
+
+#### 2.6.3 路线 C：接入真实环境（认证与鉴权）
+
+- **认证模式**：`static` 模式（默认）直接采信身份头，仅限内网/测试；生产必须配置 `OPEN_PLATFORM_AUTH_MODE=gateway_header` 或 `oidc_jwt` / `oauth2_introspection`（§5.1）。
+- **数据权限**：开启 `OPEN_PLATFORM_AUTHZ_ENABLED=true` 后，请求需携带身份头（`X-User-Id` / `X-Tenant-Id` / `X-User-Roles` 等），个人库仅创建者可访问，否则 `100403`（§5.5）。
+- **Token 作用域**：通过管理面创建的 DB token 可用 `resource:action` 作用域（如 `search:query`）限制接口范围，超出返回 `100403`（§7）。
+
+#### 2.6.4 路线 D：运维与管理（Token、监控、在线测试）
+
+- 管理 Portal（`/portal`，需 admin token）：token 创建/撤销、端点监控、MCP/CLI 在线测试、本手册。
+- admin token 与业务 token **隔离**，明文仅在创建时返回一次；未配置 `OPEN_PLATFORM_ADMIN_TOKEN` 时管理面返回 `503001`（§7）。
+
+#### 2.6.5 遇到问题时
+
+- 查 §12 常见错误排查表与 §5.4 错误码表（按 `errCode` 定位）。
+- 实时权威：`/api/catalog`（业务接口目录）、`/api/error-codes`（错误码目录）、`/openapi.json`（完整规范）。
+- 调用方透传 `X-Request-Id` / `X-Trace-Id` 后，可凭 23 位 `traceId` 在日志中心串联全链路排查（§5.2）。
 
 ## 3. 接入方式对比（REST / SDK / MCP / CLI）
 

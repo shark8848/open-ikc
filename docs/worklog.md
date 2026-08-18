@@ -541,3 +541,18 @@
 - 审查闭环（docs/code-review_2026-08-17-err-consistency.md）：无 P0/P1；P2-1 同步 `docs/开放平台接口详细定义_精简版_V2.md` deep-search 出参（去掉 results、total 语义、citations 补 page?）；P2-3 抽取 `_pick_score` 统一普通/深度检索分数兜底链（final→rerank→fused→vector→lexical→0）。
 - P2-2 待办：admin 错误码 `200020` 沿用业务 `2xxxxx` 码段（level=admin 语义隔离），后续业务域新码若冲突再为管理面划独立码段（如 `4xxxxx`）。
 - 下一步：提交推送双远端（§8.2）。
+
+## 2026-08-18
+
+### 任务：API 开发手册按 LangChain OpenWiki 表达模式重构（服务开发者视角）
+
+- 背景：用户要求参考 `docs.langchain.com/oss/openwiki/overview` 的表达模式，从服务开发者角度优化 `docs/API开发手册.md`（该文件由 `app/core/api_manual.py` 服务端渲染为 `/api-manual` 页面，Portal 左侧菜单「开发手册」内嵌）。
+- 参考模式提炼：一句话定位（What + Why）→ Get started 前置（最小可运行路径）→ Modes 选择表（不同方式怎么选）→ Capabilities 卡片式能力概览 → Next steps 引导；语言行动导向、每段回答「对你有什么用」。
+- 重构内容（docs/API开发手册.md 全量重写，639 → 846 行）：
+  - §1 平台定位与开发者价值：一句话定位 + 四大能力「解决什么问题/典型场景」表 + 五种接入方式选型表 + 手册导航（怎么读）。
+  - §2 快速开始升级为 **5 分钟全链路**：建库 → 接入文档 → 解析（含轮询约定）→ 检索，每步带 curl、响应示例与「验证点」，替代原单接口示例。
+  - §3 接入方式对比表（REST/SDK/MCP/CLI 六维度），§4 新增「知识库数据生命周期」五阶段编排表 + 异步任务约定（200003 轮询语义）。
+  - §5 全局约定、§6 接口参考（13 业务接口字段表与 curl 全部保留原内容，仅重排编号）、§7-§12 管理面/系统路由/SDK/MCP/CLI/错误排查原样保留、§13 下一步与补充约定。
+  - 因 markdown-it 渲染关闭 HTML（html: false），LangChain 的 Card/Callout 组件以表格/引用块等效实现；H1 标题保留（tests/test_system_routes.py 断言依赖）。
+- 验证：全量 `pytest tests -q` **209 passed**；`/api-manual` 渲染正常（唯一 H1、13 个 h2、24 张表格、50771 字节）。
+- 下一步：按 §8.2 提交推送（docs/API开发手册.md + worklog）。

@@ -1,71 +1,171 @@
 # OpenIKC 开放平台 API 开发手册
 
+> OpenIKC 开放平台是一个面向外部开发者的**知识库开放 API 服务**：你把文档交给我们，我们负责入库、解析、检索，你的应用只需一个统一协议即可获得「可检索的企业知识」。
+>
 > 适用版本：open-ikc-api（FastAPI 北向开放平台）· 服务端口 18000 · 协议 HTTPS/HTTP + JSON
 > 权威依据：当前代码实现 > `docs/` 设计文档。接口定义以 `/api/catalog`、`/openapi.json` 实时为准。
 
-## 1. 平台概述
+## 1. 平台是什么，能帮你做什么
 
-平台对外提供**四大类业务能力**（禁止自行扩展第五类）：
+### 1.1 定位
 
-| 能力 | 路径前缀 | 接口数 | 说明 |
+这是一个**北向开放平台**：平台不开放内部流水线，只对开发者暴露**四大类业务能力**——知识库、文档、解析、检索。你通过 REST、SDK、MCP 或 CLI 中的任意一种方式接入，即可在自己的产品里使用企业级知识管理能力，而无需关心存储、解析管道与检索引擎的实现细节。
+
+### 1.2 四大能力一览
+
+| 能力 | 它解决什么问题 | 入口 | 典型场景 |
 | --- | --- | --- | --- |
-| 知识库 | `/api/v1/knowledge-bases` | 4 | 创建 / 修改 / 列表查询 / 详情 |
-| 文档 | `/api/v1/knowledge-documents` | 3 | 接入知识源 / 一体化接入解析 / 文档信息 |
-| 解析 | `/api/v1/knowledge-documents/parse*` | 4 | 启动解析 / 查询结果 / 签发下载凭证 / 下载 |
-| 检索 | `/api/v1/knowledge-search` | 2 | 普通检索（证据列表）/ 深度检索（Agentic 多轮 + 带引用回答） |
-| 合计 | — | 13 | 业务接口共 13 个（`/query` 为普通检索兼容别名，不计新增） |
+| **知识库** | 组织和管理知识空间（个人/团队/企业），定义元数据模型 | `/api/v1/knowledge-bases` | 为每个业务域建独立知识库，控制谁可见 |
+| **文档** | 把 URL / 文件 / 目录 / 压缩包接入为可解析的文档 | `/api/v1/knowledge-documents` | 从 OSS、网页、批量目录导入知识源 |
+| **解析** | 把文档解析为结构化结果（分页、分块、OCR），支持异步任务 | `/api/v1/knowledge-documents/parse*` | 合同/白皮书/扫描件变成可检索的文本块 |
+| **检索** | 基于知识内容做普通检索与 Agentic 深度检索（带引用回答） | `/api/v1/knowledge-search` | 客服问答、内部知识助手、RAG 应用 |
+
+> **为什么只有这四类？** 平台刻意收敛能力面：索引管理等内部流水线接口不对外暴露。如果你发现需要第五类能力，请与平台方沟通，而不是绕过协议自行拼装。
 
 另有**管理面**（`/admin/*`，运维用途，独立鉴权）、**系统路由**（健康检查、API 目录、错误码目录、文档页），以及上层 **Python SDK / Java SDK / MCP Server / CLI** 四种接入方式。
 
-**开发环境**
+### 1.3 五种接入方式，怎么选
 
-- Python ≥ 3.12；服务默认端口 `18000`
-- 启动：`bash scripts/start_open_platform.sh`（或 `.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload`）
-- 文档入口：Swagger UI `/docs`、ReDoc `/redoc`、API 浏览页 `/api-browser`（均免 token，离线可用）
+| 接入方式 | 形态 | 适合谁 | 起步成本 |
+| --- | --- | --- | --- |
+| **REST** | 纯 HTTP + JSON | 任何语言、curl/Postman 调试、需要全量字段控制 | 最低，看 §2 快速开始 |
+| **Python SDK** | `open-ikc-sdk`，类型提示 + 异常映射 + 同步/异步 | Python 应用（FastAPI/Django/脚本） | 低，见 §9.1 |
+| **Java SDK** | `io.openikc:open-ikc-sdk`，零第三方依赖 | Java 17+ 后端服务 | 低，见 §9.2 |
+| **MCP Server** | 15 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
+| **CLI** | 15 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
 
-## 2. 快速开始（3 分钟跑通）
+> 选择建议：**想最快跑通** → 快速开始用 curl 或 CLI；**写正式代码** → 选对应语言的 SDK（错误码自动映射为异常）；**给 AI 助手用** → MCP。
+
+### 1.4 这份手册怎么读
+
+- 想**立刻动手** → 跳到 §2 快速开始，5 分钟跑通全链路
+- 想**确定接入方式** → 看 §3 接入方式对比
+- 想**理解业务编排** → 看 §4 典型使用流程（数据生命周期）
+- 想**查某个接口的字段** → 看 §6 接口参考
+- 遇到**报错** → 看 §5.4 错误码表与 §12 常见错误排查
+
+## 2. 快速开始：5 分钟跑通「建库 → 入库 → 解析 → 检索」
+
+本小节带你完成一次完整闭环：创建知识库 → 接入文档 → 解析 → 检索到内容。每一步都有验证点，全程使用 curl。
+
+### 2.1 准备
 
 ```bash
-# 1. 配置访问令牌（环境变量方式）
-export OPEN_PLATFORM_TOKEN=your-token          # 服务端校验；可逗号分隔多个 OPEN_PLATFORM_TOKENS
+# 1. 配置访问令牌（服务端校验用；可逗号分隔多个 OPEN_PLATFORM_TOKENS）
+export OPEN_PLATFORM_TOKEN=your-token
 
 # 2. 启动服务
 bash scripts/start_open_platform.sh
+# 或：.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 18000 --reload
 
-# 3. 第一个请求：创建知识库
-curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
+# 3. 验证服务就绪（无需 token）
+curl -s http://127.0.0.1:18000/health
+```
+
+验证点：`/health` 返回 200 即可继续。
+
+### 2.2 第 1 步：创建知识库
+
+```bash
+curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
   -H "Authorization: Bearer your-token" \
   -H "Content-Type: application/json" \
-  -H "X-Request-Id: 20260817000000000000001" \
+  -H "X-Request-Id: 20260818000000000000001" \
   -d '{"kbName":"产品知识库","kbType":"team","teamId":"team_01"}'
 ```
 
-响应：
+验证点：响应 `errCode=000000`，`data.kbId` 即后续步骤要用的知识库 ID。响应示例：
 
 ```json
 {
   "errCode": "000000",
   "errMsg": "success",
-  "data": {
-    "kbId": "kb_…（17 位数字）",
-    "kbName": "产品知识库",
-    "kbType": "team",
-    "teamId": "team_01",
-    "orgId": "",
-    "kbDesc": "",
-    "bizDomain": "general",
-    "visibility": "private",
-    "metadataSchema": [],
-    "createTime": "2026-08-17T…Z",
-    "updateTime": "2026-08-17T…Z"
-  },
-  "traceId": "20260817000000000000001"
+  "data": { "kbId": "kb_…", "kbName": "产品知识库", "kbType": "team", "teamId": "team_01" },
+  "traceId": "20260818000000000000001"
 }
 ```
 
-## 3. 全局约定（所有接口必须遵守）
+> 知识库类型默认 `personal`（无需 teamId）；`team` 库必须传 `teamId`，否则 `100001`。同范围重名返回 `100409`。
 
-### 3.1 认证（AUTHN）
+### 2.3 第 2 步：接入文档
+
+把一篇 URL 文档接入知识库：
+
+```bash
+curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/ingest \
+  -H "Authorization: Bearer your-token" -H "Content-Type: application/json" \
+  -d '{"kbId":"kb_…","source":{"type":"url","url":"https://example.com/产品白皮书.pdf"}}'
+```
+
+验证点：响应含 `docId`（单文档）。接入支持 `url / file / directory / archive` 四种来源，`file` 用 `objectKey` 或 `fileToken` 定位，详见 §6.2。
+
+### 2.4 第 3 步：启动解析并轮询结果
+
+```bash
+# 启动解析（异步任务）
+curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse \
+  -H "Authorization: Bearer your-token" -H "Content-Type: application/json" \
+  -d '{"kbId":"kb_…","docId":"doc_…","parseStrategy":{"docType":"pdf"},"executeMode":"async"}'
+
+# 轮询解析状态，直到 parseStatus=success
+curl -s "http://127.0.0.1:18000/api/v1/knowledge-documents/parse-result/query?docId=doc_…" \
+  -H "Authorization: Bearer your-token"
+```
+
+验证点：`parseStatus` 从 `queued → running → success`；未就绪时返回 `200003`，**继续轮询而不是报错**。结果就绪后可签发下载凭证并下载解析产物（§6.3）。
+
+### 2.5 第 4 步：检索你的内容
+
+```bash
+curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/universal-search \
+  -H "Authorization: Bearer your-token" -H "Content-Type: application/json" \
+  -d '{"query":"产品核心能力","kbId":"kb_…","mode":"qa","searchType":"hybrid","topK":5}'
+```
+
+验证点：`data.results` 返回命中证据列表（`mode=qa` 时附带 `answer` 摘要）。至此，你的应用已经可以通过一个接口检索知识库内容。
+
+### 2.6 下一步
+
+- 换更省事的接入方式：CLI（§11）或 Python SDK（§9.1）里跑同样的流程
+- 需要深度问答（多轮规划 + 带引用编号的回答）→ 用 deep-search（§6.4），需配置 `OPEN_PLATFORM_SEARCH_BACKEND=openai`
+- 想要可视化运维 → 打开管理 Portal（`/portal`，需 admin token）
+
+## 3. 接入方式对比（REST / SDK / MCP / CLI）
+
+| 维度 | REST | Python SDK | Java SDK | MCP | CLI |
+| --- | --- | --- | --- | --- | --- |
+| 传输 | HTTP + JSON | HTTP（httpx） | HTTP/1.1 | stdio / SSE | HTTP |
+| 语言 | 任意 | Python 3.12+ | Java 17+ | 任意（AI 客户端） | Bash |
+| 错误处理 | errCode 自行判断 | 自动映射为异常层级 | 异常层级 + 传输异常 | 工具错误（含 errCode/traceId） | 退出码 0–6 |
+| 异步支持 | 轮询 | `AsyncOpenIKCClient` | 无 | 无 | 无 |
+| 典型用途 | 集成/调试 | 业务后端 | 业务后端 | AI Agent 工具 | 运维/CI |
+| 详见 | §2、§6 | §9.1 | §9.2 | §10 | §11 |
+
+> 所有方式共用同一套协议（统一响应体、traceId、错误码），因此**中途换接入方式不改变业务语义**。
+
+## 4. 典型使用流程：知识库数据生命周期
+
+一个知识库从创建到被检索，遵循固定生命周期。按以下顺序编排接口即可。
+
+| 阶段 | 你要做的事 | 推荐接口 | 注意 |
+| --- | --- | --- | --- |
+| 1. 建库 | 规划知识空间（个人/团队/企业），定义元数据 | `knowledge-bases/create` | team 库必传 teamId；重名 `100409` |
+| 2. 接入 | 把文档（URL/文件/目录/压缩包）放入库 | `knowledge-documents/ingest` | 幂等：传 `reqId` 防止重复接入 |
+| 3. 解析 | 文档 → 结构化文本（分块/OCR） | `knowledge-documents/parse` | 异步任务，轮询 `parse-result/query` |
+| 4. 检索 | 让用户基于内容问答/取证 | `knowledge-search/universal-search` / `deep-search` | 见下方「检索与索引」说明 |
+| 5. 消费 | 下载解析产物到业务系统 | `issue-download-ticket` → `download` | 凭证一次性，注意 `expireAt` |
+
+**异步任务约定**（接入与解析通用）：
+
+- 任务状态机：`PENDING → INGESTING → INGESTED / SUCCEEDED / PARTIAL_FAILED / FAILED`（解析另有 `PARSING`、`queued/running/success/failed` 表述）。
+- 未就绪时查询返回 `200003`（解析结果尚未就绪）——这是**正常状态**，请按 1–2 秒间隔轮询，直到 `success`。
+- `executeMode=sync` 可在单次请求内完成并内联返回结果（适用于小文件）；大文档建议 `async`。
+
+> ⚠️ **检索与索引的关系**：当前阶段检索索引需要调用方显式注入（`OPEN_PLATFORM_KB_INDEX_MAP` 或请求体 `index`），**不随 ingest/parse 自动构建**。真实索引引擎落地前，接入文档后不一定立刻可检索，请先确认索引配置。
+
+## 5. 全局约定（所有接口必须遵守）
+
+### 5.1 认证（AUTHN）
 
 | 项 | 约定 |
 | --- | --- |
@@ -76,13 +176,13 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | 部署边界 | ⚠️ `static` 直接采信身份头，仅限内网/测试；生产必须 `gateway_header` 或 `oidc_jwt`/`oauth2_introspection` |
 | 免鉴权路径 | `/docs`、`/redoc`、`/openapi.json`、`/health`、`/api-browser`、`/api/catalog`、`/api/error-codes`、`/admin`、`/portal` 等 |
 
-### 3.2 链路追踪（traceId）
+### 5.2 链路追踪（traceId）
 
 - 服务端注入 **23 位纯数字** `traceId`；优先复用请求头 `X-Request-Id` / `X-Trace-Id` / `traceId` / `trace_id`。
 - 响应头回写 `X-Request-Id` 与 `X-Trace-Id`，响应体顶层携带 `traceId`。
 - 调用下游时透传同一组追踪头（`X-Request-Id` / `X-Trace-Id`），便于按链路检索日志。
 
-### 3.3 统一响应体
+### 5.3 统一响应体
 
 所有业务响应（成功与失败）均为同一结构：
 
@@ -91,8 +191,9 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 ```
 
 - 参数校验错误（Pydantic/FastAPI）由全局处理器映射为 HTTP 200 + `100001`；框架层 404/405 保留 HTTP 状态码，但仍为统一响应体。
+- 判断成功请**看 `errCode` 而不是 HTTP 状态码**：`000000` 即成功。
 
-### 3.4 错误码表（当前注册 18 个，实时查询 `/api/error-codes`）
+### 5.4 错误码表（当前注册 18 个，实时查询 `/api/error-codes`）
 
 | errCode | errMsg | 层级 | 触发场景 |
 | --- | --- | --- | --- |
@@ -115,7 +216,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | `300001` | 检索执行失败 | business | 下游检索引擎执行失败（超时/连接失败/返回非成功状态） |
 | `200020` | 在线测试执行失败 | admin | MCP / CLI 在线测试未通过 |
 
-### 3.5 鉴权（AUTHZ，可选开启）
+### 5.5 鉴权（AUTHZ，可选开启）
 
 - 开关：`OPEN_PLATFORM_AUTHZ_ENABLED=true` 启用；策略 **deny-overrides**，无命中默认拒绝 → `100403`。
 - 系统选择：请求头 `X-Auth-System` 或 `OPEN_PLATFORM_AUTH_SYSTEM`（内置 `default`、`digital_employee`）。
@@ -135,11 +236,13 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 > 另：**DB token 作用域运行时强制生效**（不依赖 AUTHZ 开关）——创建 token 时配置 `resource:action` 作用域（如 `knowledge_base:read`、`search:query`、`*:*`），调用未命中作用域的业务接口返回 `100403`；环境变量 token 不受作用域限制。作用域仅约束四类业务接口，管理面必须用独立 admin token。
 
-## 4. 业务接口详细定义
+## 6. 接口参考
 
-### 4.1 知识库
+> 完整 OpenAPI 规范见 `/openapi.json`（Swagger UI：`/docs`，ReDoc：`/redoc`）。
 
-#### 4.1.1 创建知识库 `POST /api/v1/knowledge-bases/create`
+### 6.1 知识库（4 个接口）
+
+#### 6.1.1 创建知识库 `POST /api/v1/knowledge-bases/create`
 
 请求体：
 
@@ -168,12 +271,12 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
   }'
 ```
 
-#### 4.1.2 修改知识库 `POST /api/v1/knowledge-bases/update`
+#### 6.1.2 修改知识库 `POST /api/v1/knowledge-bases/update`
 
 请求体：`kbId`(必填) + 可修改字段。`kbName`/`kbDesc` 传空字符串表示不修改；`metadataSchema` 为空表示保持不变；`kbType` 变更需同步校验 `teamId`/`orgId`。
 约束：知识库不存在 `100404`；个人库仅创建者可修改（否则 `100403`）；企业库无法识别组织授权 `100403`。
 
-#### 4.1.3 查询知识库列表 `POST /api/v1/knowledge-bases/query`
+#### 6.1.3 查询知识库列表 `POST /api/v1/knowledge-bases/query`
 
 请求体：
 
@@ -190,13 +293,13 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 响应 `data`：`{total, page, pageSize, items[]}`。
 数据范围收敛：个人库仅本人、团队库需 `teamId`、企业库按 `orgId` 或调用主体租户。
 
-#### 4.1.4 查询知识库详情 `GET /api/v1/knowledge-bases/{kb_id}`
+#### 6.1.4 查询知识库详情 `GET /api/v1/knowledge-bases/{kb_id}`
 
 路径参数 `kb_id` 必填。不存在 `100404`；越权 `100403`。响应 `data` 为完整知识库对象。
 
-### 4.2 文档
+### 6.2 文档（3 个接口）
 
-#### 4.2.1 接入知识源 `POST /api/v1/knowledge-documents/ingest`
+#### 6.2.1 接入知识源 `POST /api/v1/knowledge-documents/ingest`
 
 请求体：
 
@@ -221,7 +324,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 响应 `data`：`{ingestTaskId, docId(单文档), docIds[](目录/压缩包), taskStatus, sourceType, sourceStats, ingestTime}`。
 `taskStatus` 枚举：`PENDING / INGESTING / INGESTED / SUCCEEDED / PARTIAL_FAILED / FAILED`。
 
-#### 4.2.2 一体化接入并解析 `POST /api/v1/knowledge-documents/ingest-and-parse`
+#### 6.2.2 一体化接入并解析 `POST /api/v1/knowledge-documents/ingest-and-parse`
 
 继承 ingest 全部字段，另加：
 
@@ -233,13 +336,13 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 响应 `data`：`{ingestTaskId, parseTaskId, docId, taskStatus(PENDING/INGESTING/PARSING/SUCCEEDED/FAILED), executeMode, resultInline}`。
 
-#### 4.2.3 查询文档信息 `GET /api/v1/knowledge-documents/{doc_id}`
+#### 6.2.3 查询文档信息 `GET /api/v1/knowledge-documents/{doc_id}`
 
 路径参数 `doc_id` 必填。响应 `data`：`{docId, docTitle, kbId, sourceType, sourceUrl, objectKey, tags, metadata, status, ingestTime, updateTime}`。
 
-### 4.3 解析
+### 6.3 解析（4 个接口）
 
-#### 4.3.1 启动文档解析 `POST /api/v1/knowledge-documents/parse`
+#### 6.3.1 启动文档解析 `POST /api/v1/knowledge-documents/parse`
 
 请求体：`reqId`、`kbId`(✅)、`docId`(✅)、`parseStrategy`、`resultFormat`、`executeMode`(`async`默认/`sync`)、`parseMode`(`auto|ocr|structure`，默认 `auto`)、`chunkStrategy`(`auto|fixed|semantic`，默认 `auto`)、`chunkSize`(默认 800)。
 
@@ -251,22 +354,22 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse \
   -d '{"kbId":"kb_10001","docId":"doc_10001","parseStrategy":{"docType":"pdf"},"executeMode":"async"}'
 ```
 
-#### 4.3.2 查询解析结果 `GET /api/v1/knowledge-documents/parse-result/query?docId=doc_10001`
+#### 6.3.2 查询解析结果 `GET /api/v1/knowledge-documents/parse-result/query?docId=doc_10001`
 
 Query 参数：`docId`（必填）。响应 `data`：`{parseStatus(queued/running/success/failed), resultFormat, pageCount, chunkCount, failedReason}`。任务不存在或未就绪返回 `200003`。
 
-#### 4.3.3 获取下载凭证 `GET /api/v1/knowledge-documents/parse-result/issue-download-ticket?docId=doc_10001`
+#### 6.3.3 获取下载凭证 `GET /api/v1/knowledge-documents/parse-result/issue-download-ticket?docId=doc_10001`
 
 Query 参数：`docId`（必填）。响应 `data`：`{ticket, expireAt, downloadPath}`。结果未就绪 `200003`。
 
-#### 4.3.4 下载解析结果 `GET /api/v1/knowledge-documents/parse-result/download?docId=doc_10001&ticket=xxx`
+#### 6.3.4 下载解析结果 `GET /api/v1/knowledge-documents/parse-result/download?docId=doc_10001&ticket=xxx`
 
 Query 参数：`docId` + `ticket`（均必填）。凭证无效/过期 `200004`。
 > 当前阶段：真实结果存储落地前返回统一体（`data` 含 `docId/taskId/downloadPath/format/note`），后续切换为文件流。
 
-### 4.4 检索
+### 6.4 检索（2 个接口 + 1 个兼容别名）
 
-#### 4.4.1 普通检索 `POST /api/v1/knowledge-search/universal-search`
+#### 6.4.1 普通检索 `POST /api/v1/knowledge-search/universal-search`
 
 > 兼容别名：`POST /api/v1/knowledge-search/query` 行为与之一致（deprecated），供既有调用方平滑迁移。
 
@@ -306,7 +409,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/universal-search \
   -d '{"query":"产品核心能力","kbIds":["kb_10001"],"mode":"qa","searchType":"hybrid","relNum":10,"useRerank":true,"topK":5,"withCitation":true}'
 ```
 
-#### 4.4.2 深度检索 `POST /api/v1/knowledge-search/deep-search`
+#### 6.4.2 深度检索 `POST /api/v1/knowledge-search/deep-search`
 
 Agentic 多轮深度检索：子查询规划、并行召回、反思与带引用回答；权限收敛与普通检索一致（逐库授权，任一拒绝整体 `100403`）。
 
@@ -370,7 +473,9 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 }
 ```
 
-## 5. 管理面接口（`/admin/*`，运维用途）
+## 7. 管理面接口（`/admin/*`，运维用途）
+
+> 管理面与业务接口隔离：独立 token、不进入业务 catalog、请求不纳入业务监控统计。
 
 - 鉴权：`Authorization: Bearer <admin-token>`，token 来自环境变量 `OPEN_PLATFORM_ADMIN_TOKEN`（**与业务 token 隔离，禁止复用**）。
 - 未配置该环境变量时管理面默认关闭，所有请求返回 `503001`（HTTP 503）。
@@ -391,7 +496,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 
 DB token 存储于 SQLite（`OPEN_PLATFORM_DB_PATH` 可覆盖，默认 `data/open_ikc_platform.db`），库中只存 sha256。
 
-## 6. 系统路由（无需业务鉴权）
+## 8. 系统路由（无需业务鉴权）
 
 | Path | 说明 |
 | --- | --- |
@@ -402,9 +507,9 @@ DB token 存储于 SQLite（`OPEN_PLATFORM_DB_PATH` 可覆盖，默认 `data/ope
 | `/api/error-codes` | 错误码目录 |
 | `/portal` | 管理 Portal 前端壳 |
 
-## 7. SDK 接入
+## 9. SDK 接入
 
-### 7.1 Python SDK（`open-ikc-sdk` v1.0.0）
+### 9.1 Python SDK（`open-ikc-sdk` v1.0.0）
 
 ```bash
 pip install sdk/python
@@ -430,7 +535,7 @@ client.close()
 - 检索：`client.search.query(...)` 普通检索（对应 `/universal-search`，`/query` 兼容别名亦可），参数 `query`、`kbId`/`kbIds`（至少一个）、`teamId`/`orgId`、`ownerId`、`orgPath`、`mode`、`searchType`、`relNum`、`useRerank`、`score`、`topK`、`filters`、`withCitation`、`index`、`isOptimize`；`client.search.deep_search(...)` 深度检索（对应 `/deep-search`，需后端 `openai`），参数 `query`、`kbId`/`kbIds`、`teamId`/`orgId`、`ownerId`、`orgPath`、`searchType`、`topK`、`useRerank`、`sessionId`、`memory`、`deepSearch`、`filters`、`responseSpec`。
 - 完整示例：`sdk/python/examples/quickstart.py`（同步全链路）、`sdk/python/examples/async_quickstart.py`。
 
-### 7.2 Java SDK（`io.openikc:open-ikc-sdk:1.0.0`，Java 17+，零第三方依赖）
+### 9.2 Java SDK（`io.openikc:open-ikc-sdk:1.0.0`，Java 17+，零第三方依赖）
 
 ```java
 OpenIKCClient client = new OpenIKCClient.Builder("http://127.0.0.1:18000")
@@ -446,11 +551,11 @@ client.close();
 - 异常层级：`ValidationException`(100001) / `UnauthorizedException`(100401) / `ForbiddenException`(100403) / `NotFoundException`(100404) / `MethodNotAllowedException`(100405) / `ConflictException`(100409) / `NotImplementedException`(501001) / `SystemException`(999999) / 其余 `BusinessException`；传输层 `OpenIKCConnectionException/TimeoutException/ProtocolException`。
 - ⚠️ 必须固定 HTTP/1.1（JDK 默认 h2c 升级会被 uvicorn 拒绝），SDK 已内置；traceId 自动生成 23 位数字，可 `Builder.traceId(...)` 固定复用。
 
-## 8. MCP Server 接入
+## 10. MCP Server 接入
 
 MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），15 个工具与业务接口一一对应。
 
-### 8.1 运行方式
+### 10.1 运行方式
 
 ```bash
 pip install "sdk/python[mcp]"          # 依赖 mcp>=2.0
@@ -460,7 +565,7 @@ python -m open_ikc_sdk.mcp --base-url http://127.0.0.1:18000 --token <token>
 python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 ```
 
-### 8.2 客户端配置示例（Claude Desktop `claude_desktop_config.json`）
+### 10.2 客户端配置示例（Claude Desktop `claude_desktop_config.json`）
 
 ```json
 {
@@ -482,7 +587,7 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 
 > `command` 需指向安装了 `open-ikc-sdk[mcp]` 的 Python 解释器；token 与身份头用于平台鉴权。
 
-### 8.3 工具清单与参数（15 个）
+### 10.3 工具清单与参数（15 个）
 
 **知识库**
 
@@ -535,14 +640,14 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 | `sys_catalog` | — | 拉取 `/api/catalog` |
 | `sys_error_codes` | — | 拉取 `/api/error-codes` |
 
-### 8.4 工具返回与错误
+### 10.4 工具返回与错误
 
 - 返回：JSON 序列化 dict（复用 SDK 模型）。
 - 错误：SDK `OpenIKCError` 子类转为工具错误，错误信息含 `errCode` / `errMsg` / `traceId`。
 
-## 9. CLI 接入
+## 11. CLI 接入
 
-### 9.1 安装与入口
+### 11.1 安装与入口
 
 ```bash
 pip install "sdk/python[cli]"          # 依赖 typer>=0.15
@@ -551,7 +656,7 @@ python -m open_ikc_sdk.cli --help      # 模块入口
 ikc --help                             # 安装后入口（pyproject 注册）
 ```
 
-### 9.2 全局选项（位于子命令之前）
+### 11.2 全局选项（位于子命令之前）
 
 | 选项 | 说明 |
 | --- | --- |
@@ -561,7 +666,7 @@ ikc --help                             # 安装后入口（pyproject 注册）
 | `--json` | 输出原始 JSON（默认渲染简洁表格） |
 | `--debug` | 打印异常堆栈 |
 
-### 9.3 退出码约定
+### 11.3 退出码约定
 
 | 退出码 | 含义 |
 | --- | --- |
@@ -573,7 +678,7 @@ ikc --help                             # 安装后入口（pyproject 注册）
 | 5 | 平台占位未实现（501001） |
 | 6 | 传输层错误（连接 / 超时 / HTTP 状态） |
 
-### 9.4 子命令与示例（15 个）
+### 11.4 子命令与示例（15 个）
 
 **知识库**
 
@@ -615,7 +720,7 @@ ikc sys-catalog
 ikc sys-error-codes
 ```
 
-## 10. 常见错误排查
+## 12. 常见错误排查
 
 | 现象 | 原因与处理 |
 | --- | --- |
@@ -630,9 +735,11 @@ ikc sys-error-codes
 | `501001` | 占位未实现；深度检索需配置 `OPEN_PLATFORM_SEARCH_BACKEND=openai` 且下游 DeepSearch 可用 |
 | `100001` + HTTP 200 | 参数校验失败，检查必填/枚举/条件字段（如 `kbType=team` 缺 `teamId`、`source.type=url` 缺 `url`、检索缺 `kbId/kbIds`） |
 
-## 11. 补充约定
+## 13. 下一步与补充约定
 
-- 未实现能力必须返回 `501001`，**禁止静默空成功**。
-- 调用下游时透传追踪头（`X-Request-Id` / `X-Trace-Id`），日志经 `ikc-log-center` 按 traceId 串联检索。
-- 接口若变更，以 `/api/catalog`（业务目录）与 `/openapi.json` 为最新权威；管理面接口不进入 catalog。
+- 实时权威：接口以 `/api/catalog`（业务目录）与 `/openapi.json` 为准；错误码以 `/api/error-codes` 为准；管理面接口不进入 catalog。
+- 完整可运行示例：`sdk/python/examples/quickstart.py`（同步全链路）、`sdk/python/examples/async_quickstart.py`；Java 用法见 `sdk/java/README.md`。
+- 管理 Portal（`/portal`）：token 管理、端点监控、MCP/CLI 在线测试、本手册应用内页面。
+- 未实现能力必须返回 `501001`，**禁止静默空成功**；调用下游时透传追踪头（`X-Request-Id` / `X-Trace-Id`），日志经 `ikc-log-center` 按 traceId 串联检索。
 - MCP / CLI 边界：不新增、不修改平台 REST 路由与 `catalog.py`；不暴露 reindex / task query 等未落地能力。
+- 接口若变更，以当前代码与 `/api/catalog` 为最新权威；本文档与代码不一致时以代码为准。

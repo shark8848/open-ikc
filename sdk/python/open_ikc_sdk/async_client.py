@@ -26,6 +26,7 @@ from .models.parse import (
     ParseTask,
 )
 from .models.search import DeepSearchResult, SearchResult
+from .models.wiki import WikiPageData, WikiSearchData, WikiTreeData
 from .transport import DownloadPayload
 from .transport_async import AsyncTransport
 
@@ -123,7 +124,7 @@ class AsyncOpenIKCClient:
 
 
 class AsyncKnowledgeBaseClient:
-    """知识库域异步客户端：create / update / query / get。"""
+    """知识库域异步客户端：create / update / query / get / wiki_tree / wiki_page / wiki_search。"""
 
     _UPDATE_FIELDS = {"kbName", "kbType", "teamId", "orgId", "kbDesc", "visibility", "metadataSchema"}
 
@@ -206,6 +207,33 @@ class AsyncKnowledgeBaseClient:
             path_params={"kb_id": kb_id},
         )
         return KnowledgeBase.from_dict(envelope.data)
+
+    async def wiki_tree(self, kb_id: str, page: int = 1, pageSize: int = 20) -> WikiTreeData:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/wiki/tree",
+            path_params={"kb_id": kb_id},
+            params={"page": page, "pageSize": pageSize},
+        )
+        return WikiTreeData.from_dict(envelope.data)
+
+    async def wiki_page(self, kb_id: str, page_id: str) -> WikiPageData:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/wiki/page",
+            path_params={"kb_id": kb_id},
+            params={"pageId": page_id},
+        )
+        return WikiPageData.from_dict(envelope.data)
+
+    async def wiki_search(self, kb_id: str, q: str = "", tag: str = "") -> WikiSearchData:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/wiki/search",
+            path_params={"kb_id": kb_id},
+            params={"q": q, "tag": tag},
+        )
+        return WikiSearchData.from_dict(envelope.data)
 
 
 class AsyncDocumentClient:

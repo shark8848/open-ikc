@@ -29,6 +29,7 @@ from .models.document import DocumentInfo, DocumentIngestAndParseResult, Documen
 from .models.knowledge_base import KnowledgeBase, KnowledgeBasePage, KnowledgeMetadataField
 from .models.parse import DownloadResult, DownloadTicket, ParseResult, ParseTask
 from .models.search import SearchResult, SearchResultItem
+from .models.wiki import WikiPageData, WikiPageDetail, WikiSearchData, WikiSearchHit, WikiTreeData, WikiTreeNode
 from .trace import generate_trace_id
 
 __all__ = [
@@ -50,6 +51,12 @@ __all__ = [
     "DownloadResult",
     "SearchResult",
     "SearchResultItem",
+    "WikiTreeData",
+    "WikiTreeNode",
+    "WikiPageData",
+    "WikiPageDetail",
+    "WikiSearchData",
+    "WikiSearchHit",
     "generate_trace_id",
     "OpenIKCError",
     "OpenIKCTransportError",

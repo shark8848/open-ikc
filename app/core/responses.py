@@ -229,3 +229,71 @@ def deep_search_query_response(
             "steps": steps,
         },
     ))
+
+
+def wiki_tree_response(
+    *,
+    kb_id: str,
+    total: int,
+    page: int,
+    page_size: int,
+    tree: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "wiki",
+            "total": total,
+            "page": page,
+            "pageSize": page_size,
+            "tree": tree,
+        },
+    ))
+
+
+def _wiki_page_data(page_record: Any) -> dict[str, Any]:
+    return {
+        "pageId": page_record.page_id,
+        "title": page_record.title,
+        "level": page_record.level,
+        "parentPageId": page_record.parent_page_id,
+        "markdown": page_record.markdown,
+        "fields": dict(page_record.fields),
+        "tags": list(page_record.tags),
+        "links": list(page_record.links),
+        "sourceDocs": list(page_record.source_docs),
+        "status": page_record.status,
+        "createdAt": page_record.created_at,
+        "updatedAt": page_record.updated_at,
+    }
+
+
+def wiki_page_response(*, kb_id: str, page_record: Any) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "wiki",
+            "page": _wiki_page_data(page_record),
+        },
+    ))
+
+
+def wiki_search_response(
+    *,
+    kb_id: str,
+    q: str,
+    total: int,
+    items: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "wiki",
+            "q": q,
+            "total": total,
+            "items": items,
+        },
+    ))

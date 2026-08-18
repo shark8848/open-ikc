@@ -2,10 +2,10 @@ from __future__ import annotations
 
 """MCP Server（stdio）：将 OpenIKC 开放平台现有 REST 接口封装为 MCP 工具。
 
-工具清单与 SDK ``OpenIKCClient`` 领域方法一一对应（16 个）：
-kb_create / kb_update / kb_query / kb_get / doc_ingest / doc_ingest_and_parse /
-doc_get / parse_start / parse_direct / parse_query / parse_issue_ticket / parse_download /
-search_query / deep_search / sys_catalog / sys_error_codes。
+工具清单与 SDK ``OpenIKCClient`` 领域方法一一对应（19 个）：
+kb_create / kb_update / kb_query / kb_get / wiki_tree / wiki_page / wiki_search /
+doc_ingest / doc_ingest_and_parse / doc_get / parse_start / parse_direct / parse_query /
+parse_issue_ticket / parse_download / search_query / deep_search / sys_catalog / sys_error_codes。
 
 所有工具返回 JSON 序列化 dict（复用 SDK 模型），错误抛 ``OpenIKCError`` 子类。
 不新增平台 REST 接口，仅做上层封装。
@@ -159,6 +159,38 @@ def build_server(client: OpenIKCClient) -> MCPServer:
             kbId: 知识库 ID。
         """
         return _model_to_dict(client.knowledge_bases.get(kbId))
+
+    @mcp.tool()
+    def wiki_tree(kbId: str, page: int = 1, pageSize: int = 20) -> dict[str, Any]:
+        """查询 Wiki 库页面树（pageId/title/level/嵌套 children）。
+
+        Args:
+            kbId: Wiki 知识库 ID（kbMode=wiki）。
+            page: 页码，从 1 开始。
+            pageSize: 每页根节点数（最大 100）。
+        """
+        return _model_to_dict(client.knowledge_bases.wiki_tree(kbId, page=page, pageSize=pageSize))
+
+    @mcp.tool()
+    def wiki_page(kbId: str, pageId: str) -> dict[str, Any]:
+        """查询 Wiki 页面详情（正文 / 结构化字段 / 互链 / 来源证据）。
+
+        Args:
+            kbId: Wiki 知识库 ID。
+            pageId: 页面 ID（由 wiki_tree / wiki_search 返回）。
+        """
+        return _model_to_dict(client.knowledge_bases.wiki_page(kbId, page_id=pageId))
+
+    @mcp.tool()
+    def wiki_search(kbId: str, q: str = "", tag: str = "") -> dict[str, Any]:
+        """检索 Wiki 库页面（标题命中加权 > 正文命中）。
+
+        Args:
+            kbId: Wiki 知识库 ID。
+            q: 检索关键字，空串返回全部活跃页面。
+            tag: 按页面标签精确过滤，可选。
+        """
+        return _model_to_dict(client.knowledge_bases.wiki_search(kbId, q=q, tag=tag))
 
     # ---------- 文档 ----------
 

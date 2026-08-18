@@ -1,7 +1,7 @@
 # 知识加工与专业库形态优化方案：文本库 / Wiki 库 / 图谱库
 
 > 文档日期：2026-08-18（v2，方向修正）
-> 状态：方案评审稿；**P1（kbMode 形态协议）已落地（2026-08-18）**，P2/P3/P4 待评审后实施
+> 状态：方案评审稿；**P1（kbMode 形态协议）已落地（2026-08-18）**，**P2（Wiki 库）已落地（2026-08-18）**，P3/P4 待评审后实施
 > 产品决策：**Wiki、图谱定义为专业的知识库形态（专业库）**，而非解析产物形态。
 > 范围：面向「知识加工」的对外 API 定义优化，重点设计 Wiki 库与图谱库的构建与访问。
 
@@ -221,7 +221,7 @@ Wiki 库的核心资产是**库级页面树**（跨文档合并）：
 | 阶段 | 内容 | 改动面 |
 | --- | --- | --- |
 | P1 | `kbMode` 协议：create/update/query/detail 支持形态与配置 + 校验 + catalog + 文档 | `app/schemas/knowledge_base.py`、`app/services/knowledge_base.py`、`app/core/catalog.py`、手册 |
-| P2 | Wiki 库：`wikiConfig` + 库级页面存储 + `wiki/tree|page|search` + `parse` 联动 | 新增 `app/services/wiki_store.py` 等，约 3–4 文件 + 测试 |
+| P2 | Wiki 库：`wikiConfig` + 库级页面存储 + `wiki/tree|page|search` + `parse` 联动 | **已落地**：`app/services/wiki_store.py`（页面记录/合并/树/检索/增量废弃）、`app/services/wiki.py`、`app/schemas/wiki.py`、路由与 catalog、`sync` 解析自动建页、`tests/test_wiki_library.py` 10 例 |
 | P3 | 图谱库：`graphSchema` + 抽取编排（auto 规则 + LLM 可配）+ `graph/stat|nodes|edges|neighbors|export` + 串行合并 | 新增 `app/services/graph_store.py` 等，约 4–6 文件 + 测试 |
 | P4 | 检索消费侧：wiki 页面检索、图谱多跳 | 依赖真实检索后端 |
 

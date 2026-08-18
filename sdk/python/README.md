@@ -59,7 +59,7 @@ asyncio.run(main())
 
 领域封装方法当前进度：
 
-- [x] 知识库：`knowledge_bases.create / update / query / get`（M2）
+- [x] 知识库：`knowledge_bases.create / update / query / get / wiki_tree / wiki_page / wiki_search`（M2 + P2 Wiki 库）
 - [x] 文档：`documents.ingest / ingest_and_parse / get`（M3）
 - [x] 解析：`parse.parse / query_result / issue_download_ticket / download`（M4）
 - [x] 检索：`search.query`（M4；平台已真实落地，关键词进程内检索 + 数据权限过滤）
@@ -80,7 +80,7 @@ python -m open_ikc_sdk.mcp
 python -m open_ikc_sdk.mcp --base-url http://127.0.0.1:18000 --token <token>
 ```
 
-- 工具清单（16 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_direct` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `deep_search` / `sys_catalog` / `sys_error_codes`。
+- 工具清单（19 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `wiki_tree` / `wiki_page` / `wiki_search` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_direct` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `deep_search` / `sys_catalog` / `sys_error_codes`。
 - 基于 mcp 2.x 的 `MCPServer` API 实现（`list_tools` 异步、`server_info`/`is_error` 等 snake_case 字段），依赖 `mcp>=2.0`。
 - 复杂结构参数（`source`、`parseStrategy`、`metadataSchema` 等）在 MCP 中为原生 object/array 类型（mcp>=2.0 按 JSON Schema 校验并反序列化）。
 - 完整定义见 `docs/MCP与CLI接口定义.md`；端到端冒烟见下文「MCP stdio 端到端冒烟」。
@@ -99,6 +99,9 @@ python -m open_ikc_sdk.cli --help
 # 安装后可直接使用（pyproject 注册了 ikc 入口）
 ikc kb-list --keyword 产品
 ikc kb-get kb_10001
+ikc wiki-tree kb_10001 --page 1 --page-size 20
+ikc wiki-page kb_10001 --page-id wiki_abc123
+ikc wiki-search kb_10001 --q "产品" --tag 指南
 ikc search-query --query "产品能力" --kb-id kb_10001
 ```
 
@@ -130,7 +133,7 @@ python sdk/python/examples/async_quickstart.py
 .venv/bin/python scripts/mcp_stdio_smoke.py [--token <token>]
 ```
 
-以官方 mcp 2.0 `ClientSession` 走完整协议链路：`initialize -> list_tools（16 工具）-> call_tool(sys_catalog) -> call_tool(kb_create)`，验证 MCP Server 对真实平台的端到端可用性。
+以官方 mcp 2.0 `ClientSession` 走完整协议链路：`initialize -> list_tools（19 工具）-> call_tool(sys_catalog) -> call_tool(kb_create)`，验证 MCP Server 对真实平台的端到端可用性。
 
 ## 测试
 

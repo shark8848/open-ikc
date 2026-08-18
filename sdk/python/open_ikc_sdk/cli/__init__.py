@@ -5,7 +5,7 @@ from __future__ import annotations
 入口：``python -m open_ikc_sdk.cli``（安装后可用 ``ikc``）。
 
 子命令分组（与 SDK 领域方法一一对应）：
-- kb: create / update / list / get
+- kb: create / update / list / get / wiki-tree / wiki-page / wiki-search
 - doc: ingest / ingest-and-parse / get
 - parse: start / direct / query / ticket / download
 - search: query / deep-search
@@ -250,6 +250,47 @@ def kb_get(
     """按知识库 ID 查询详情。"""
     try:
         data = _get_client().knowledge_bases.get(kb_id)
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("wiki-tree")
+def wiki_tree(
+    kb_id: str = typer.Argument(..., help="Wiki 知识库 ID"),
+    page: int = typer.Option(1, "--page", help="页码"),
+    page_size: int = typer.Option(20, "--page-size", help="每页根节点数"),
+) -> None:
+    """查询 Wiki 库页面树。"""
+    try:
+        data = _get_client().knowledge_bases.wiki_tree(kb_id, page=page, pageSize=page_size)
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("wiki-page")
+def wiki_page(
+    kb_id: str = typer.Argument(..., help="Wiki 知识库 ID"),
+    page_id: str = typer.Option(..., "--page-id", help="页面 ID（由 wiki-tree / wiki-search 返回）"),
+) -> None:
+    """查询 Wiki 页面详情。"""
+    try:
+        data = _get_client().knowledge_bases.wiki_page(kb_id, page_id=page_id)
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("wiki-search")
+def wiki_search(
+    kb_id: str = typer.Argument(..., help="Wiki 知识库 ID"),
+    q: str = typer.Option("", "--q", help="检索关键字"),
+    tag: str = typer.Option("", "--tag", help="按标签精确过滤"),
+) -> None:
+    """检索 Wiki 库页面。"""
+    try:
+        data = _get_client().knowledge_bases.wiki_search(kb_id, q=q, tag=tag)
         _emit(data)
     except Exception as exc:
         _handle_error(exc)

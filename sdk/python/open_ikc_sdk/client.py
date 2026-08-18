@@ -21,6 +21,7 @@ from .models.parse import (
     ParseTask,
 )
 from .models.search import DeepSearchResult, SearchResult, SearchResultItem
+from .models.wiki import WikiPageData, WikiSearchData, WikiTreeData
 from .transport import DownloadPayload, Transport
 
 
@@ -123,7 +124,7 @@ def _dump_metadata_schema(items: list) -> list[dict]:
 
 
 class KnowledgeBaseClient:
-    """知识库域客户端：create / update / query / get。"""
+    """知识库域客户端：create / update / query / get / wiki_tree / wiki_page / wiki_search。"""
 
     _UPDATE_FIELDS = {"kbName", "kbType", "teamId", "orgId", "kbDesc", "visibility", "metadataSchema"}
 
@@ -210,6 +211,36 @@ class KnowledgeBaseClient:
             path_params={"kb_id": kb_id},
         )
         return KnowledgeBase.from_dict(envelope.data)
+
+    def wiki_tree(self, kb_id: str, page: int = 1, pageSize: int = 20) -> WikiTreeData:
+        """查询 Wiki 库页面树（page/pageSize 分页根节点）。"""
+        envelope = self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/wiki/tree",
+            path_params={"kb_id": kb_id},
+            params={"page": page, "pageSize": pageSize},
+        )
+        return WikiTreeData.from_dict(envelope.data)
+
+    def wiki_page(self, kb_id: str, page_id: str) -> WikiPageData:
+        """按 pageId 查询 Wiki 页面详情。"""
+        envelope = self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/wiki/page",
+            path_params={"kb_id": kb_id},
+            params={"pageId": page_id},
+        )
+        return WikiPageData.from_dict(envelope.data)
+
+    def wiki_search(self, kb_id: str, q: str = "", tag: str = "") -> WikiSearchData:
+        """库内页面级检索；q 为空返回全部活跃页面，tag 可按标签精确过滤。"""
+        envelope = self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/wiki/search",
+            path_params={"kb_id": kb_id},
+            params={"q": q, "tag": tag},
+        )
+        return WikiSearchData.from_dict(envelope.data)
 
 def _dump_source(source: DocumentSource | dict) -> dict:
     return source.to_dict() if isinstance(source, DocumentSource) else dict(source)

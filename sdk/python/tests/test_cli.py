@@ -83,6 +83,86 @@ def test_kb_get_uses_path_param():
     assert json.loads(result.output)["kbId"] == "kb_10001"
 
 
+def test_wiki_tree_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/wiki/tree"
+        assert dict(request.url.params) == {"page": "2", "pageSize": "10"}
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "wiki",
+                "total": 1,
+                "page": 2,
+                "pageSize": 10,
+                "tree": [
+                    {
+                        "pageId": "wiki_abc123",
+                        "title": "首页",
+                        "level": 1,
+                        "parentPageId": "",
+                        "children": [],
+                    }
+                ],
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["--json", "wiki-tree", "kb_10001", "--page", "2", "--page-size", "10"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["tree"][0]["title"] == "首页"
+
+
+def test_wiki_page_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/wiki/page"
+        assert dict(request.url.params) == {"pageId": "wiki_abc123"}
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "wiki",
+                "page": {
+                    "pageId": "wiki_abc123",
+                    "title": "首页",
+                    "level": 1,
+                    "parentPageId": "",
+                    "markdown": "# 首页\n正文",
+                    "fields": {},
+                    "tags": [],
+                    "links": [],
+                    "sourceDocs": [],
+                    "status": "active",
+                    "createdAt": "2026-08-01T00:00:00Z",
+                    "updatedAt": "2026-08-02T00:00:00Z",
+                },
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["--json", "wiki-page", "kb_10001", "--page-id", "wiki_abc123"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["page"]["markdown"].startswith("# 首页")
+
+
+def test_wiki_search_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/wiki/search"
+        assert dict(request.url.params) == {"q": "产品", "tag": "指南"}
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "wiki",
+                "q": "产品",
+                "total": 1,
+                "items": [{"pageId": "wiki_abc123", "title": "产品首页", "snippet": "说明", "tags": ["指南"], "score": 0.9}],
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["--json", "wiki-search", "kb_10001", "--q", "产品", "--tag", "指南"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["items"][0]["pageId"] == "wiki_abc123"
+
+
 def test_doc_ingest_json_source():
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.url.path == "/api/v1/knowledge-documents/ingest"

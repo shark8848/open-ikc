@@ -29,8 +29,8 @@
 | **REST** | 纯 HTTP + JSON | 任何语言、curl/Postman 调试、需要全量字段控制 | 最低，看 §2 快速开始 |
 | **Python SDK** | `open-ikc-sdk`，类型提示 + 异常映射 + 同步/异步 | Python 应用（FastAPI/Django/脚本） | 低，见 §9.1 |
 | **Java SDK** | `io.openikc:open-ikc-sdk`，零第三方依赖 | Java 17+ 后端服务 | 低，见 §9.2 |
-| **MCP Server** | 16 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
-| **CLI** | 16 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
+| **MCP Server** | 19 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
+| **CLI** | 19 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
 
 > 选择建议：**想最快跑通** → 快速开始用 curl 或 CLI；**写正式代码** → 选对应语言的 SDK（错误码自动映射为异常）；**给 AI 助手用** → MCP。
 
@@ -311,7 +311,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 
 #### 6.1.1 创建知识库
 
-接口：`POST /api/v1/knowledge-bases/create`
+`POST /api/v1/knowledge-bases/create`：创建知识库接口。
 
 请求体：
 
@@ -345,14 +345,14 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 #### 6.1.2 修改知识库
 
-接口：`POST /api/v1/knowledge-bases/update`
+`POST /api/v1/knowledge-bases/update`：修改知识库信息接口。
 
 请求体：`kbId`(必填) + 可修改字段。`kbName`/`kbDesc` 传空字符串表示不修改；`metadataSchema` 为空表示保持不变；`kbType` 变更需同步校验 `teamId`/`orgId`；`kbMode`/`wikiConfig`/`graphSchema` 不传表示保持不变。
 约束：知识库不存在 `100404`；个人库仅创建者可修改（否则 `100403`）；企业库无法识别组织授权 `100403`；`wiki` 与 `graph` 之间互转返回 `200014`（建议新建目标形态库）。
 
 #### 6.1.3 查询知识库列表
 
-接口：`POST /api/v1/knowledge-bases/query`
+`POST /api/v1/knowledge-bases/query`：查询知识库列表接口。
 
 请求体：
 
@@ -372,15 +372,52 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 #### 6.1.4 查询知识库详情
 
-接口：`GET /api/v1/knowledge-bases/{kb_id}`
+`GET /api/v1/knowledge-bases/{kb_id}`：查询知识库详情接口。
 
 路径参数 `kb_id` 必填。不存在 `100404`；越权 `100403`。响应 `data` 为完整知识库对象。
+
+#### 6.1.5 查询 Wiki 库页面树
+
+`GET /api/v1/knowledge-bases/{kb_id}/wiki/tree`：查询 Wiki 库（`kbMode=wiki`）的库级页面树（跨文档合并后的页面层级）。
+
+Query 参数：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `page` | int | 页码，默认 1 |
+| `pageSize` | int | 每页根节点数，默认 20，最大 100 |
+
+响应 `data`：`{kbId, kbMode("wiki"), total, page, pageSize, tree[]}`；`tree[]` 节点：`{pageId, title, level, parentPageId, children[]}`。
+约束：非 wiki 形态调用返回 `100001`（`data.field=kbMode`）；知识库不存在 `100404`；wiki 库暂无页面返回空树（非错误）；个人库仅创建者可访问，否则 `100403`。
+
+#### 6.1.6 查询 Wiki 页面详情
+
+`GET /api/v1/knowledge-bases/{kb_id}/wiki/page`：按 `pageId` 查询单页正文、结构化字段、互链与来源证据。
+
+Query 参数：`pageId`（必填）。页面不存在或不属于该库返回 `100404`。
+
+响应 `data`：`{kbId, kbMode("wiki"), page}`；`page` 字段：`pageId`、`title`、`level`、`parentPageId`、`markdown`（正文）、`fields`（结构化字段）、`tags`、`links[]`（`{title, pageId}` 互链）、`sourceDocs[]`（来源文档证据）、`status`（`active`/`deprecated`）、`createdAt`、`updatedAt`（UTC）。
+
+#### 6.1.7 检索 Wiki 库页面
+
+`GET /api/v1/knowledge-bases/{kb_id}/wiki/search`：库内页面级检索，标题命中加权 > 正文命中。
+
+Query 参数：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `q` | string | 检索关键字；空串返回全部活跃页面 |
+| `tag` | string | 按页面标签精确过滤，可选 |
+
+响应 `data`：`{kbId, kbMode("wiki"), q, total, items[]}`；`items[]` 元素：`{pageId, title, snippet, tags, score}`。
+
+> Wiki 库页面由文档解析成功后自动构建：`kbMode=wiki` 的库执行 `sync` 解析（§6.3.1）或 `ingest-and-parse`（§6.2.2）时，按库 `wikiConfig` 切页并按 `dedup`（`merge`/`overwrite`/`skip`）跨文档合并，页面 ID 由 `kbId + 标题规范化键` 稳定派生，重复加工自动去重；`async` 任务待真实解析引擎落地后执行建页。
 
 ### 6.2 文档
 
 #### 6.2.1 接入知识源
 
-接口：`POST /api/v1/knowledge-documents/ingest`
+`POST /api/v1/knowledge-documents/ingest`：接入知识源接口。
 
 请求体：
 
@@ -407,7 +444,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 #### 6.2.2 一体化接入并解析
 
-接口：`POST /api/v1/knowledge-documents/ingest-and-parse`
+`POST /api/v1/knowledge-documents/ingest-and-parse`：一体化接入并解析接口。
 
 继承 ingest 全部字段，另加：
 
@@ -421,13 +458,13 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 #### 6.2.3 查询文档信息
 
-接口：`GET /api/v1/knowledge-documents/{doc_id}`
+`GET /api/v1/knowledge-documents/{doc_id}`：查询文档信息接口。
 
 路径参数 `doc_id` 必填。响应 `data`：`{docId, docTitle, kbId, sourceType, sourceUrl, objectKey, tags, metadata, status, ingestTime, updateTime}`。
 
 #### 6.2.4 上传文档（7 天暂存）
 
-接口：`POST /api/v1/knowledge-documents/upload`
+`POST /api/v1/knowledge-documents/upload`：上传文档（7 天暂存）接口。
 
 `multipart/form-data` 上传单个文档文件，平台暂存 **7 天**（默认，可用 `OPEN_PLATFORM_UPLOAD_TTL_SECONDS` 调整）并返回临时访问地址。暂存文件**不创建知识库、不登记文档**，仅提供临时存储与访问，适合「先上传、后接入/解析/分享」的编排。
 
@@ -447,7 +484,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 #### 6.2.5 访问暂存文档
 
-接口：`GET /api/v1/knowledge-documents/upload/{file_id}`
+`GET /api/v1/knowledge-documents/upload/{file_id}`：访问暂存文档接口。
 
 按上传返回的 `fileId` 访问 7 天暂存文件内容（**二进制流**，`Content-Type` 与上传一致，`Content-Disposition` 携带原始文件名）。访问需携带 `Bearer`；仅创建者可访问（越权 `100403`），不存在返回 `100404`，过期或已清理返回 `200013`。
 
@@ -457,7 +494,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 #### 6.3.1 启动文档解析
 
-接口：`POST /api/v1/knowledge-documents/parse`
+`POST /api/v1/knowledge-documents/parse`：启动文档解析接口。
 
 请求体：`reqId`、`kbId`(✅)、`docId`(✅)、`parseStrategy`、`resultFormat`、`executeMode`(`async`默认/`sync`)、`parseMode`(`auto|ocr|structure`，默认 `auto`)、`chunkStrategy`(`auto|fixed|semantic`，默认 `auto`)、`chunkSize`(默认 800)。
 
@@ -471,26 +508,26 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse \
 
 #### 6.3.2 查询解析结果
 
-接口：`GET /api/v1/knowledge-documents/parse-result/query?docId=doc_10001`
+`GET /api/v1/knowledge-documents/parse-result/query?docId=doc_10001`：查询解析结果接口。
 
 Query 参数：`docId`（必填）。响应 `data`：`{parseStatus(queued/running/success/failed), resultFormat, pageCount, chunkCount, failedReason}`。任务不存在或未就绪返回 `200003`。
 
 #### 6.3.3 获取下载凭证
 
-接口：`GET /api/v1/knowledge-documents/parse-result/issue-download-ticket?docId=doc_10001`
+`GET /api/v1/knowledge-documents/parse-result/issue-download-ticket?docId=doc_10001`：获取解析结果下载凭证接口。
 
 Query 参数：`docId`（必填）。响应 `data`：`{ticket, expireAt, downloadPath}`。结果未就绪 `200003`。
 
 #### 6.3.4 下载解析结果
 
-接口：`GET /api/v1/knowledge-documents/parse-result/download?docId=doc_10001&ticket=xxx`
+`GET /api/v1/knowledge-documents/parse-result/download?docId=doc_10001&ticket=xxx`：下载解析结果接口。
 
 Query 参数：`docId` + `ticket`（均必填）。凭证无效/过期 `200004`。
 > 当前阶段：真实结果存储落地前返回统一体（`data` 含 `docId/taskId/downloadPath/format/note`），后续切换为文件流。
 
 #### 6.3.5 独立解析（免知识库）
 
-接口：`POST /api/v1/knowledge-documents/parse-direct`
+`POST /api/v1/knowledge-documents/parse-direct`：独立解析（免知识库）接口。
 
 对一次性传入的来源直接解析，**不创建知识库、不登记文档**；适合「只要结构化文本、不建库不检索」的场景（选型见 §4.1）。
 
@@ -526,9 +563,9 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse-direct \
 
 #### 6.4.1 普通检索
 
-接口：`POST /api/v1/knowledge-search/universal-search`
+`POST /api/v1/knowledge-search/universal-search`：普通检索接口。
 
-接口：`POST /api/v1/knowledge-search/query`（兼容别名，行为与 `universal-search` 一致，deprecated，供既有调用方平滑迁移）
+`POST /api/v1/knowledge-search/query`（兼容别名，行为与 `universal-search` 一致，deprecated，供既有调用方平滑迁移）：普通检索兼容别名接口。
 
 请求体：
 
@@ -568,7 +605,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/universal-search \
 
 #### 6.4.2 深度检索
 
-接口：`POST /api/v1/knowledge-search/deep-search`
+`POST /api/v1/knowledge-search/deep-search`：深度检索接口。
 
 Agentic 多轮深度检索：子查询规划、并行召回、反思与带引用回答；权限收敛与普通检索一致（逐库授权，任一拒绝整体 `100403`）。
 
@@ -712,7 +749,7 @@ client.close();
 
 ## 10. MCP Server 接入
 
-MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），16 个工具与业务接口一一对应。
+MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），19 个工具与业务接口一一对应（知识库 7：kb_create/kb_update/kb_query/kb_get/wiki_tree/wiki_page/wiki_search）。
 
 ### 10.1 运行方式
 
@@ -756,6 +793,9 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 | `kb_update` | `kbId`(必填), 其余同创建（均可选） | 局部更新（缺省字段保留现有值） |
 | `kb_query` | `page`=1, `pageSize`=20, `kbType`, `teamId`, `orgId`, `ownerId`, `keyword` | 分页查询 |
 | `kb_get` | `kbId`(必填) | 查询详情 |
+| `wiki_tree` | `kbId`(必填), `page`=1, `pageSize`=20 | 查询 Wiki 库页面树（仅 `kbMode=wiki`） |
+| `wiki_page` | `kbId`(必填), `pageId`(必填) | 查询 Wiki 页面详情（正文/字段/互链/来源） |
+| `wiki_search` | `kbId`(必填), `q`="", `tag`="" | 检索 Wiki 库页面 |
 
 **文档**
 
@@ -846,6 +886,9 @@ ikc kb-create 产品知识库 --kb-type team --team-id team_01 --kb-desc "用于
 ikc kb-update kb_10001 --kb-name 产品知识库-客服版
 ikc kb-list --page 1 --page-size 20 --keyword 客服
 ikc kb-get kb_10001
+ikc wiki-tree kb_10001 --page 1 --page-size 20
+ikc wiki-page kb_10001 --page-id wiki_xxx
+ikc wiki-search kb_10001 --q 请假 --tag 制度
 ```
 
 **文档**（`source` 以 JSON 字符串接收，复杂参数同理）

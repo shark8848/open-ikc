@@ -244,3 +244,146 @@ def test_model_extra_fields_passthrough():
     assert result.extra == {"futureField": 1}
     assert result.to_dict()["futureField"] == 1
     client.close()
+
+
+WIKI_TREE_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "wiki",
+    "total": 2,
+    "page": 1,
+    "pageSize": 20,
+    "tree": [
+        {
+            "pageId": "wiki_abc123",
+            "title": "首页",
+            "level": 1,
+            "parentPageId": "",
+            "children": [
+                {"pageId": "wiki_def456", "title": "子页", "level": 2, "parentPageId": "wiki_abc123", "children": []}
+            ],
+        }
+    ],
+}
+
+WIKI_PAGE_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "wiki",
+    "page": {
+        "pageId": "wiki_abc123",
+        "title": "首页",
+        "level": 1,
+        "parentPageId": "",
+        "markdown": "# 首页\n正文",
+        "fields": {"owner": "张三"},
+        "tags": ["指南"],
+        "links": [{"title": "子页", "pageId": "wiki_def456"}],
+        "sourceDocs": ["doc_1"],
+        "status": "active",
+        "createdAt": "2026-08-01T00:00:00Z",
+        "updatedAt": "2026-08-02T00:00:00Z",
+    },
+}
+
+WIKI_SEARCH_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "wiki",
+    "q": "产品",
+    "total": 1,
+    "items": [{"pageId": "wiki_abc123", "title": "产品首页", "snippet": "产品说明", "tags": ["指南"], "score": 0.9}],
+}
+
+
+def test_wiki_tree_sends_path_and_query_params():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return ok_response(WIKI_TREE_DATA)
+
+    client = make_client(handler)
+    result = client.knowledge_bases.wiki_tree("kb_10001", page=2, pageSize=10)
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/wiki/tree"
+    assert captured["params"] == {"page": "2", "pageSize": "10"}
+    assert result.kbId == "kb_10001"
+    assert result.kbMode == "wiki"
+    assert result.total == 2
+    assert result.page == 1
+    assert result.pageSize == 20
+    assert result.tree[0].pageId == "wiki_abc123"
+    assert result.tree[0].title == "首页"
+    assert result.tree[0].children[0].pageId == "wiki_def456"
+    assert result.to_dict()["tree"][0]["children"][0]["title"] == "子页"
+    client.close()
+
+
+def test_wiki_tree_defaults_page_params():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["params"] = dict(request.url.params)
+        return ok_response(WIKI_TREE_DATA)
+
+    client = make_client(handler)
+    client.knowledge_bases.wiki_tree("kb_10001")
+    assert captured["params"] == {"page": "1", "pageSize": "20"}
+    client.close()
+
+
+def test_wiki_page_sends_page_id_param_and_parses_detail():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return ok_response(WIKI_PAGE_DATA)
+
+    client = make_client(handler)
+    result = client.knowledge_bases.wiki_page("kb_10001", page_id="wiki_abc123")
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/wiki/page"
+    assert captured["params"] == {"pageId": "wiki_abc123"}
+    assert result.kbMode == "wiki"
+    assert result.page.title == "首页"
+    assert result.page.markdown == "# 首页\n正文"
+    assert result.page.fields == {"owner": "张三"}
+    assert result.page.tags == ["指南"]
+    assert result.page.links == [{"title": "子页", "pageId": "wiki_def456"}]
+    assert result.page.sourceDocs == ["doc_1"]
+    assert result.page.status == "active"
+    assert result.to_dict()["page"]["updatedAt"] == "2026-08-02T00:00:00Z"
+    client.close()
+
+
+def test_wiki_search_sends_q_and_tag_params():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return ok_response(WIKI_SEARCH_DATA)
+
+    client = make_client(handler)
+    result = client.knowledge_bases.wiki_search("kb_10001", q="产品", tag="指南")
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/wiki/search"
+    assert captured["params"] == {"q": "产品", "tag": "指南"}
+    assert result.q == "产品"
+    assert result.total == 1
+    assert result.items[0].pageId == "wiki_abc123"
+    assert result.items[0].snippet == "产品说明"
+    assert result.items[0].tags == ["指南"]
+    assert result.items[0].score == 0.9
+    assert result.to_dict()["items"][0]["title"] == "产品首页"
+    client.close()
+
+
+def test_wiki_search_defaults_empty_params():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["params"] = dict(request.url.params)
+        return ok_response(WIKI_SEARCH_DATA)
+
+    client = make_client(handler)
+    client.knowledge_bases.wiki_search("kb_10001")
+    assert captured["params"] == {"q": "", "tag": ""}
+    client.close()

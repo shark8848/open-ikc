@@ -756,3 +756,23 @@
 - 文档：API 手册 §6.1/§5.4、V2 详细定义 A-01、README（能力总览 + 实现状态）、方案文档 P1 标记落地。
 - 环境：18000 第三次被用户侧 `scripts/start_open_platform.sh` 实例占用（随机 admin token、未配业务 token），未再强杀；P1 冒烟在 18001 完成并已停止。用户如需 18000 正常使用，用「业务 token + admin token=test-admin-token」重启。
 - 下一步：P2（Wiki 库）/ P3（图谱库）按业务优先级评审后实施；提交推送（github）。
+
+### 任务：P2 落地——Wiki 库（库级页面树 + 检索 + parse 联动 + MCP/CLI 覆盖）（2026-08-18 续）
+
+- 需求：按方案 P2 落地 Wiki 库；保持「MCP/CLI 完整覆盖所有 API」。
+- 平台侧（`docs/知识加工形态优化方案_wiki图谱与解析.md` P2 全部落地）：
+  - `app/services/wiki_store.py`：`WikiPageRecord` + `WikiPageStore`（原子读写、按稳定键 merge/overwrite/skip 合并、树构建、页面检索、增量废弃）+ `build_document_pages`；页面 ID = `wiki_ + sha1(kbId:stableKey)[:12]` 跨文档/跨构建稳定。
+  - `app/services/wiki.py`（`WikiService`：tree/page/search 只读视图 + `build_from_doc` 加工联动）；`app/schemas/wiki.py`（树/页/检索响应模型）；`app/core/responses.py` 三响应构造。
+  - 路由（`app/routers/knowledge_base.py` + `app/core/catalog.py`）：`GET /api/v1/knowledge-bases/{kb_id}/wiki/tree|page|search`（只读，AUTHZ 沿用库权限；非 wiki 形态 `100001`、页面不存在 `100404`）。
+  - parse 联动：`ParseService` sync 解析成功后按库 `wikiConfig` 自动建页（`_build_wiki_pages_if_wiki_kb`），`ingest-and-parse` 同链路；建页失败不阻断解析主链路（logger warning）。
+  - 修复两处实现缺陷：`WikiPageStore` 持锁内再加锁死锁（改 `_find_by_key_locked`）；稳定键恒同 pageId 导致 merge 分支死代码（按稳定键直接合并）；空 q 检索被 normalize 成 "untitled"（改按原始 q 判断）。
+- SDK/MCP/CLI（子代理完成，写范围 `sdk/python/**`）：
+  - `models/wiki.py`（6 模型）、`client.py`/`async_client.py` 三方法、MCP 三工具（`wiki_tree`/`wiki_page`/`wiki_search`）、CLI 三命令（`wiki-tree`/`wiki-page`/`wiki-search`），工具/命令 16 → 19。
+- 平台在线测试白名单：`app/core/admin/mcp_cli_test.py` 补 CLI `wiki-tree`/`wiki-page`/`wiki-search` + MCP `wiki_tree`/`wiki_page`/`wiki_search`（参数级白名单）；`scripts/mcp_stdio_smoke.py` expected 16 → 19。
+- 验证（全绿）：
+  - 平台 `pytest tests -q` **273 passed**（新增 `tests/test_wiki_library.py` 10 例：形态拒绝/空树/建页/详情/检索/合并/覆盖/分页/catalog）。
+  - SDK `pytest sdk/python/tests -q` **148 passed**（原 134 + 新增 14）。
+  - 手册一致性 **78/78**（新增 wiki 8 例，覆盖 text 库拒绝、空树、sync 联动建页、页面详情、检索、空 q、catalog 18 条对齐）。
+  - 端到端冒烟（临时实例 18001，已停止）：REST 建 wiki 库→ingest→sync parse 建页；CLI `wiki-tree`/`wiki-page`/`wiki-search` 全通；MCP 19 工具齐全，三 wiki 工具 call_tool 全通。
+- 文档：API 手册（§6.1.5-6.1.7 wiki 三接口 + §6 全部「接口：」并入正文、§10/§11 工具与命令 16→19）、README（能力 4→7、实现状态 P2）、V2 详细定义（A-05/A-06/A-07）、`docs/MCP与CLI接口定义.md`（映射表/工具清单/白名单）、`docs/管理Portal设计.md`（白名单）、方案文档 P2 标记落地。
+- 下一步：P3（图谱库）按业务优先级评审后实施；提交推送（github）。

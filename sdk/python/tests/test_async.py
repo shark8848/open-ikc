@@ -244,3 +244,108 @@ def test_async_retry_on_connection_error():
         await client.close()
 
     asyncio.run(main())
+
+
+WIKI_TREE_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "wiki",
+    "total": 1,
+    "page": 1,
+    "pageSize": 20,
+    "tree": [
+        {
+            "pageId": "wiki_abc123",
+            "title": "首页",
+            "level": 1,
+            "parentPageId": "",
+            "children": [{"pageId": "wiki_def456", "title": "子页", "level": 2, "parentPageId": "wiki_abc123", "children": []}],
+        }
+    ],
+}
+
+WIKI_PAGE_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "wiki",
+    "page": {
+        "pageId": "wiki_abc123",
+        "title": "首页",
+        "level": 1,
+        "parentPageId": "",
+        "markdown": "# 首页",
+        "fields": {},
+        "tags": [],
+        "links": [],
+        "sourceDocs": [],
+        "status": "active",
+        "createdAt": "2026-08-01T00:00:00Z",
+        "updatedAt": "2026-08-02T00:00:00Z",
+    },
+}
+
+WIKI_SEARCH_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "wiki",
+    "q": "产品",
+    "total": 1,
+    "items": [{"pageId": "wiki_abc123", "title": "产品首页", "snippet": "说明", "tags": ["指南"], "score": 0.8}],
+}
+
+
+def test_async_wiki_tree():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            captured["params"] = dict(request.url.params)
+            return ok_response(WIKI_TREE_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.wiki_tree("kb_10001", page=2, pageSize=10)
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/wiki/tree"
+        assert captured["params"] == {"page": "2", "pageSize": "10"}
+        assert result.total == 1
+        assert result.tree[0].children[0].pageId == "wiki_def456"
+        await client.close()
+
+    asyncio.run(main())
+
+
+def test_async_wiki_page():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            captured["params"] = dict(request.url.params)
+            return ok_response(WIKI_PAGE_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.wiki_page("kb_10001", page_id="wiki_abc123")
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/wiki/page"
+        assert captured["params"] == {"pageId": "wiki_abc123"}
+        assert result.page.title == "首页"
+        assert result.page.status == "active"
+        await client.close()
+
+    asyncio.run(main())
+
+
+def test_async_wiki_search():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            captured["params"] = dict(request.url.params)
+            return ok_response(WIKI_SEARCH_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.wiki_search("kb_10001", q="产品", tag="指南")
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/wiki/search"
+        assert captured["params"] == {"q": "产品", "tag": "指南"}
+        assert result.total == 1
+        assert result.items[0].score == 0.8
+        await client.close()
+
+    asyncio.run(main())

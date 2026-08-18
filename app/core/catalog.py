@@ -23,6 +23,21 @@ API_CATALOG = [
                 "path": "/api/v1/knowledge-bases/{kb_id}",
                 "summary": "查询知识库详情",
             },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/wiki/tree",
+                "summary": "查询 Wiki 库页面树",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/wiki/page",
+                "summary": "查询 Wiki 页面详情",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/wiki/search",
+                "summary": "检索 Wiki 库页面",
+            },
         ],
     },
     {

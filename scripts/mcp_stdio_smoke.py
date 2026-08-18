@@ -54,8 +54,8 @@ async def _smoke(base_url: str, token: str) -> int:
             expected = {
                 "kb_create", "kb_update", "kb_query", "kb_get",
                 "doc_ingest", "doc_ingest_and_parse", "doc_get",
-                "parse_start", "parse_query", "parse_issue_ticket", "parse_download",
-                "search_query", "sys_catalog", "sys_error_codes",
+                "parse_start", "parse_direct", "parse_query", "parse_issue_ticket", "parse_download",
+                "search_query", "deep_search", "sys_catalog", "sys_error_codes",
             }
             missing = expected - set(names)
             assert not missing, f"missing tools: {missing}"

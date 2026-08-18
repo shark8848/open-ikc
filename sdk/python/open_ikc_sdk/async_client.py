@@ -18,8 +18,14 @@ from .models.knowledge_base import (
     KnowledgeBasePage,
     KnowledgeMetadataField,
 )
-from .models.parse import DownloadResult, DownloadTicket, ParseResult, ParseTask
-from .models.search import SearchResult
+from .models.parse import (
+    DownloadResult,
+    DownloadTicket,
+    ParseDirectResult,
+    ParseResult,
+    ParseTask,
+)
+from .models.search import DeepSearchResult, SearchResult
 from .transport import DownloadPayload
 from .transport_async import AsyncTransport
 
@@ -292,7 +298,7 @@ class AsyncDocumentClient:
 
 
 class AsyncParseClient:
-    """解析域异步客户端：parse / query_result / issue_download_ticket / download。"""
+    """解析域异步客户端：parse / parse_direct / query_result / issue_download_ticket / download。"""
 
     def __init__(self, client: AsyncOpenIKCClient) -> None:
         self._client = client
@@ -334,6 +340,35 @@ class AsyncParseClient:
         )
         return ParseResult.from_dict(envelope.data)
 
+    async def parse_direct(
+        self,
+        *,
+        source: DocumentSource | dict,
+        reqId: str = "",
+        parseStrategy: dict | None = None,
+        resultFormat: dict | None = None,
+        executeMode: str = "async",
+        parseMode: str | None = None,
+        chunkStrategy: str | None = None,
+        chunkSize: int | None = None,
+    ) -> ParseDirectResult:
+        """免知识库独立解析（parse-direct）。"""
+        body: dict = {"source": _dump_source(source), "executeMode": executeMode}
+        if reqId:
+            body["reqId"] = reqId
+        if parseStrategy:
+            body["parseStrategy"] = dict(parseStrategy)
+        if resultFormat:
+            body["resultFormat"] = dict(resultFormat)
+        if parseMode is not None:
+            body["parseMode"] = parseMode
+        if chunkStrategy is not None:
+            body["chunkStrategy"] = chunkStrategy
+        if chunkSize is not None:
+            body["chunkSize"] = chunkSize
+        envelope = await self._client.request("POST", "/api/v1/knowledge-documents/parse-direct", body=body)
+        return ParseDirectResult.from_dict(envelope.data)
+
     async def issue_download_ticket(self, *, docId: str) -> DownloadTicket:
         envelope = await self._client.request(
             "GET",
@@ -356,7 +391,7 @@ class AsyncParseClient:
 
 
 class AsyncSearchClient:
-    """检索域异步客户端：query。"""
+    """检索域异步客户端：query / deep_search。"""
 
     def __init__(self, client: AsyncOpenIKCClient) -> None:
         self._client = client
@@ -367,19 +402,97 @@ class AsyncSearchClient:
         query: str = "",
         kbId: str = "",
         kbIds: list[str] | None = None,
+        teamId: str = "",
+        orgId: str = "",
         ownerId: str = "",
         orgPath: str = "",
+        mode: str = "qa",
+        searchType: str = "hybrid",
+        relNum: int = 0,
+        useRerank: bool = False,
+        score: float | None = None,
+        topK: int = 5,
+        filters: dict | None = None,
+        withCitation: bool = True,
+        index: str = "",
+        isOptimize: bool = False,
     ) -> SearchResult:
-        body: dict = {}
+        body: dict = {
+            "mode": mode,
+            "searchType": searchType,
+            "relNum": relNum,
+            "useRerank": useRerank,
+            "topK": topK,
+            "withCitation": withCitation,
+            "isOptimize": isOptimize,
+        }
         if query:
             body["query"] = query
         if kbId:
             body["kbId"] = kbId
         if kbIds:
             body["kbIds"] = list(kbIds)
+        if teamId:
+            body["teamId"] = teamId
+        if orgId:
+            body["orgId"] = orgId
         if ownerId:
             body["ownerId"] = ownerId
         if orgPath:
             body["orgPath"] = orgPath
-        envelope = await self._client.request("POST", "/api/v1/knowledge-search/query", body=body)
+        if score is not None:
+            body["score"] = score
+        if filters:
+            body["filters"] = dict(filters)
+        if index:
+            body["index"] = index
+        envelope = await self._client.request("POST", "/api/v1/knowledge-search/universal-search", body=body)
         return SearchResult.from_dict(envelope.data)
+
+    async def deep_search(
+        self,
+        *,
+        query: str = "",
+        kbId: str = "",
+        kbIds: list[str] | None = None,
+        teamId: str = "",
+        orgId: str = "",
+        ownerId: str = "",
+        orgPath: str = "",
+        searchType: str = "hybrid",
+        topK: int = 8,
+        useRerank: bool = True,
+        sessionId: str = "",
+        memory: dict | None = None,
+        deepSearch: dict | None = None,
+        filters: dict | None = None,
+        responseSpec: dict | None = None,
+    ) -> DeepSearchResult:
+        """Agentic 深度检索（/deep-search）；需要平台配置 openai 检索后端，否则返回 501001。"""
+        body: dict = {"searchType": searchType, "topK": topK, "useRerank": useRerank}
+        if query:
+            body["query"] = query
+        if kbId:
+            body["kbId"] = kbId
+        if kbIds:
+            body["kbIds"] = list(kbIds)
+        if teamId:
+            body["teamId"] = teamId
+        if orgId:
+            body["orgId"] = orgId
+        if ownerId:
+            body["ownerId"] = ownerId
+        if orgPath:
+            body["orgPath"] = orgPath
+        if sessionId:
+            body["sessionId"] = sessionId
+        if memory:
+            body["memory"] = dict(memory)
+        if deepSearch:
+            body["deepSearch"] = dict(deepSearch)
+        if filters:
+            body["filters"] = dict(filters)
+        if responseSpec:
+            body["responseSpec"] = dict(responseSpec)
+        envelope = await self._client.request("POST", "/api/v1/knowledge-search/deep-search", body=body)
+        return DeepSearchResult.from_dict(envelope.data)

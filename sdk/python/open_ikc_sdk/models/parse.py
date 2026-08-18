@@ -53,6 +53,32 @@ class ParseResult:
         )
 
 
+_PARSE_DIRECT_FIELDS = {"taskId", "docId", "taskStatus", "executeMode", "resultInline"}
+
+
+@dataclass
+class ParseDirectResult:
+    """免知识库独立解析结果（对应平台 ParseDirectResponse.data）。"""
+
+    taskId: str
+    docId: str
+    taskStatus: str
+    executeMode: str
+    resultInline: dict[str, Any] = field(default_factory=dict)
+    extra: dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ParseDirectResult":
+        return cls(
+            taskId=str(data.get("taskId", "")),
+            docId=str(data.get("docId", "")),
+            taskStatus=str(data.get("taskStatus", "")),
+            executeMode=str(data.get("executeMode", "")),
+            resultInline=dict(data.get("resultInline") or {}),
+            extra={key: value for key, value in data.items() if key not in _PARSE_DIRECT_FIELDS},
+        )
+
+
 _DOWNLOAD_TICKET_FIELDS = {"ticket", "expireAt", "downloadPath"}
 
 

@@ -46,6 +46,22 @@ CLI_WHITELIST: dict[str, CommandSpec] = {
     "search-query": CommandSpec(
         flags=frozenset({"--query", "--kb-id", "--kb-ids", "--owner-id", "--org-path"})
     ),
+    "deep-search": CommandSpec(
+        flags=frozenset(
+            {
+                "--query",
+                "--kb-id",
+                "--kb-ids",
+                "--owner-id",
+                "--org-path",
+                "--search-type",
+                "--top-k",
+                "--use-rerank",
+                "--no-use-rerank",
+                "--session-id",
+            }
+        )
+    ),
 }
 
 # MCP 工具白名单：工具名 → 允许的参数 key 集合（仅只读工具）
@@ -58,6 +74,25 @@ MCP_TOOL_WHITELIST: dict[str, frozenset[str]] = {
     "parse_query": frozenset({"docId"}),
     "parse_issue_ticket": frozenset({"docId"}),
     "search_query": frozenset({"query", "kbId", "kbIds", "ownerId", "orgPath", "mode", "searchType", "topK"}),
+    "deep_search": frozenset(
+        {
+            "query",
+            "kbId",
+            "kbIds",
+            "teamId",
+            "orgId",
+            "ownerId",
+            "orgPath",
+            "searchType",
+            "topK",
+            "useRerank",
+            "sessionId",
+            "memory",
+            "deepSearch",
+            "filters",
+            "responseSpec",
+        }
+    ),
 }
 
 

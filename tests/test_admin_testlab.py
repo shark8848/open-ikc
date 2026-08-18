@@ -182,9 +182,12 @@ def test_whitelist_payload_structure() -> None:
     payload = mcp_cli_test.whitelist_payload()
     assert "cli" in payload and "mcpTools" in payload
     assert "cliArgs" in payload and "mcpArgs" in payload
-    assert "kb-list" in payload["cli"] and "sys_catalog" in payload["mcpTools"]
+    assert "kb-list" in payload["cli"] and "deep-search" in payload["cli"]
+    assert "sys_catalog" in payload["mcpTools"] and "deep_search" in payload["mcpTools"]
     assert payload["cliArgs"]["kb-get"]["positional"] == 1
     assert payload["mcpArgs"]["kb_get"] == ["kbId"]
+    assert "--top-k" in payload["cliArgs"]["deep-search"]["flags"]
+    assert "kbIds" in payload["mcpArgs"]["deep_search"]
 
 
 def test_parse_mcp_steps() -> None:

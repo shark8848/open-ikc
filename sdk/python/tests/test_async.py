@@ -172,7 +172,17 @@ def test_async_search_query_parses_result():
 
         client = make_client(handler)
         result = await client.search.query(query="问题", kbIds=["kb_1", "kb_2"])
-        assert captured["body"] == {"query": "问题", "kbIds": ["kb_1", "kb_2"]}
+        assert captured["body"] == {
+            "query": "问题",
+            "kbIds": ["kb_1", "kb_2"],
+            "mode": "qa",
+            "searchType": "hybrid",
+            "relNum": 0,
+            "useRerank": False,
+            "topK": 5,
+            "withCitation": True,
+            "isOptimize": False,
+        }
         assert result.results[0].score == 0.9
         await client.close()
 

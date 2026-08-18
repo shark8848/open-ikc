@@ -98,8 +98,8 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | REST | 任何语言、curl/Postman 调试、需全量字段控制 | 最低 | §1.4 / 手册 §6 |
 | Python SDK | Python 应用（FastAPI/Django/脚本），类型安全 + 异常映射 | 低 | §4 |
 | Java SDK | Java 17+ 后端服务，零第三方依赖 | 低 | §4 |
-| MCP Server | Claude Desktop / Cursor 等 AI 客户端（14 个工具） | 低 | §4 |
-| CLI | 运维脚本、快速验证、CI 冒烟（14 个子命令） | 最低 | §4 |
+| MCP Server | Claude Desktop / Cursor 等 AI 客户端（16 个工具） | 低 | §4 |
+| CLI | 运维脚本、快速验证、CI 冒烟（16 个子命令） | 最低 | §4 |
 
 ## 3. 文档导航
 
@@ -136,8 +136,8 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 - **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`），四大能力类型安全封装：同步/异步客户端、异常映射、trace 透传、MCP/CLI 同源；[sdk/python/README.md](sdk/python/README.md)。
 - **Java SDK**：`sdk/java/`（Maven，Java 17，零第三方依赖，`io.openikc:open-ikc-sdk:1.0.0`），同协议同错误码；[sdk/java/README.md](sdk/java/README.md)，设计见 [docs/开放平台JavaSDK集成设计.md](docs/开放平台JavaSDK集成设计.md)。
-- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），14 个工具，供 Claude 等 LLM 直接调用平台能力。
-- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），14 个子命令，全局选项 + 退出码约定。
+- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），16 个工具，供 Claude 等 LLM 直接调用平台能力。
+- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），16 个子命令，全局选项 + 退出码约定。
 - 完整能力映射 / 环境变量 / 工具与命令清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
 
 ## 5. 配置参考

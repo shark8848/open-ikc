@@ -19,10 +19,12 @@
 | 文档 | `documents.ingest_and_parse` | `doc_ingest_and_parse` | `doc-ingest-and-parse` |
 | 文档 | `documents.get` | `doc_get` | `doc-get` |
 | 解析 | `parse.parse` | `parse_start` | `parse-start` |
+| 解析 | `parse.parse_direct` | `parse_direct` | `parse-direct` |
 | 解析 | `parse.query_result` | `parse_query` | `parse-query` |
 | 解析 | `parse.issue_download_ticket` | `parse_issue_ticket` | `parse-ticket` |
 | 解析 | `parse.download` | `parse_download` | `parse-download` |
 | 检索 | `search.query` | `search_query` | `search-query` |
+| 检索 | `search.deep_search` | `deep_search` | `deep-search` |
 | 系统 | `fetch_catalog` | `sys_catalog` | `sys-catalog` |
 | 系统 | `fetch_error_codes` | `sys_error_codes` | `sys-error-codes` |
 
@@ -60,7 +62,7 @@ python -m open_ikc_sdk.mcp --base-url http://127.0.0.1:18000 --token <token>
 python -m open_ikc_sdk.mcp --transport sse
 ```
 
-- 工具名：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `sys_catalog` / `sys_error_codes`。
+- 工具名（16 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_direct` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `deep_search` / `sys_catalog` / `sys_error_codes`。
 - 工具返回：JSON 序列化 dict（复用 SDK 模型 `to_dict()` / `dataclasses.asdict`）。
 - 错误：SDK `OpenIKCError` 子类，由 MCP 运行时转为工具错误；错误信息含 `errCode` / `errMsg` / `traceId`。
 - 客户端配置（Claude Desktop / Claude Code 等）：stdio 命令指向 `python -m open_ikc_sdk.mcp`，并注入上述环境变量。
@@ -152,19 +154,22 @@ ikc --help
 | 工具 | 参数 | 说明 |
 | --- | --- | --- |
 | `parse_start` | `kbId`(必填), `docId`(必填), `reqId`, `parseStrategy`(JSON), `resultFormat`(JSON), `executeMode`="async", `parseMode`, `chunkStrategy`, `chunkSize` | 启动文档解析任务 |
+| `parse_direct` | `source`(必填, url/file/directory/archive), `reqId`, `parseStrategy`(JSON), `resultFormat`(JSON), `executeMode`="async", `parseMode`, `chunkStrategy`, `chunkSize` | 免知识库独立解析（不建库、不登记文档） |
 | `parse_query` | `docId`(必填) | 查询解析状态与产物摘要 |
 | `parse_issue_ticket` | `docId`(必填) | 签发一次性下载凭证 |
 | `parse_download` | `docId`(必填), `ticket`(必填), `toPath` | 下载解析结果 |
 
 > `parse_download`：平台当前返回 JSON 统一壳元数据；文件流落地后返回 base64 编码字节（`format=bytes, encoding=base64`）。
+> `parse_direct`：`executeMode=sync` 请求内返回内联结果；`async` 返回临时 `docId`（`pdoc_` 前缀）后复用 `parse_query` / `parse_issue_ticket` / `parse_download` 轮询/下载。
 
 ### 3.4 检索
 
 | 工具 | 参数 | 说明 |
 | --- | --- | --- |
-| `search_query` | `query`, `kbId`/`kbIds`(至少一个), `ownerId`, `orgPath` | 统一检索问答 |
+| `search_query` | `query`, `kbId`/`kbIds`(至少一个), `teamId`/`orgId`, `ownerId`, `orgPath`, `mode`="qa", `searchType`="hybrid", `relNum`, `useRerank`, `score`, `topK`, `filters`, `withCitation`, `index`, `isOptimize` | 统一检索问答（`/universal-search`） |
+| `deep_search` | `query`, `kbId`/`kbIds`(至少一个), `teamId`/`orgId`, `ownerId`, `orgPath`, `searchType`="hybrid", `topK`=8, `useRerank`=true, `sessionId`, `memory`, `deepSearch`, `filters`, `responseSpec` | Agentic 深度检索（需平台配置 openai 检索后端，否则 `501001`） |
 
-> `kbId` / `kbIds` / `ownerId` / `orgPath` 同时是平台 AUTHZ 数据权限上下文，原样透传（与 SDK 一致）。
+> `kbId` / `kbIds` / `teamId` / `orgId` / `ownerId` / `orgPath` 同时是平台 AUTHZ 数据权限上下文，原样透传（与 SDK 一致）。
 
 ### 3.5 系统
 
@@ -196,6 +201,7 @@ ikc doc-get doc_10001
 
 ```bash
 ikc parse-start kb_10001 doc_10001 --execute-mode async
+ikc parse-direct '{"type":"url","url":"https://example.com/a.pdf"}' --execute-mode sync
 ikc parse-query doc_10001
 ikc parse-ticket doc_10001
 ikc parse-download doc_10001 <ticket> --to-path ./result.json
@@ -205,6 +211,7 @@ ikc parse-download doc_10001 <ticket> --to-path ./result.json
 
 ```bash
 ikc search-query --query "产品能力" --kb-id kb_10001 --owner-id u100 --org-path /集团/销售中心/华东
+ikc deep-search --query "对比 2025 与 2026 白皮书" --kb-id kb_10001 --top-k 8 --no-use-rerank
 ```
 
 ### 4.5 系统
@@ -228,13 +235,13 @@ ikc sys-error-codes
 
 ## 7. 验证
 
-- SDK 测试：`pytest sdk/python/tests -q` 全部通过（**130 passed**）。
+- SDK 测试：`pytest sdk/python/tests -q` 全部通过（**134 passed**）。
 - 新增测试覆盖：
   - `test_bootstrap.py`：`client_from_env` 环境变量 → 客户端 / token / 身份头组装（7 例）。
-  - `test_mcp_tools.py`：14 个工具逐一断言请求路径 / body / 返回 JSON（httpx.MockTransport，不起服务，mcp 2.0 `call_tool` 异步调用）（18 例）。
+  - `test_mcp_tools.py`：16 个工具逐一断言请求路径 / body / 返回 JSON（httpx.MockTransport，不起服务，mcp 2.0 `call_tool` 异步调用）（20 例）。
   - `test_cli.py`：子命令解析、`--json` 输出、错误退出码映射、下载落盘（13 例）。
 - **端到端冒烟**（真实平台，`scripts/mcp_stdio_smoke.py`）：以官方 mcp 2.0 `ClientSession + stdio_client` 连接 `python -m open_ikc_sdk.mcp --transport stdio`，验证
-  `initialize（server_info=open-ikc）→ list_tools（14 工具齐全）→ call_tool(sys_catalog) → call_tool(kb_create)` 全链路通过。
+  `initialize（server_info=open-ikc）→ list_tools（16 工具齐全）→ call_tool(sys_catalog) → call_tool(kb_create)` 全链路通过。
   用法：先 `bash scripts/start_open_platform.sh` 启动平台，再 `.venv/bin/python scripts/mcp_stdio_smoke.py [--token <token>]`。
 
 ## 8. MCP 2.0 适配要点（mcp>=2.0）
@@ -251,7 +258,7 @@ ikc sys-error-codes
 - `POST /admin/test/mcp`：body `{tool, args?, token?, baseUrl?, timeoutSeconds?}`。subprocess 启动 `python -m open_ikc_sdk.mcp`（stdio），走
   `initialize → list_tools → call_tool(tool, args)` 三步冒烟，返回结构化步骤结果；`args` 为工具参数 JSON 对象（key 须在工具白名单允许范围，如 `kb_get` 需 `{"kbId":"kb_10001"}`）。
 - `POST /admin/test/cli`：body `{command, args[]?, token?, baseUrl?, identity?, timeoutSeconds?}` 执行白名单 CLI 命令，捕获 stdout/stderr/退出码。
-- `GET /admin/test/whitelist`：返回 `{cli, mcpTools, cliArgs, mcpArgs}`。只读白名单：CLI 为 `kb-list` / `kb-get` / `doc-get` / `parse-query` / `sys-catalog` / `sys-error-codes` / `search-query`；MCP 为 `sys_catalog` / `sys_error_codes` / `kb_get` / `kb_query` / `doc_get` / `parse_query` / `parse_issue_ticket` / `search_query`。禁止任意 shell 与写操作。
+- `GET /admin/test/whitelist`：返回 `{cli, mcpTools, cliArgs, mcpArgs}`。只读白名单：CLI 为 `kb-list` / `kb-get` / `doc-get` / `parse-query` / `sys-catalog` / `sys-error-codes` / `search-query` / `deep-search`；MCP 为 `sys_catalog` / `sys_error_codes` / `kb_get` / `kb_query` / `doc_get` / `parse_query` / `parse_issue_ticket` / `search_query` / `deep_search`。禁止任意 shell 与写操作。
 - 安全约束：命令/工具 + 参数双重白名单 + 超时（默认 20s，上限 120s）；token 从请求上下文注入子进程环境变量，不落库；统一响应壳 `errCode=000000` 表示执行成功（非子进程退出码）。
 - 执行实现：`app/core/admin/mcp_cli_test.py`，subprocess 经 `starlette.concurrency.run_in_threadpool` 放线程池，避免阻塞平台事件循环。
 - 该能力属管理面（需 `OPEN_PLATFORM_ADMIN_TOKEN`），不进入业务 `catalog.py`。详见 `docs/管理Portal设计.md`。

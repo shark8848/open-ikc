@@ -671,3 +671,22 @@
 - 测试：`tests/test_admin_testlab.py` 重写扩展（18 新增）：位置参数上限、带参工具放行/拒绝、白名单 ⊆ SDK 命令/工具一致性、whitelist 结构、HTTP 层鉴权 100401/503001、参数类型错误 100001、执行失败 200020 结构化返回。全量 `pytest tests -q` **235 passed**（原 217）；`/tmp/manual_conformance.py` 62/62 回归通过；Portal `npm run build` 通过。
 - 文档：`docs/管理Portal设计.md` §3.4、`docs/MCP与CLI接口定义.md` §9、`docs/API开发手册.md` §7 管理面接口表同步（args/timeoutSeconds/白名单明细/超时默认 20s 上限 120s）。
 - 下一步：提交推送（github）。
+
+### 任务：MCP / CLI 端到端完整测试 + 覆盖缺口补齐
+
+- 用户要求：检查 MCP/CLI 测试为何未全通过，用 token 完整测试；分析 MCP/CLI 是否完整覆盖所有 API 并完善。
+- 环境：后台启动平台（127.0.0.1:18000，用户 token + 独立 admin token），对运行中平台做真实端到端测试。
+- 测试方式：`/tmp/mcp_cli_e2e.py` —— CLI 16 命令逐一 subprocess 真实执行、MCP 16 工具用官方 mcp 2.0 ClientSession 逐一 call_tool；唯一库名保证可重复；报告 `docs/测试报告_MCP与CLI端到端_2026-08-18.md`。
+- 结果：**35/35 全部通过（100%）**。初始 2 类失败均为测试脚本问题（多行 JSON 解析、库名重复 100409），修复后全绿；deep-search 在平台 in_process 后端下返回 501001（平台未启用 openai 后端），按「链路正确 + 结构化 501001」判定通过。
+- 覆盖缺口分析（对照 AGENTS.md §3.2 业务路由 15 条 + 系统 2 条）：
+  - 原有缺口：**parse-direct（免库解析）与 deep-search（深度检索）在 MCP/CLI 均未封装**；另 `search.query` 走 `/knowledge-search/query` 别名而非 `/universal-search`，且未透传检索增强参数。
+- 完善落地（SDK 14→16 工具/命令，覆盖全部 15 条业务路由 + 2 系统接口）：
+  - 模型：`models/parse.py` 新增 `ParseDirectResult`；`models/search.py` 增强 `SearchResult`（qaNote/total/searchType/usedConfig）并新增 `DeepSearchCitation/DeepSearchStep/DeepSearchResult`。
+  - 客户端：`client.py` / `async_client.py` 新增 `parse.parse_direct(...)`、`search.deep_search(...)`；`search.query(...)` 补全 teamId/orgId/mode/searchType/relNum/useRerank/score/topK/filters/withCitation/index/isOptimize 并指向 `/universal-search`。
+  - MCP：`server.py` 新增 `parse_direct`、`deep_search` 工具，`search_query` 透传增强参数（16 工具）。
+  - CLI：`cli/__init__.py` 新增 `parse-direct`、`deep-search` 命令（16 子命令）。
+  - 在线测试白名单：CLI 加 `deep-search`、MCP 加 `deep_search`（只读）；parse-direct 属写操作（创建解析任务）按安全设计不进白名单。
+  - `scripts/mcp_stdio_smoke.py` expected 工具集 14→16。
+- 测试：SDK `pytest sdk/python/tests -q` **134 passed**（新增 parse_direct/deep_search 客户端与 MCP 用例、search 路径/body 断言更新）；平台 `pytest tests -q` **235 passed**（白名单结构断言补 deep-search/deep_search）；`/tmp/manual_conformance.py` 62/62；e2e 35/35。
+- 文档：README、`docs/API开发手册.md`（§1.3/§10/§11）、`docs/MCP与CLI接口定义.md`（映射表/工具与命令清单/§7 验证/§9 白名单）、`docs/管理Portal设计.md`（§3.4 白名单）、`docs/开放平台SDK集成设计.md`、`sdk/python/README.md` 全部 14→16 并补 parse-direct/deep-search 说明。
+- 下一步：提交推送（github）。

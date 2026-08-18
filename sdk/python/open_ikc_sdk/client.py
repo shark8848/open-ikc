@@ -13,8 +13,14 @@ from .models.document import (
     DocumentSource,
 )
 from .models.knowledge_base import KnowledgeBase, KnowledgeBasePage, KnowledgeMetadataField
-from .models.parse import DownloadResult, DownloadTicket, ParseResult, ParseTask
-from .models.search import SearchResult, SearchResultItem
+from .models.parse import (
+    DownloadResult,
+    DownloadTicket,
+    ParseDirectResult,
+    ParseResult,
+    ParseTask,
+)
+from .models.search import DeepSearchResult, SearchResult, SearchResultItem
 from .transport import DownloadPayload, Transport
 
 
@@ -309,7 +315,7 @@ class DocumentClient:
         return DocumentInfo.from_dict(envelope.data)
 
 class ParseClient:
-    """解析域客户端：parse / query_result / issue_download_ticket / download。"""
+    """解析域客户端：parse / parse_direct / query_result / issue_download_ticket / download。"""
 
     def __init__(self, client: OpenIKCClient) -> None:
         self._client = client
@@ -353,6 +359,35 @@ class ParseClient:
         )
         return ParseResult.from_dict(envelope.data)
 
+    def parse_direct(
+        self,
+        *,
+        source: DocumentSource | dict,
+        reqId: str = "",
+        parseStrategy: dict | None = None,
+        resultFormat: dict | None = None,
+        executeMode: str = "async",
+        parseMode: str | None = None,
+        chunkStrategy: str | None = None,
+        chunkSize: int | None = None,
+    ) -> ParseDirectResult:
+        """免知识库独立解析：直接解析传入来源，不创建知识库、不登记文档（parse-direct）。"""
+        body: dict = {"source": _dump_source(source), "executeMode": executeMode}
+        if reqId:
+            body["reqId"] = reqId
+        if parseStrategy:
+            body["parseStrategy"] = dict(parseStrategy)
+        if resultFormat:
+            body["resultFormat"] = dict(resultFormat)
+        if parseMode is not None:
+            body["parseMode"] = parseMode
+        if chunkStrategy is not None:
+            body["chunkStrategy"] = chunkStrategy
+        if chunkSize is not None:
+            body["chunkSize"] = chunkSize
+        envelope = self._client.request("POST", "/api/v1/knowledge-documents/parse-direct", body=body)
+        return ParseDirectResult.from_dict(envelope.data)
+
     def issue_download_ticket(self, *, docId: str) -> DownloadTicket:
         """签发解析结果短期下载凭证。"""
         envelope = self._client.request(
@@ -377,7 +412,7 @@ class ParseClient:
 
 
 class SearchClient:
-    """检索域客户端：query。"""
+    """检索域客户端：query / deep_search。"""
 
     def __init__(self, client: OpenIKCClient) -> None:
         self._client = client
@@ -388,21 +423,98 @@ class SearchClient:
         query: str = "",
         kbId: str = "",
         kbIds: list[str] | None = None,
+        teamId: str = "",
+        orgId: str = "",
         ownerId: str = "",
         orgPath: str = "",
+        mode: str = "qa",
+        searchType: str = "hybrid",
+        relNum: int = 0,
+        useRerank: bool = False,
+        score: float | None = None,
+        topK: int = 5,
+        filters: dict | None = None,
+        withCitation: bool = True,
+        index: str = "",
+        isOptimize: bool = False,
     ) -> SearchResult:
-        """统一检索问答；kbId/kbIds/ownerId/orgPath 同时是平台 AUTHZ 数据权限上下文，原样透传。"""
-        body: dict = {}
+        """统一检索问答（/universal-search）；kbId/kbIds/ownerId/orgPath 同时是平台 AUTHZ 数据权限上下文，原样透传。"""
+        body: dict = {
+            "mode": mode,
+            "searchType": searchType,
+            "relNum": relNum,
+            "useRerank": useRerank,
+            "topK": topK,
+            "withCitation": withCitation,
+            "isOptimize": isOptimize,
+        }
         if query:
             body["query"] = query
         if kbId:
             body["kbId"] = kbId
         if kbIds:
             body["kbIds"] = list(kbIds)
+        if teamId:
+            body["teamId"] = teamId
+        if orgId:
+            body["orgId"] = orgId
         if ownerId:
             body["ownerId"] = ownerId
         if orgPath:
             body["orgPath"] = orgPath
-        envelope = self._client.request("POST", "/api/v1/knowledge-search/query", body=body)
+        if score is not None:
+            body["score"] = score
+        if filters:
+            body["filters"] = dict(filters)
+        if index:
+            body["index"] = index
+        envelope = self._client.request("POST", "/api/v1/knowledge-search/universal-search", body=body)
         return SearchResult.from_dict(envelope.data)
 
+    def deep_search(
+        self,
+        *,
+        query: str = "",
+        kbId: str = "",
+        kbIds: list[str] | None = None,
+        teamId: str = "",
+        orgId: str = "",
+        ownerId: str = "",
+        orgPath: str = "",
+        searchType: str = "hybrid",
+        topK: int = 8,
+        useRerank: bool = True,
+        sessionId: str = "",
+        memory: dict | None = None,
+        deepSearch: dict | None = None,
+        filters: dict | None = None,
+        responseSpec: dict | None = None,
+    ) -> DeepSearchResult:
+        """Agentic 深度检索（/deep-search）；需要平台配置 openai 检索后端，否则返回 501001。"""
+        body: dict = {"searchType": searchType, "topK": topK, "useRerank": useRerank}
+        if query:
+            body["query"] = query
+        if kbId:
+            body["kbId"] = kbId
+        if kbIds:
+            body["kbIds"] = list(kbIds)
+        if teamId:
+            body["teamId"] = teamId
+        if orgId:
+            body["orgId"] = orgId
+        if ownerId:
+            body["ownerId"] = ownerId
+        if orgPath:
+            body["orgPath"] = orgPath
+        if sessionId:
+            body["sessionId"] = sessionId
+        if memory:
+            body["memory"] = dict(memory)
+        if deepSearch:
+            body["deepSearch"] = dict(deepSearch)
+        if filters:
+            body["filters"] = dict(filters)
+        if responseSpec:
+            body["responseSpec"] = dict(responseSpec)
+        envelope = self._client.request("POST", "/api/v1/knowledge-search/deep-search", body=body)
+        return DeepSearchResult.from_dict(envelope.data)

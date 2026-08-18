@@ -2,10 +2,10 @@ from __future__ import annotations
 
 """MCP Server（stdio）：将 OpenIKC 开放平台现有 REST 接口封装为 MCP 工具。
 
-工具清单与 SDK ``OpenIKCClient`` 领域方法一一对应（14 个）：
+工具清单与 SDK ``OpenIKCClient`` 领域方法一一对应（16 个）：
 kb_create / kb_update / kb_query / kb_get / doc_ingest / doc_ingest_and_parse /
-doc_get / parse_start / parse_query / parse_issue_ticket / parse_download /
-search_query / sys_catalog / sys_error_codes。
+doc_get / parse_start / parse_direct / parse_query / parse_issue_ticket / parse_download /
+search_query / deep_search / sys_catalog / sys_error_codes。
 
 所有工具返回 JSON 序列化 dict（复用 SDK 模型），错误抛 ``OpenIKCError`` 子类。
 不新增平台 REST 接口，仅做上层封装。
@@ -23,7 +23,7 @@ from ..client import OpenIKCClient
 SERVER_NAME = "open-ikc"
 SERVER_INSTRUCTIONS = (
     "OpenIKC 开放平台北向 API 的 MCP 封装，覆盖知识库 / 文档 / 解析 / 检索四类能力。"
-    "所有写操作（kb_create / kb_update / doc_ingest / doc_ingest_and_parse / parse_start）"
+    "所有写操作（kb_create / kb_update / doc_ingest / doc_ingest_and_parse / parse_start / parse_direct）"
     "需注意数据权限上下文（kbId / ownerId / orgPath 等）由请求体承载，与平台 AUTHZ 一致。"
 )
 
@@ -298,6 +298,42 @@ def build_server(client: OpenIKCClient) -> MCPServer:
         )
 
     @mcp.tool()
+    def parse_direct(
+        source: dict,
+        reqId: str = "",
+        parseStrategy: dict | None = None,
+        resultFormat: dict | None = None,
+        executeMode: str = "async",
+        parseMode: str = "auto",
+        chunkStrategy: str = "auto",
+        chunkSize: int = 800,
+    ) -> dict[str, Any]:
+        """免知识库独立解析：直接解析传入来源，不创建知识库、不登记文档。
+
+        Args:
+            source: 待解析来源对象（url/file/directory/archive），如 {"type": "url", "url": "https://example.com/a.pdf"}。
+            reqId: 幂等请求标识。
+            parseStrategy: 解析策略（docType/parseMethod/backend/pageRange/chunking 等）。
+            resultFormat: 返回格式（type/includeLayout/includeImages/imageEncoding 等）。
+            executeMode: sync 请求内返回内联结果；async 返回临时 docId 后经 parse_query/parse_issue_ticket/parse_download 轮询下载。
+            parseMode: 解析模式 auto/ocr/structure。
+            chunkStrategy: 分段策略 auto/fixed/semantic。
+            chunkSize: 分段长度。
+        """
+        return _model_to_dict(
+            client.parse.parse_direct(
+                source=source,
+                reqId=reqId,
+                parseStrategy=parseStrategy,
+                resultFormat=resultFormat,
+                executeMode=executeMode,
+                parseMode=parseMode,
+                chunkStrategy=chunkStrategy,
+                chunkSize=chunkSize,
+            )
+        )
+
+    @mcp.tool()
     def parse_query(docId: str) -> dict[str, Any]:
         """查询文档解析状态与产物摘要。
 
@@ -345,8 +381,20 @@ def build_server(client: OpenIKCClient) -> MCPServer:
         query: str = "",
         kbId: str = "",
         kbIds: list | None = None,
+        teamId: str = "",
+        orgId: str = "",
         ownerId: str = "",
         orgPath: str = "",
+        mode: str = "qa",
+        searchType: str = "hybrid",
+        relNum: int = 0,
+        useRerank: bool = False,
+        score: float | None = None,
+        topK: int = 5,
+        filters: dict | None = None,
+        withCitation: bool = True,
+        index: str = "",
+        isOptimize: bool = False,
     ) -> dict[str, Any]:
         """统一检索问答。
 
@@ -354,16 +402,92 @@ def build_server(client: OpenIKCClient) -> MCPServer:
             query: 检索问题或关键词。
             kbId: 目标知识库 ID（kbId / kbIds 至少提供一个）。
             kbIds: 目标知识库 ID 字符串数组。
+            teamId / orgId: team/enterprise 库归属范围（数据权限上下文）。
             ownerId: 资源所有者 ID（owner_only 场景判定）。
             orgPath: 组织路径，如 /集团/销售中心/华东。
+            mode: qa（附简短回答）/ search（仅证据）。
+            searchType: fulltext / vector / hybrid。
+            relNum: 关联召回数量（0~200）。
+            useRerank: 是否重排。
+            score: 分数阈值。
+            topK: 证据数量上限。
+            filters: 元数据过滤。
+            withCitation: 是否返回引用。
+            index: 目标索引名。
+            isOptimize: 是否开启查询优化。
         """
         return _model_to_dict(
             client.search.query(
                 query=query,
                 kbId=kbId,
                 kbIds=kbIds,
+                teamId=teamId,
+                orgId=orgId,
                 ownerId=ownerId,
                 orgPath=orgPath,
+                mode=mode,
+                searchType=searchType,
+                relNum=relNum,
+                useRerank=useRerank,
+                score=score,
+                topK=topK,
+                filters=filters,
+                withCitation=withCitation,
+                index=index,
+                isOptimize=isOptimize,
+            )
+        )
+
+    @mcp.tool()
+    def deep_search(
+        query: str = "",
+        kbId: str = "",
+        kbIds: list | None = None,
+        teamId: str = "",
+        orgId: str = "",
+        ownerId: str = "",
+        orgPath: str = "",
+        searchType: str = "hybrid",
+        topK: int = 8,
+        useRerank: bool = True,
+        sessionId: str = "",
+        memory: dict | None = None,
+        deepSearch: dict | None = None,
+        filters: dict | None = None,
+        responseSpec: dict | None = None,
+    ) -> dict[str, Any]:
+        """Agentic 深度检索（多轮子查询规划、并行召回、反思与带引用回答）。
+
+        Args:
+            query: 复杂检索问题。
+            kbId / kbIds: 目标知识库（至少提供一个）。
+            teamId / orgId / ownerId / orgPath: 数据权限上下文。
+            searchType: fulltext / vector / hybrid。
+            topK: 每轮召回窗口。
+            useRerank: 是否重排（深度检索默认开启）。
+            sessionId: 会话 ID（下游记忆检索）。
+            memory: 调用方注入记忆（mode/items）。
+            deepSearch: 流程控制（maxSteps/subQuery/stopWhen 等）。
+            filters: 元数据过滤。
+            responseSpec: 返回增强控制（include: answer/citations/usedQueries/steps）。
+        """
+        return _model_to_dict(
+            client.search.deep_search(
+                query=query,
+                kbId=kbId,
+                kbIds=kbIds,
+                teamId=teamId,
+                orgId=orgId,
+                ownerId=ownerId,
+                orgPath=orgPath,
+                searchType=searchType,
+                topK=topK,
+                useRerank=useRerank,
+                sessionId=sessionId,
+                memory=memory,
+                deepSearch=deepSearch,
+                filters=filters,
+                responseSpec=responseSpec,
             )
         )
 

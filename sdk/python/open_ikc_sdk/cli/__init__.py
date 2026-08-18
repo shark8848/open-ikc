@@ -7,8 +7,8 @@ from __future__ import annotations
 子命令分组（与 SDK 领域方法一一对应）：
 - kb: create / update / list / get
 - doc: ingest / ingest-and-parse / get
-- parse: start / query / ticket / download
-- search: query
+- parse: start / direct / query / ticket / download
+- search: query / deep-search
 - sys: catalog / error-codes
 
 全局选项：
@@ -413,6 +413,34 @@ def parse_download(
 # ---------- 检索 ----------
 
 
+@app.command("parse-direct")
+def parse_direct(
+    source: str = typer.Argument(..., help='知识源 JSON，如 {"type":"url","url":"..."}'),
+    req_id: str = typer.Option("", "--req-id", help="幂等号"),
+    parse_strategy: str = typer.Option(None, "--parse-strategy", help="解析策略（JSON）"),
+    result_format: str = typer.Option(None, "--result-format", help="结果格式（JSON）"),
+    execute_mode: str = typer.Option("async", "--execute-mode", help="async / sync"),
+    parse_mode: str = typer.Option(None, "--parse-mode", help="解析模式"),
+    chunk_strategy: str = typer.Option(None, "--chunk-strategy", help="切分策略"),
+    chunk_size: int = typer.Option(None, "--chunk-size", help="切分大小"),
+) -> None:
+    """免知识库独立解析（不创建知识库、不登记文档）。"""
+    try:
+        data = _get_client().parse.parse_direct(
+            source=_parse_json(source),
+            reqId=req_id,
+            parseStrategy=_parse_json(parse_strategy) if parse_strategy else None,
+            resultFormat=_parse_json(result_format) if result_format else None,
+            executeMode=execute_mode,
+            parseMode=parse_mode,
+            chunkStrategy=chunk_strategy,
+            chunkSize=chunk_size,
+        )
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
 @app.command("search-query")
 def search_query(
     query: str = typer.Option("", "--query", help="检索问题或关键词"),
@@ -436,6 +464,36 @@ def search_query(
             typer.echo(f"答案: {data.answer or '(无)'}")
             items = [_render._as_dict(item) for item in data.results]
             typer.echo(_table_output(items, ["docId", "score", "snippet"]))
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("deep-search")
+def deep_search(
+    query: str = typer.Option("", "--query", help="复杂检索问题"),
+    kb_id: str = typer.Option("", "--kb-id", help="目标知识库 ID"),
+    kb_ids: str = typer.Option(None, "--kb-ids", help="知识库 ID 列表（JSON 数组）"),
+    owner_id: str = typer.Option("", "--owner-id", help="资源所有者 ID"),
+    org_path: str = typer.Option("", "--org-path", help="组织路径"),
+    search_type: str = typer.Option("hybrid", "--search-type", help="fulltext / vector / hybrid"),
+    top_k: int = typer.Option(8, "--top-k", help="每轮召回窗口"),
+    use_rerank: bool = typer.Option(True, "--use-rerank/--no-use-rerank", help="是否重排"),
+    session_id: str = typer.Option("", "--session-id", help="会话 ID"),
+) -> None:
+    """Agentic 深度检索（需平台配置 openai 检索后端，否则 501001）。"""
+    try:
+        data = _get_client().search.deep_search(
+            query=query,
+            kbId=kb_id,
+            kbIds=_parse_json(kb_ids) if kb_ids else None,
+            ownerId=owner_id,
+            orgPath=org_path,
+            searchType=search_type,
+            topK=top_k,
+            useRerank=use_rerank,
+            sessionId=session_id,
+        )
+        _emit(data)
     except Exception as exc:
         _handle_error(exc)
 

@@ -48,10 +48,10 @@ sdk/
       trace.py              # 23 位数字 traceId 生成/复用
       headers.py            # 认证头 + AUTHZ 身份头构建（CallerIdentity）
       mcp/                  # MCP Server 封装（mcp 2.x MCPServer，stdio 默认）
-        server.py           # build_server：14 个工具定义
+        server.py           # build_server：16 个工具定义
         main.py             # python -m open_ikc_sdk.mcp 入口（--base-url/--token/--transport）
       cli/                  # CLI 封装（typer）
-        __init__.py         # ikc app（11 个子命令 + 全局选项 + 退出码映射）
+        __init__.py         # ikc app（16 个子命令 + 全局选项 + 退出码映射）
         _render.py          # JSON / 表格渲染
         __main__.py         # python -m open_ikc_sdk.cli 入口
       models/
@@ -71,7 +71,7 @@ sdk/
       test_retry.py
       test_models.py
       test_bootstrap.py     # client_from_env 环境变量 -> 客户端 / token / 身份头
-      test_mcp_tools.py     # 14 个 MCP 工具逐一 MockTransport 断言（mcp 2.0 call_tool）
+      test_mcp_tools.py     # 16 个 MCP 工具逐一 MockTransport 断言（mcp 2.0 call_tool）
       test_cli.py           # CLI 子命令解析 / --json / 退出码 / 下载落盘
 ```
 
@@ -306,8 +306,8 @@ async def main():
 3. M3 ✅ 文档域三方法 + 模型 + 测试。
 4. M4 ✅ 解析/检索域方法 + 模型 + 测试（平台已真实落地）。
 5. M5 ✅ 异步客户端、下载流支持、日志脱敏完善、README 与示例。
-6. M6 ✅ MCP Server 与 CLI 上层封装（14 工具 + 11 子命令，见 `docs/MCP与CLI接口定义.md`）。
-7. 发布 ✅ `pyproject.toml` 与 `_version.py` 统一 `1.0.0`（与平台 `open-ikc-api` 一致）；SDK 测试基线 130 passed。
+6. M6 ✅ MCP Server 与 CLI 上层封装（16 工具 + 16 子命令，见 `docs/MCP与CLI接口定义.md`）。
+7. 发布 ✅ `pyproject.toml` 与 `_version.py` 统一 `1.0.0`（与平台 `open-ikc-api` 一致）；SDK 测试基线 134 passed。
 
 > 本设计稿仅定义 SDK 边界与协议，不涉及平台内部实现；若平台对外协议（路径、字段、错误码）调整，
 > 以 AGENTS.md 权威顺序（契约 > 代码 > V2 文档）为准同步本文档。

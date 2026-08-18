@@ -29,8 +29,8 @@
 | **REST** | 纯 HTTP + JSON | 任何语言、curl/Postman 调试、需要全量字段控制 | 最低，看 §2 快速开始 |
 | **Python SDK** | `open-ikc-sdk`，类型提示 + 异常映射 + 同步/异步 | Python 应用（FastAPI/Django/脚本） | 低，见 §9.1 |
 | **Java SDK** | `io.openikc:open-ikc-sdk`，零第三方依赖 | Java 17+ 后端服务 | 低，见 §9.2 |
-| **MCP Server** | 14 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
-| **CLI** | 14 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
+| **MCP Server** | 16 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
+| **CLI** | 16 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
 
 > 选择建议：**想最快跑通** → 快速开始用 curl 或 CLI；**写正式代码** → 选对应语言的 SDK（错误码自动映射为异常）；**给 AI 助手用** → MCP。
 
@@ -675,7 +675,7 @@ client.close();
 
 ## 10. MCP Server 接入
 
-MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），14 个工具与业务接口一一对应。
+MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），16 个工具与业务接口一一对应。
 
 ### 10.1 运行方式
 
@@ -742,6 +742,7 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 | 工具 | 参数 | 说明 |
 | --- | --- | --- |
 | `parse_start` | `kbId`(必填), `docId`(必填), `reqId`, `parseStrategy`(object), `resultFormat`(object), `executeMode`="async", `parseMode`, `chunkStrategy`, `chunkSize` | 启动解析任务 |
+| `parse_direct` | `source`(object 必填), `reqId`, `parseStrategy`(object), `resultFormat`(object), `executeMode`="async", `parseMode`, `chunkStrategy`, `chunkSize` | 免知识库独立解析（返回临时 `pdoc_` docId，sync 内联结果） |
 | `parse_query` | `docId`(必填) | 查询解析状态与产物摘要 |
 | `parse_issue_ticket` | `docId`(必填) | 签发一次性下载凭证 |
 | `parse_download` | `docId`(必填), `ticket`(必填), `toPath` | 下载解析结果（文件流落地前返回 JSON 壳元数据） |
@@ -751,6 +752,7 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 | 工具 | 参数 | 说明 |
 | --- | --- | --- |
 | `search_query` | `query`, `kbId`/`kbIds`(至少一个), `teamId`/`orgId`, `ownerId`, `orgPath`, `mode`, `searchType`, `relNum`, `useRerank`, `score`, `topK`, `filters`, `withCitation`, `index`, `isOptimize` | 普通检索（证据列表） |
+| `deep_search` | `query`, `kbId`/`kbIds`(至少一个), `teamId`/`orgId`, `ownerId`, `orgPath`, `searchType`="hybrid", `topK`=8, `useRerank`=true, `sessionId`, `memory`, `deepSearch`, `filters`, `responseSpec` | Agentic 深度检索（需平台配置 openai 后端，否则 `501001`） |
 > `kbId` / `kbIds` / `ownerId` / `orgPath` 同时是平台 AUTHZ 数据权限上下文，原样透传。
 
 **系统**
@@ -821,6 +823,7 @@ ikc doc-get doc_10001
 
 ```bash
 ikc parse-start kb_10001 doc_10001 --execute-mode async
+ikc parse-direct '{"type":"url","url":"https://example.com/a.pdf"}' --execute-mode sync
 ikc parse-query doc_10001
 ikc parse-ticket doc_10001
 ikc parse-download doc_10001 <ticket> --to-path ./result.json
@@ -830,6 +833,7 @@ ikc parse-download doc_10001 <ticket> --to-path ./result.json
 
 ```bash
 ikc search-query --query "产品能力" --kb-id kb_10001 --owner-id u100 --org-path /集团/销售中心/华东 --search-type hybrid --top-k 5
+ikc deep-search --query "对比 2025 与 2026 白皮书" --kb-id kb_10001 --top-k 8 --no-use-rerank
 ```
 
 **系统**

@@ -80,6 +80,38 @@ def test_parse_sends_body_and_returns_task():
     client.close()
 
 
+def test_parse_direct_sends_body_and_returns_result():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["body"] = json.loads(request.content or b"{}")
+        return ok_response(
+            {
+                "taskId": "pt_20001",
+                "docId": "pdoc_20001",
+                "taskStatus": "success",
+                "executeMode": "sync",
+                "resultInline": {"fileData": {"totalPage": 12}, "summary": "摘要"},
+            }
+        )
+
+    client = make_client(handler)
+    result = client.parse.parse_direct(
+        source={"type": "url", "url": "https://example.com/a.pdf"},
+        executeMode="sync",
+        parseStrategy={"docType": "pdf"},
+    )
+    assert captured["path"] == "/api/v1/knowledge-documents/parse-direct"
+    assert captured["body"]["source"] == {"type": "url", "url": "https://example.com/a.pdf"}
+    assert captured["body"]["executeMode"] == "sync"
+    assert captured["body"]["parseStrategy"] == {"docType": "pdf"}
+    assert result.docId == "pdoc_20001"
+    assert result.taskStatus == "success"
+    assert result.resultInline["summary"] == "摘要"
+    client.close()
+
+
 def test_parse_omits_optional_tuning_when_not_provided():
     captured = {}
 

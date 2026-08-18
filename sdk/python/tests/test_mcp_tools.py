@@ -275,11 +275,56 @@ def test_search_query():
         "search_query",
         {"query": "产品能力？", "kbId": "kb_10001", "kbIds": ["kb_10001", "kb_10002"]},
     )
-    assert captured["path"] == "/api/v1/knowledge-search/query"
+    assert captured["path"] == "/api/v1/knowledge-search/universal-search"
     assert captured["body"]["kbId"] == "kb_10001"
     assert captured["body"]["kbIds"] == ["kb_10001", "kb_10002"]
     assert result["answer"] == "回答"
     assert result["results"][0]["docId"] == "doc_1"
+
+
+def test_parse_direct():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["body"] = json.loads(request.content or b"{}")
+        return ok_response(
+            {
+                "taskId": "parse_10001",
+                "docId": "pdoc_10001",
+                "taskStatus": "success",
+                "executeMode": "sync",
+                "resultInline": {"fileData": {"totalPage": 12}},
+            }
+        )
+
+    result = call_tool(
+        make_server(handler),
+        "parse_direct",
+        {"source": {"type": "url", "url": "https://example.com/a.pdf"}, "executeMode": "sync"},
+    )
+    assert captured["path"] == "/api/v1/knowledge-documents/parse-direct"
+    assert captured["body"]["source"] == {"type": "url", "url": "https://example.com/a.pdf"}
+    assert captured["body"]["executeMode"] == "sync"
+    assert result["docId"] == "pdoc_10001"
+
+
+def test_deep_search():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["body"] = json.loads(request.content or b"{}")
+        return ok_response({"answer": "结论", "total": 1, "citations": [], "usedQueries": [], "steps": []})
+
+    result = call_tool(
+        make_server(handler),
+        "deep_search",
+        {"query": "对比白皮书", "kbId": "kb_10001", "topK": 8},
+    )
+    assert captured["path"] == "/api/v1/knowledge-search/deep-search"
+    assert captured["body"]["kbId"] == "kb_10001"
+    assert result["answer"] == "结论"
 
 
 def test_search_query_invalid_kb_ids():
@@ -331,10 +376,12 @@ def test_tool_inventory_matches_contract():
         "doc_ingest_and_parse",
         "doc_get",
         "parse_start",
+        "parse_direct",
         "parse_query",
         "parse_issue_ticket",
         "parse_download",
         "search_query",
+        "deep_search",
         "sys_catalog",
         "sys_error_codes",
     }

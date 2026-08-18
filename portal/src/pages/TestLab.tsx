@@ -17,6 +17,7 @@ export function TestLab() {
 
   // MCP 冒烟
   const [mcpTool, setMcpTool] = useState('sys_catalog')
+  const [mcpArgsText, setMcpArgsText] = useState('')
   const [mcpRunning, setMcpRunning] = useState(false)
   const [mcpResult, setMcpResult] = useState<TestResultData | null>(null)
 
@@ -44,10 +45,25 @@ export function TestLab() {
   async function runMcp() {
     setMcpRunning(true)
     setMcpResult(null)
+    let mcpArgs: Record<string, unknown> | undefined
+    if (mcpArgsText.trim()) {
+      try {
+        const parsed = JSON.parse(mcpArgsText)
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+          throw new Error('参数必须是 JSON 对象')
+        }
+        mcpArgs = parsed
+      } catch (e) {
+        toast.error(`工具参数 JSON 解析失败: ${e instanceof Error ? e.message : String(e)}`)
+        setMcpRunning(false)
+        return
+      }
+    }
     try {
       setMcpResult(
         await adminApi.testMcp({
           tool: mcpTool,
+          args: mcpArgs,
           token: token || undefined,
           baseUrl: baseUrl || undefined,
         }),
@@ -193,6 +209,21 @@ export function TestLab() {
               ))}
             </select>
           </div>
+          <div className="form-field" style={{ flex: 1, minWidth: 240 }}>
+            <label>
+              工具参数（JSON，可选）
+              {whitelist?.mcpArgs[mcpTool]?.length ? (
+                <span className="muted"> — 允许: {whitelist.mcpArgs[mcpTool].join(', ')}</span>
+              ) : null}
+            </label>
+            <input
+              type="text"
+              placeholder={whitelist?.mcpArgs[mcpTool]?.length ? '如 {"kbId":"kb_10001"}' : '该工具无需参数'}
+              value={mcpArgsText}
+              onChange={(e) => setMcpArgsText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && runMcp()}
+            />
+          </div>
           <button className="btn" disabled={mcpRunning} onClick={runMcp}>
             {mcpRunning ? '执行中…' : '运行 MCP 冒烟'}
           </button>
@@ -217,7 +248,12 @@ export function TestLab() {
             </select>
           </div>
           <div className="form-field" style={{ flex: 1, minWidth: 240 }}>
-            <label>参数</label>
+            <label>
+              参数
+              {whitelist?.cliArgs[cliCommand]?.flags.length ? (
+                <span className="muted"> — 允许: {whitelist.cliArgs[cliCommand].flags.join(' ')}</span>
+              ) : null}
+            </label>
             <input type="text" placeholder="如 --page 1 --page-size 10" value={cliArgs} onChange={(e) => setCliArgs(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && runCli()} />
           </div>
           <button className="btn" disabled={cliRunning} onClick={runCli}>

@@ -16,6 +16,7 @@ from app.core.admin import mcp_cli_test, stats, token_store
 from app.core.admin.auth import admin_required
 from app.core.error_codes import AdminErrorCodes, CommonErrorCodes, ErrorCode
 from app.core.trace import current_trace_id
+from app.schemas.admin_test import CliTestRequest, McpTestRequest
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -167,16 +168,18 @@ async def revoke_token(
 
 @router.post("/test/mcp")
 async def test_mcp(
-    payload: dict[str, Any],
+    payload: McpTestRequest,
     _: Any = Depends(_admin_dep),
 ) -> JSONResponse:
-    tool = str(payload.get("tool", "sys_catalog"))
-    token = str(payload.get("token", ""))
-    base_url = str(payload.get("baseUrl", "http://127.0.0.1:18000"))
     # subprocess 为同步阻塞调用，需在线程池中执行，避免阻塞事件循环
     # （子进程请求平台自身端点，若事件循环被阻塞则互相等待直至超时）。
     result = await run_in_threadpool(
-        mcp_cli_test.run_mcp_smoke, token=token, base_url=base_url, tool=tool
+        mcp_cli_test.run_mcp_smoke,
+        token=payload.token,
+        base_url=payload.baseUrl,
+        tool=payload.tool,
+        args=payload.args,
+        timeout_seconds=payload.timeoutSeconds or mcp_cli_test.DEFAULT_TIMEOUT_SECONDS,
     )
     if not result.ok:
         return JSONResponse(_fail(AdminErrorCodes.TEST_FAILED, message="MCP 测试未通过", data=result.to_dict()))
@@ -185,22 +188,18 @@ async def test_mcp(
 
 @router.post("/test/cli")
 async def test_cli(
-    payload: dict[str, Any],
+    payload: CliTestRequest,
     _: Any = Depends(_admin_dep),
 ) -> JSONResponse:
-    command = str(payload.get("command", "")).strip()
-    args = [str(a) for a in (payload.get("args") or [])]
-    token = str(payload.get("token", ""))
-    base_url = str(payload.get("baseUrl", "http://127.0.0.1:18000"))
-    identity = payload.get("identity")
     # 同步阻塞 subprocess 在线程池执行，避免事件循环死锁（见 test/mcp 注释）。
     result = await run_in_threadpool(
         mcp_cli_test.run_cli_command,
-        command=command,
-        args=args,
-        token=token,
-        base_url=base_url,
-        identity=identity if isinstance(identity, dict) else None,
+        command=payload.command,
+        args=payload.args,
+        token=payload.token,
+        base_url=payload.baseUrl,
+        identity=payload.identity,
+        timeout_seconds=payload.timeoutSeconds or mcp_cli_test.DEFAULT_TIMEOUT_SECONDS,
     )
     if not result.ok:
         return JSONResponse(_fail(AdminErrorCodes.TEST_FAILED, message="CLI 测试未通过", data=result.to_dict()))
@@ -209,9 +208,4 @@ async def test_cli(
 
 @router.get("/test/whitelist")
 async def test_whitelist(_: Any = Depends(_admin_dep)) -> JSONResponse:
-    return JSONResponse(
-        _ok({
-            "cli": list(mcp_cli_test.CLI_WHITELIST.keys()),
-            "mcpTools": sorted(mcp_cli_test.MCP_TOOL_WHITELIST),
-        })
-    )
+    return JSONResponse(_ok(mcp_cli_test.whitelist_payload()))

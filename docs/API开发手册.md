@@ -612,9 +612,9 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 | GET | `/admin/tokens?include_revoked=` | Token 列表（默认不含已撤销） |
 | POST | `/admin/tokens` | 创建 token：`{name(必填), owner, scopes[], expiresInSeconds}`；`scopes` 为 `resource:action`（支持 `*`），≤32 个、单个 ≤64 字符；响应含**仅此一次**的明文 `token` |
 | POST | `/admin/tokens/{token_id}/revoke` | 撤销 token（不存在返回 `100404`） |
-| POST | `/admin/test/mcp` | MCP 在线冒烟：`{tool, token, baseUrl}` |
-| POST | `/admin/test/cli` | CLI 在线测试：`{command, args[], token, baseUrl, identity}`（白名单命令） |
-| GET | `/admin/test/whitelist` | CLI 命令 / MCP 工具白名单 |
+| POST | `/admin/test/mcp` | MCP 在线冒烟：`{tool, args?, token?, baseUrl?, timeoutSeconds?}`；`args` 为工具参数（key 须在白名单范围） |
+| POST | `/admin/test/cli` | CLI 在线测试：`{command, args[]?, token?, baseUrl?, identity?, timeoutSeconds?}`（白名单只读命令） |
+| GET | `/admin/test/whitelist` | CLI 命令 / MCP 工具白名单（含各自允许参数 `cliArgs`/`mcpArgs`） |
 
 DB token 存储于 SQLite（`OPEN_PLATFORM_DB_PATH` 可覆盖，默认 `data/open_ikc_platform.db`），库中只存 sha256。
 

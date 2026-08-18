@@ -651,3 +651,23 @@
   3. sync 解析命中既有 queued 任务时复用状态不强制完成，与手册「sync 请求内完成」存在语义差异，建议确认产品预期并补文档。
 - 测试脚本：`/tmp/manual_conformance.py`（可复跑，报告路径写死为当日文件）。
 - 下一步：全量 pytest 回归后提交推送（github）。
+
+### 任务：在线测试模块（/admin/test/*）分析检查与全面优化
+
+- 用户要求：对在线测试模块进行分析检查，找出问题与遗漏，全面优化并确保测试完整正确。
+- 审查发现的问题/遗漏：
+  1. **MCP 冒烟 `kb_get` 必失败**：`kb_get(kbId)` 为必填参数，原冒烟以 `{}` 调用必然 `is_error`，白名单含 `kb_get` 但永远测不过；
+  2. **白名单不完整**：CLI `kb-list` 缺 `--team-id/--org-id/--owner-id`；MCP 只读工具 `doc_get/parse_query/parse_issue_ticket/search_query` 未纳入；
+  3. **Router 裸 dict 请求体**：`payload: dict[str, Any]` 无参数校验，`args` 类型错误会被拆成字符；
+  4. **CLI 位置参数无上限**：`kb-get` 等可传任意多个位置参数；
+  5. **MCP 冒烟不支持工具参数**，步骤超时硬编码 10s；
+  6. 无 HTTP 层测试、无白名单与 SDK 命令/工具一致性测试。
+- 优化落地：
+  - `app/core/admin/mcp_cli_test.py`：白名单升级为「命令/工具 + 参数级」规格（`CommandSpec`：flags + 位置参数上限；MCP 工具 → 允许参数 key）；`run_mcp_smoke` 支持 `args`（JSON 注入子进程环境，避免转义）；步骤超时参数化；CLI 位置参数数量校验；新增 `whitelist_payload()`。
+  - `app/schemas/admin_test.py`（新增）：`McpTestRequest` / `CliTestRequest` Pydantic 模型（含 `timeoutSeconds` 1–120、类型校验）。
+  - `app/routers/admin.py`：接入 Schema、透传 args/timeoutSeconds、whitelist 返回 `{cli, mcpTools, cliArgs, mcpArgs}`。
+  - Portal：`TestLab.tsx` MCP 冒烟支持工具参数 JSON 输入，并展示各命令/工具允许参数提示；`types.ts` 同步。
+  - 白名单最终：CLI 7 命令（kb-list/kb-get/doc-get/parse-query/sys-catalog/sys-error-codes/search-query）；MCP 8 工具（sys_catalog/sys_error_codes/kb_get/kb_query/doc_get/parse_query/parse_issue_ticket/search_query），全部只读。
+- 测试：`tests/test_admin_testlab.py` 重写扩展（18 新增）：位置参数上限、带参工具放行/拒绝、白名单 ⊆ SDK 命令/工具一致性、whitelist 结构、HTTP 层鉴权 100401/503001、参数类型错误 100001、执行失败 200020 结构化返回。全量 `pytest tests -q` **235 passed**（原 217）；`/tmp/manual_conformance.py` 62/62 回归通过；Portal `npm run build` 通过。
+- 文档：`docs/管理Portal设计.md` §3.4、`docs/MCP与CLI接口定义.md` §9、`docs/API开发手册.md` §7 管理面接口表同步（args/timeoutSeconds/白名单明细/超时默认 20s 上限 120s）。
+- 下一步：提交推送（github）。

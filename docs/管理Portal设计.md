@@ -61,8 +61,10 @@ portal/                           # 前端（Vite 8 + React 18 + TS），构建�
 ### 3.4 MCP/CLI 在线测试（mcp_cli_test.py）
 
 - subprocess 真实执行 `.venv/bin/python -m open_ikc_sdk.mcp` / `.venv/bin/python -m open_ikc_sdk.cli`。
-- **命令白名单**：CLI 仅 `kb-list`/`kb-get`/`sys-catalog`/`sys-error-codes`/`search-query`（只读）；MCP 仅 `sys_catalog`/`sys_error_codes`/`kb_get`/`kb_query`。禁止任意 shell。
-- 超时 20s；token 从请求上下文注入子进程环境变量，不落库。
+- **命令/工具白名单（只读）**：CLI 为 `kb-list`/`kb-get`/`doc-get`/`parse-query`/`sys-catalog`/`sys-error-codes`/`search-query`；MCP 为 `sys_catalog`/`sys_error_codes`/`kb_get`/`kb_query`/`doc_get`/`parse_query`/`parse_issue_ticket`/`search_query`。禁止任意 shell 与写操作。
+- **参数级白名单**：每个命令/工具仅允许声明过的 flag / 参数 key（含位置参数数量上限），越界参数在进入 subprocess 前即被拒绝；MCP 冒烟支持传工具参数（`args`，JSON 注入子进程，避免转义问题）。
+- **超时**：默认 20s、上限 120s（`timeoutSeconds` 可调）；token 从请求上下文注入子进程环境变量，不落库。
+- `GET /admin/test/whitelist` 返回 `{cli, mcpTools, cliArgs, mcpArgs}`：前两者为命令/工具清单，后两者为各自允许的参数明细（Portal 据此渲染可选参数提示）。
 - **⚠️ 事件循环死锁**：`/admin/test/mcp`、`/admin/test/cli` 为 async 路由，其中同步 `subprocess.run` 会阻塞事件循环；子进程请求平台自身端点（如 `GET /api/catalog`）时平台无法响应 → 互相等待直至超时。**必须用 `run_in_threadpool`（`starlette.concurrency`）在线程池执行。**
 
 ## 4. 前端（portal/）
@@ -74,7 +76,7 @@ portal/                           # 前端（Vite 8 + React 18 + TS），构建�
   - **Dashboard**：总览卡片（在线并发/总请求/错误数/错误率/活跃端点/活跃 token）+ 最近请求明细表，10s 自动刷新。
   - **Tokens**：创建表单（名称/所有者/作用域/有效期）、明文 token 一次性展示、撤销确认、含已撤销筛选。
   - **Endpoints**：端点维度 + token 维度统计表，30/60/120 分钟窗口切换。
-  - **TestLab**：MCP 冒烟（工具选择 + 结构化步骤结果）、CLI 命令执行器（白名单命令选择 + 参数输入 + 输出展示）。
+  - **TestLab**：MCP 冒烟（工具选择 + 可选工具参数 JSON + 结构化步骤结果）、CLI 命令执行器（白名单命令选择 + 参数输入 + 允许参数提示 + 输出展示）。
 
 ## 5. 静态挂载与豁免
 

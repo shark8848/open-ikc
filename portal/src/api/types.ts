@@ -82,6 +82,8 @@ export interface TokenStat {
 export interface TestWhitelist {
   cli: string[]
   mcpTools: string[]
+  cliArgs: Record<string, { flags: string[]; positional: number }>
+  mcpArgs: Record<string, string[]>
 }
 
 export interface TestResultData {
@@ -96,8 +98,10 @@ export interface TestResultData {
 
 export interface McpTestPayload {
   tool?: string
+  args?: Record<string, unknown>
   token?: string
   baseUrl?: string
+  timeoutSeconds?: number
 }
 
 export interface CliTestPayload {
@@ -106,4 +110,5 @@ export interface CliTestPayload {
   token?: string
   baseUrl?: string
   identity?: Record<string, string> | null
+  timeoutSeconds?: number
 }

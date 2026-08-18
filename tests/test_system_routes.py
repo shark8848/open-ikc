@@ -74,6 +74,19 @@ def test_api_manual_page_renders_manual() -> None:
     assert f'href="#{h2_trouble.group(1)}">§12</a>' in text
 
 
+def test_openapi_docs_pages_available() -> None:
+    """Swagger /docs、ReDoc /redoc 与 /openapi.json 可访问，且包含最新接口（parse-direct）。"""
+    checks = [
+        ("/docs", "swagger"),
+        ("/redoc", "redoc"),
+        ("/openapi.json", "/api/v1/knowledge-documents/parse-direct"),
+    ]
+    for path, needle in checks:
+        response = client.get(path)
+        assert response.status_code == 200, path
+        assert needle in response.text, f"{path} 缺少 {needle}"
+
+
 def test_business_routes_still_require_authentication() -> None:
     response = client.post(
         "/api/v1/knowledge-bases/create",

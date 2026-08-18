@@ -626,3 +626,14 @@
 - 验证：全量 `pytest tests -q` **216 passed**（新增 7 例：sync 内联/async 轮询/下载链路/owner 收敛/参数校验/任务不存在/catalog）；`/api-manual` 渲染含 §6.3.5 且自动链接生效。
 - 审查：Claude Code 自动审查本轮跳过（Anthropic API 网络受限，与今日此前任务一致）。
 - 下一步：已提交推送（github）。
+
+### 任务：Swagger / Redoc / API 开发手册完整性核对
+
+- 用户要求：核对所有 Redoc、Swagger 与 API 开发手册是否完整优化和更新。
+- 核对结果（全部一致）：
+  - OpenAPI（/docs、/redoc、/openapi.json 数据源）：24 个路径；业务 15 条与 `/api/catalog`、手册 §6 完全一致；`parse-direct` 请求/响应模型（ParseDirectRequest/Response/Data、DocumentSource）已在 components 完整生成。
+  - 手册 §6：知识库 4 + 文档 3 + 解析 5（含 6.3.5 独立解析）+ 检索 3（含 /query 兼容别名说明）；无残留旧数量表述（13/15/11 个等）。
+  - 本地静态资源 `app/core/static/docs/{swagger-ui,redoc}` 就位，离线可用。
+- 补测试：`tests/test_system_routes.py` 新增 `test_openapi_docs_pages_available`（/docs、/redoc、/openapi.json 200 且含最新接口）。
+- 验证：全量 `pytest tests -q` **217 passed**。
+- 下一步：已提交推送（github）。

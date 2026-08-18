@@ -17,7 +17,7 @@
 | --- | --- | --- | --- |
 | **知识库** | 组织和管理知识空间（个人/团队/企业），定义元数据模型 | `/api/v1/knowledge-bases` | 为每个业务域建独立知识库，控制谁可见 |
 | **文档** | 把 URL / 文件 / 目录 / 压缩包接入为可解析的文档 | `/api/v1/knowledge-documents` | 从 OSS、网页、批量目录导入知识源 |
-| **解析** | 把文档解析为结构化结果（分页、分块、OCR），支持异步任务 | `/api/v1/knowledge-documents/parse*` | 合同/白皮书/扫描件变成可检索的文本块 |
+| **解析** | 把文档解析为结构化结果（分页、分块、OCR），支持异步任务与**免知识库独立解析** | `/api/v1/knowledge-documents/parse*` | 合同/白皮书/扫描件变成文本块；只要结构化文本不建库（§6.3.5） |
 | **检索** | 基于知识内容做普通检索与 Agentic 深度检索（带引用回答） | `/api/v1/knowledge-search` | 客服问答、内部知识助手、RAG 应用 |
 
 另有**管理面**（`/admin/*`，运维用途，独立鉴权）、**系统路由**（健康检查、API 目录、错误码目录、文档页），以及上层 **Python SDK / Java SDK / MCP Server / CLI** 四种接入方式。
@@ -40,6 +40,7 @@
 - 想**确定接入方式** → 看 §3 接入方式对比
 - 想**理解业务编排** → 看 §4 典型使用流程（数据生命周期）
 - 想**查某个接口的字段** → 看 §6 接口参考
+- 只想**解析文件、不建库** → 看 §6.3.5 独立解析（免知识库）
 - 遇到**报错** → 看 §5.4 错误码表与 §12 常见错误排查
 
 ## 2. 快速开始：5 分钟跑通「建库 → 入库 → 解析 → 检索」
@@ -211,6 +212,16 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 - `executeMode=sync` 可在单次请求内完成并内联返回结果（适用于小文件）；大文档建议 `async`。
 
 > ⚠️ **检索与索引的关系**：当前阶段检索索引需要调用方显式注入（`OPEN_PLATFORM_KB_INDEX_MAP` 或请求体 `index`），**不随 ingest/parse 自动构建**。真实索引引擎落地前，接入文档后不一定立刻可检索，请先确认索引配置。
+
+### 4.1 免库独立解析（场景 B：只要解析能力）
+
+只做**文件/URL → 结构化文本**、不需要知识空间与检索的场景，直接调独立解析接口（§6.3.5）：
+
+- 一次请求完成解析，**不创建知识库、不登记文档**，知识空间不被纯解析任务污染；
+- `executeMode=sync` 请求内直接返回内联结果；`async` 返回临时 `docId`（`pdoc_` 前缀）后，用现有 `parse-result/query`、`issue-download-ticket`、`download` 轮询/下载；
+- 任务归属调用方身份，仅创建者可查询/下载（`100403`）。
+
+**选型建议**：需要入库、检索与知识空间管理 → 走 §4 上方生命周期；只要解析产物 → 走独立解析。
 
 ## 5. 全局约定（所有接口必须遵守）
 
@@ -439,6 +450,40 @@ Query 参数：`docId`（必填）。响应 `data`：`{ticket, expireAt, downloa
 
 Query 参数：`docId` + `ticket`（均必填）。凭证无效/过期 `200004`。
 > 当前阶段：真实结果存储落地前返回统一体（`data` 含 `docId/taskId/downloadPath/format/note`），后续切换为文件流。
+
+#### 6.3.5 独立解析（免知识库）
+
+接口：`POST /api/v1/knowledge-documents/parse-direct`
+
+对一次性传入的来源直接解析，**不创建知识库、不登记文档**；适合「只要结构化文本、不建库不检索」的场景（选型见 §4.1）。
+
+请求体：
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `source` | object | ✅ | 来源对象，与 ingest 一致（`type=url/file/directory/archive`，字段校验相同） |
+| `reqId` | string | 否 | 幂等请求标识 |
+| `parseStrategy` | object | 否 | 同 §6.3.1（docType/parseMethod/backend/pageRange/chunking 等） |
+| `resultFormat` | object | 否 | 同 §6.3.1（type/includeLayout/includeImages/imageEncoding 等） |
+| `executeMode` | enum | 否 | `async`（默认，返回任务轮询）/ `sync`（请求内返回内联结果） |
+| `parseMode` | enum | 否 | `auto`（默认）/ `ocr` / `structure` |
+| `chunkStrategy` / `chunkSize` | — | 否 | 同 §6.3.1（默认 `auto` / 800） |
+
+响应 `data`：`{taskId, docId（临时标识 pdoc_ 前缀，仅用于后续轮询/下载）, taskStatus, executeMode, resultInline}`。
+
+后续环节复用现有接口，以返回的 `docId` 操作：
+
+- `parse-result/query?docId=<pdoc_xxx>`：轮询解析状态；
+- `parse-result/issue-download-ticket?docId=<pdoc_xxx>`：签发一次性下载凭证；
+- `parse-result/download?docId=<pdoc_xxx>&ticket=xxx`：下载解析结果。
+
+数据权限：任务归属调用方认证身份，仅创建者可查询/下载（否则 `100403`）；不进入知识库可见范围、不参与检索索引。
+
+```bash
+curl -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse-direct \
+  -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
+  -d '{"source":{"type":"url","url":"https://example.com/contract.pdf"},"parseStrategy":{"docType":"pdf"},"executeMode":"sync"}'
+```
 
 ### 6.4 检索
 
@@ -815,5 +860,6 @@ ikc sys-error-codes
 - 完整可运行示例：`sdk/python/examples/quickstart.py`（同步全链路）、`sdk/python/examples/async_quickstart.py`；Java 用法见 `sdk/java/README.md`。
 - 管理 Portal（`/portal`）：token 管理、端点监控、MCP/CLI 在线测试、本手册应用内页面。
 - 未实现能力必须返回 `501001`，**禁止静默空成功**；调用下游时透传追踪头（`X-Request-Id` / `X-Trace-Id`），日志经 `ikc-log-center` 按 traceId 串联检索。
+- 场景选型：需要知识空间与检索 → 走「建库 → 入库 → 解析 → 检索」生命周期；只要解析能力 → 用 `parse-direct`（§6.3.5），仍属解析能力域，不新增第五类能力。
 - MCP / CLI 边界：不新增、不修改平台 REST 路由与 `catalog.py`；不暴露 reindex / task query 等未落地能力。
 - 接口若变更，以当前代码与 `/api/catalog` 为最新权威；本文档与代码不一致时以代码为准。

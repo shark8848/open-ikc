@@ -612,3 +612,17 @@
 - 测试：`tests/test_system_routes.py` 手册渲染用例补断言——`§2` 链接指向「2. 快速开始」标题锚点、`§12` 链接指向「12. 常见错误排查」锚点；全量 `pytest tests -q` **209 passed**。
 - 审查：Claude Code 自动审查本轮跳过（与今日此前任务一致，Anthropic API 网络受限）。
 - 下一步：已提交推送（github）。
+
+### 任务：双场景（需库 / 免库纯解析）接口满足度分析 + 落地免库独立解析接口
+
+- 用户要求：面向「需要库（知识、解析、检索）」与「不需要库、只需要解析能力」两种场景，分析当前开发接口是否满足或可优化，并同步更新文档。
+- 分析结论：场景 A（需库全链路）现状接口完全满足；场景 B（免库纯解析）**不满足**——`ingest.kbId`/`parse.kbId`+`docId` 均必填，纯解析被迫「建库→入库→解析→清理」，带来语义错配、知识空间数据污染与上手成本问题。
+- 优化落地：新增 **`POST /api/v1/knowledge-documents/parse-direct` 免库独立解析**接口：
+  - 入参 `source`（url/file/directory/archive，与 ingest 同构）+ `parseStrategy`/`resultFormat`/`executeMode`（sync 内联 / async 轮询）等；
+  - 不创建知识库、不登记文档；async 返回临时 `docId`（`pdoc_` 前缀），复用现有 `parse-result/query`、`issue-download-ticket`、`download`；
+  - 权限：任务归属调用方认证身份，仅创建者可查询/下载（100403）；不进知识库可见范围、不参与检索；仍属解析能力域，不新增第五类能力。
+  - 实现：`app/schemas/source.py`（DocumentSource 从 document.py 抽出，消除 document↔parse 循环导入）、`ParseDirectRequest/Data/Response`、`ParseService.parse_direct` + `_get_parse_task_doc_or_raise`/`_validate_parse_doc_scope`、路由与 catalog 同步。
+- 文档同步：新增 `docs/解析场景分析_需库与免库.md`；API 手册 §1.2/§1.4/§4.1/§6.3.5/§13、README 能力总览（解析 4→5 接口）与实现状态、V2 详细定义 B-02.1。
+- 验证：全量 `pytest tests -q` **216 passed**（新增 7 例：sync 内联/async 轮询/下载链路/owner 收敛/参数校验/任务不存在/catalog）；`/api-manual` 渲染含 §6.3.5 且自动链接生效。
+- 审查：Claude Code 自动审查本轮跳过（Anthropic API 网络受限，与今日此前任务一致）。
+- 下一步：已提交推送（github）。

@@ -96,6 +96,26 @@ def parse_response(
     ))
 
 
+def parse_direct_response(
+    *,
+    task_id: str,
+    doc_id: str,
+    task_status: str,
+    execute_mode: str,
+    result_inline: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        ParseErrorCodes.SUCCESS,
+        {
+            "taskId": task_id,
+            "docId": doc_id,
+            "taskStatus": task_status,
+            "executeMode": execute_mode,
+            "resultInline": result_inline or {},
+        },
+    ))
+
+
 def parse_result_query_response(
     *,
     parse_status: str,

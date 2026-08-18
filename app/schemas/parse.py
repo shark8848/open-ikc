@@ -5,6 +5,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.schemas.source import DocumentSource
+
 PARSE_DOC_TYPES = {"auto", "pdf", "docx", "xlsx", "pptx", "txt", "md", "html", "jpg", "png"}
 PARSE_METHODS = {"auto", "ocr", "txt"}
 PARSE_BACKENDS = {"pipeline", "vllm-engine"}
@@ -127,6 +129,67 @@ class DocumentParseRequest(BaseModel):
     )
 
 
+class ParseDirectRequest(BaseModel):
+    """免知识库独立解析请求：直接传入来源解析，不创建知识库、不登记文档。"""
+
+    reqId: str = Field("", description="幂等请求标识，建议调用方传入；为空时服务端自动生成。")
+    source: DocumentSource = Field(
+        ...,
+        description="待解析来源对象，支持 url/file/directory/archive；免知识库，不登记文档。",
+    )
+    parseStrategy: dict = Field(
+        default_factory=dict,
+        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等，透传。",
+    )
+    resultFormat: dict = Field(
+        default_factory=dict,
+        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等，透传。",
+    )
+    executeMode: Literal["sync", "async"] = Field(
+        "async",
+        description="执行方式：sync 请求内返回内联结果，async 返回任务 ID 后经 parse-result 系列接口轮询/下载。",
+    )
+    parseMode: str = Field("auto", description="解析模式：auto/ocr/structure。")
+    chunkStrategy: str = Field("auto", description="分段策略：auto/fixed/semantic。")
+    chunkSize: int = Field(800, description="分段长度，chunkStrategy=fixed 时生效。")
+
+    @model_validator(mode="after")
+    def validate_options(self) -> "ParseDirectRequest":
+        validate_parse_strategy(self.parseStrategy)
+        validate_result_format(self.resultFormat)
+        if self.parseMode not in PARSE_MODES:
+            raise ValueError(f"parseMode 非法：{self.parseMode}（可选：{'/'.join(sorted(PARSE_MODES))}）")
+        if self.chunkStrategy not in CHUNK_STRATEGIES:
+            raise ValueError(
+                f"chunkStrategy 非法：{self.chunkStrategy}（可选：{'/'.join(sorted(CHUNK_STRATEGIES))}）"
+            )
+        if isinstance(self.chunkSize, bool) or self.chunkSize < 0:
+            raise ValueError("chunkSize 必须为非负整数")
+        source = self.source
+        if source.type == "url" and not source.url.strip():
+            raise ValueError("source.type=url 时 source.url 必填")
+        if source.type == "file" and not source.objectKey.strip() and not source.fileToken.strip():
+            raise ValueError("source.type=file 时 objectKey 或 fileToken 至少一个非空")
+        if source.type in {"directory", "archive"} and not source.objectKey.strip():
+            raise ValueError("source.type=directory/archive 时 objectKey 必填")
+        return self
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "reqId": "req_parse_direct_20260818_0001",
+                "source": {"type": "url", "url": "https://example.com/contract.pdf"},
+                "parseStrategy": {"docType": "pdf", "parseMethod": "auto"},
+                "resultFormat": {"type": "json", "includeLayout": True},
+                "executeMode": "sync",
+                "parseMode": "auto",
+                "chunkStrategy": "auto",
+                "chunkSize": 800,
+            }
+        }
+    )
+
+
 class _ParseEnvelope(BaseModel):
     """统一响应体外壳：errCode / errMsg / traceId + data 业务数据。"""
 
@@ -155,6 +218,18 @@ class DocumentParseData(BaseModel):
 
 class DocumentParseResponse(_ParseEnvelope):
     data: DocumentParseData = Field(..., description="解析任务信息。")
+
+
+class ParseDirectData(BaseModel):
+    taskId: str = Field(..., description="解析任务 ID。")
+    docId: str = Field(..., description="本次独立解析生成的临时文档标识（pdoc_ 前缀），仅用于后续轮询/凭证/下载。")
+    taskStatus: str = Field(..., description="任务状态：queued/running/success/failed。")
+    executeMode: str = Field(..., description="执行方式：sync/async。")
+    resultInline: dict = Field(default_factory=dict, description="executeMode=sync 时返回的内联解析结果；async 为空对象。")
+
+
+class ParseDirectResponse(_ParseEnvelope):
+    data: ParseDirectData = Field(..., description="独立解析任务信息。")
 
 
 class ParseResultQueryData(BaseModel):

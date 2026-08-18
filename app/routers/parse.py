@@ -8,11 +8,14 @@ from app.schemas.parse import (
     DocumentParseResponse,
     DownloadResultResponse,
     IssueDownloadTicketResponse,
+    ParseDirectRequest,
+    ParseDirectResponse,
     ParseResultQueryResponse,
 )
 from app.services.document_store import DocumentStore
 from app.services.knowledge_base import KnowledgeBaseService
 from app.services.parse import ParseService
+from app.services.parse_store import ParseTaskStore
 
 router = APIRouter(prefix="/api/v1/knowledge-documents", tags=["解析"])
 
@@ -29,6 +32,17 @@ def _request_identity(request: Request) -> dict[str, str]:
 
 def _doc_scope_context(doc_id: str) -> dict:
     """从文档记录与所属知识库组装 AUTHZ 数据权限上下文。"""
+    if doc_id.startswith("pdoc_"):
+        task = ParseTaskStore.get_task_by_doc(doc_id)
+        if task is not None:
+            return {
+                "doc_id": doc_id,
+                "kb_id": "",
+                "kb_type": "",
+                "owner_id": task.owner_id,
+                "org_path": task.tenant_id,
+            }
+        return {"doc_id": doc_id, "kb_id": "", "kb_type": "", "owner_id": "", "org_path": ""}
     doc = DocumentStore.get(doc_id)
     if doc is None:
         return {"doc_id": doc_id, "kb_id": "", "kb_type": "", "owner_id": "", "org_path": ""}
@@ -58,6 +72,29 @@ async def parse_document(request: Request, payload: DocumentParseRequest) -> dic
         context=_doc_scope_context(payload.docId),
     )
     return ParseService.parse(payload, owner_id=identity["user_id"], tenant_id=identity["tenant_id"])
+
+
+@router.post(
+    "/parse-direct",
+    summary="独立解析（免知识库）",
+    description="对一次性传入的来源（url/file/directory/archive）直接解析，不创建知识库、不登记文档；sync 请求内返回内联结果，async 返回任务与临时文档标识后经 parse-result 系列接口轮询/下载。",
+    response_model=ParseDirectResponse,
+)
+async def parse_direct(request: Request, payload: ParseDirectRequest) -> dict:
+    identity = _request_identity(request)
+    authorize_or_raise(
+        request=request,
+        action="write",
+        resource_type="parse",
+        resource_id="",
+        context={
+            "kb_id": "",
+            "kb_type": "",
+            "owner_id": identity["user_id"],
+            "org_path": identity["tenant_id"],
+        },
+    )
+    return ParseService.parse_direct(payload, owner_id=identity["user_id"], tenant_id=identity["tenant_id"])
 
 
 @router.get(

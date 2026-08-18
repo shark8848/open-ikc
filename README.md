@@ -83,7 +83,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | --- | --- | --- | --- |
 | 知识库 | `/api/v1/knowledge-bases` | 4 | 组织与管理知识空间（个人/团队/企业），定义元数据模型 |
 | 文档 | `/api/v1/knowledge-documents` | 3 | 接入 URL / 文件 / 目录 / 压缩包为可解析文档 |
-| 解析 | `/api/v1/knowledge-documents/parse*` | 4 | 解析为结构化结果，支持异步任务、凭证与下载 |
+| 解析 | `/api/v1/knowledge-documents/parse*` | 5 | 解析为结构化结果，支持异步任务、凭证与下载；支持免知识库独立解析（`parse-direct`） |
 | 检索 | `/api/v1/knowledge-search` | 2 + 1 兼容别名 | 普通检索（证据列表）与深度检索（Agentic 多轮 + 带引用回答） |
 
 另有：
@@ -127,6 +127,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | SDK 集成设计 | `docs/开放平台SDK集成设计.md`、`docs/开放平台JavaSDK集成设计.md` |
 | MCP / CLI 接口定义 | `docs/MCP与CLI接口定义.md` |
 | 管理 Portal 设计 | `docs/管理Portal设计.md` |
+| 解析场景分析（需库 / 免库） | `docs/解析场景分析_需库与免库.md` |
 | 工作日志（跨天上下文） | `docs/worklog.md` |
 
 > 权威顺序：`AGENTS.md` 与当前代码 > `docs/` 设计文档；接口定义以 `/api/catalog`、`/openapi.json` 实时为准。
@@ -287,7 +288,7 @@ cd /home/open-ikc && .venv/bin/python -m pytest tests -q
 | --- | --- |
 | 知识库 | 已落地：进程内存储 + 业务校验 + AUTHZ；创建返回真实 `kbId`，同名冲突 `100409`，个人/团队/企业库按数据范围收敛 |
 | 文档 | 已落地：`ingest` / `ingest-and-parse` / 详情查询，知识库归属校验 + 幂等登记 + AUTHZ |
-| 解析 | 已落地：异步任务与内联结果、结果查询 / 下载凭证 / 下载，进程内任务与结果存储 + AUTHZ |
+| 解析 | 已落地：异步任务与内联结果、结果查询 / 下载凭证 / 下载，进程内任务与结果存储 + AUTHZ；`parse-direct` 免库独立解析（不建库、不登记文档，仅创建者可查询/下载） |
 | 检索 | 已落地：普通检索（`universal-search`，后端可切 `in_process` / `ur` / `openai`）+ 深度检索（`deep-search`，依赖下游 DeepSearch）；`/query` 为普通检索兼容别名 |
 
 ## 10. 协作与审查

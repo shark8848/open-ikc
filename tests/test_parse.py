@@ -15,6 +15,7 @@ client = TestClient(app)
 AUTH = {"Authorization": "Bearer test-token"}
 PARSE_TASK_ID_PATTERN = re.compile(r"^parse_\d{17}$")
 DOC_ID_PATTERN = re.compile(r"^doc_\d{17}$")
+PARSE_ONLY_DOC_ID_PATTERN = re.compile(r"^pdoc_\d{17}$")
 
 
 @pytest.fixture(autouse=True)
@@ -330,3 +331,102 @@ def test_parse_rejects_invalid_parse_mode() -> None:
     doc = _ingest(kb["kbId"])
     body = _parse(_parse_payload(doc["docId"], kb_id=kb["kbId"], parseMode="llm"))
     assert body["errCode"] == "100001"
+
+
+def _parse_direct(payload: dict, headers: dict | None = None) -> dict:
+    response = client.post(
+        "/api/v1/knowledge-documents/parse-direct",
+        json=payload,
+        headers=headers or AUTH,
+    )
+    return response.json()
+
+
+def _parse_direct_payload(**overrides) -> dict:
+    payload: dict = {
+        "source": {"type": "url", "url": "https://example.com/parse-only.pdf"},
+        "parseStrategy": {"docType": "pdf", "parseMethod": "auto"},
+        "resultFormat": {"type": "json", "includeLayout": True},
+        "executeMode": "sync",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_parse_direct_sync_returns_inline_without_kb() -> None:
+    """免库独立解析：无需建库/登记文档，sync 直接返回内联结果。"""
+    body = _parse_direct(_parse_direct_payload())
+    assert body["errCode"] == "000000"
+    data = body["data"]
+    assert PARSE_ONLY_DOC_ID_PATTERN.fullmatch(data["docId"])
+    assert PARSE_TASK_ID_PATTERN.fullmatch(data["taskId"])
+    assert data["taskStatus"] == "success"
+    assert data["executeMode"] == "sync"
+    assert data["resultInline"].get("fileData", {}).get("totalPage") == 12
+
+
+def test_parse_direct_async_then_query_and_download() -> None:
+    """免库独立解析 async：返回临时 docId，后续可复用查询/凭证/下载接口。"""
+    body = _parse_direct(_parse_direct_payload(executeMode="async"))
+    assert body["errCode"] == "000000"
+    data = body["data"]
+    assert PARSE_ONLY_DOC_ID_PATTERN.fullmatch(data["docId"])
+    assert data["taskStatus"] == "queued"
+
+    query = _query(data["docId"])
+    assert query["errCode"] == "000000"
+    assert query["data"]["parseStatus"] == "queued"
+
+    # queued 任务不可签发凭证（结果未就绪）
+    ticket = _issue_ticket(data["docId"])
+    assert ticket["errCode"] == "200003"
+
+
+def test_parse_direct_sync_download_flow() -> None:
+    """免库独立解析 sync 完成后：签发凭证并下载解析结果。"""
+    body = _parse_direct(_parse_direct_payload())
+    doc_id = body["data"]["docId"]
+    ticket = _issue_ticket(doc_id)
+    assert ticket["errCode"] == "000000"
+    download = _download(doc_id, ticket["data"]["ticket"])
+    assert download["errCode"] == "000000"
+    assert download["data"]["docId"] == doc_id
+    assert download["data"]["format"] == "json"
+
+
+def test_parse_direct_owner_only_access() -> None:
+    """免库独立解析结果仅创建者可查询/下载（owner 收敛）。"""
+    bob = {"Authorization": "Bearer test-token", "X-User-Id": "bob", "X-Tenant-Id": "t_bob"}
+    alice = {"Authorization": "Bearer test-token", "X-User-Id": "alice", "X-Tenant-Id": "t_alice"}
+    body = _parse_direct(_parse_direct_payload(), headers=alice)
+    doc_id = body["data"]["docId"]
+    assert body["errCode"] == "000000"
+
+    forbidden = _query(doc_id, headers=bob)
+    assert forbidden["errCode"] == "100403"
+    own = _query(doc_id, headers=alice)
+    assert own["errCode"] == "000000"
+
+
+def test_parse_direct_rejects_invalid_source() -> None:
+    """免库独立解析来源校验：url 类型缺 url 返回参数错误。"""
+    body = _parse_direct(_parse_direct_payload(source={"type": "url", "url": ""}))
+    assert body["errCode"] == "100001"
+
+
+def test_parse_direct_task_not_found() -> None:
+    body = _query("pdoc_00000000000000000")
+    assert body["errCode"] == "100404"
+
+
+def test_catalog_includes_parse_direct() -> None:
+    response = client.get("/api/catalog")
+    body = response.json()
+    assert body["status"] is True
+    parse_routes = [
+        item["path"]
+        for category in body["data"]
+        if category["category"] == "解析"
+        for item in category["routes"]
+    ]
+    assert "/api/v1/knowledge-documents/parse-direct" in parse_routes

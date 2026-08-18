@@ -56,6 +56,11 @@ API_CATALOG = [
                 "summary": "启动文档解析",
             },
             {
+                "method": "POST",
+                "path": "/api/v1/knowledge-documents/parse-direct",
+                "summary": "独立解析（免知识库）",
+            },
+            {
                 "method": "GET",
                 "path": "/api/v1/knowledge-documents/parse-result/query",
                 "summary": "查询解析结果",

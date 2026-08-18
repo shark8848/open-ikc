@@ -242,7 +242,9 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 - 参数校验错误（Pydantic/FastAPI）由全局处理器映射为 HTTP 200 + `100001`；框架层 404/405 保留 HTTP 状态码，但仍为统一响应体。
 - 判断成功请**看 `errCode` 而不是 HTTP 状态码**：`000000` 即成功。
 
-### 5.4 错误码表（当前注册 18 个，实时查询 `/api/error-codes`）
+### 5.4 错误码表
+
+> 当前注册 18 个，实时查询 `/api/error-codes`。
 
 | errCode | errMsg | 层级 | 触发场景 |
 | --- | --- | --- | --- |
@@ -289,9 +291,11 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 
 > 完整 OpenAPI 规范见 `/openapi.json`（Swagger UI：`/docs`，ReDoc：`/redoc`）。
 
-### 6.1 知识库（4 个接口）
+### 6.1 知识库
 
-#### 6.1.1 创建知识库 `POST /api/v1/knowledge-bases/create`
+#### 6.1.1 创建知识库
+
+接口：`POST /api/v1/knowledge-bases/create`
 
 请求体：
 
@@ -320,12 +324,16 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
   }'
 ```
 
-#### 6.1.2 修改知识库 `POST /api/v1/knowledge-bases/update`
+#### 6.1.2 修改知识库
+
+接口：`POST /api/v1/knowledge-bases/update`
 
 请求体：`kbId`(必填) + 可修改字段。`kbName`/`kbDesc` 传空字符串表示不修改；`metadataSchema` 为空表示保持不变；`kbType` 变更需同步校验 `teamId`/`orgId`。
 约束：知识库不存在 `100404`；个人库仅创建者可修改（否则 `100403`）；企业库无法识别组织授权 `100403`。
 
-#### 6.1.3 查询知识库列表 `POST /api/v1/knowledge-bases/query`
+#### 6.1.3 查询知识库列表
+
+接口：`POST /api/v1/knowledge-bases/query`
 
 请求体：
 
@@ -342,13 +350,17 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 响应 `data`：`{total, page, pageSize, items[]}`。
 数据范围收敛：个人库仅本人、团队库需 `teamId`、企业库按 `orgId` 或调用主体租户。
 
-#### 6.1.4 查询知识库详情 `GET /api/v1/knowledge-bases/{kb_id}`
+#### 6.1.4 查询知识库详情
+
+接口：`GET /api/v1/knowledge-bases/{kb_id}`
 
 路径参数 `kb_id` 必填。不存在 `100404`；越权 `100403`。响应 `data` 为完整知识库对象。
 
-### 6.2 文档（3 个接口）
+### 6.2 文档
 
-#### 6.2.1 接入知识源 `POST /api/v1/knowledge-documents/ingest`
+#### 6.2.1 接入知识源
+
+接口：`POST /api/v1/knowledge-documents/ingest`
 
 请求体：
 
@@ -373,7 +385,9 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 响应 `data`：`{ingestTaskId, docId(单文档), docIds[](目录/压缩包), taskStatus, sourceType, sourceStats, ingestTime}`。
 `taskStatus` 枚举：`PENDING / INGESTING / INGESTED / SUCCEEDED / PARTIAL_FAILED / FAILED`。
 
-#### 6.2.2 一体化接入并解析 `POST /api/v1/knowledge-documents/ingest-and-parse`
+#### 6.2.2 一体化接入并解析
+
+接口：`POST /api/v1/knowledge-documents/ingest-and-parse`
 
 继承 ingest 全部字段，另加：
 
@@ -385,13 +399,17 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 响应 `data`：`{ingestTaskId, parseTaskId, docId, taskStatus(PENDING/INGESTING/PARSING/SUCCEEDED/FAILED), executeMode, resultInline}`。
 
-#### 6.2.3 查询文档信息 `GET /api/v1/knowledge-documents/{doc_id}`
+#### 6.2.3 查询文档信息
+
+接口：`GET /api/v1/knowledge-documents/{doc_id}`
 
 路径参数 `doc_id` 必填。响应 `data`：`{docId, docTitle, kbId, sourceType, sourceUrl, objectKey, tags, metadata, status, ingestTime, updateTime}`。
 
-### 6.3 解析（4 个接口）
+### 6.3 解析
 
-#### 6.3.1 启动文档解析 `POST /api/v1/knowledge-documents/parse`
+#### 6.3.1 启动文档解析
+
+接口：`POST /api/v1/knowledge-documents/parse`
 
 请求体：`reqId`、`kbId`(✅)、`docId`(✅)、`parseStrategy`、`resultFormat`、`executeMode`(`async`默认/`sync`)、`parseMode`(`auto|ocr|structure`，默认 `auto`)、`chunkStrategy`(`auto|fixed|semantic`，默认 `auto`)、`chunkSize`(默认 800)。
 
@@ -403,22 +421,30 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse \
   -d '{"kbId":"kb_10001","docId":"doc_10001","parseStrategy":{"docType":"pdf"},"executeMode":"async"}'
 ```
 
-#### 6.3.2 查询解析结果 `GET /api/v1/knowledge-documents/parse-result/query?docId=doc_10001`
+#### 6.3.2 查询解析结果
+
+接口：`GET /api/v1/knowledge-documents/parse-result/query?docId=doc_10001`
 
 Query 参数：`docId`（必填）。响应 `data`：`{parseStatus(queued/running/success/failed), resultFormat, pageCount, chunkCount, failedReason}`。任务不存在或未就绪返回 `200003`。
 
-#### 6.3.3 获取下载凭证 `GET /api/v1/knowledge-documents/parse-result/issue-download-ticket?docId=doc_10001`
+#### 6.3.3 获取下载凭证
+
+接口：`GET /api/v1/knowledge-documents/parse-result/issue-download-ticket?docId=doc_10001`
 
 Query 参数：`docId`（必填）。响应 `data`：`{ticket, expireAt, downloadPath}`。结果未就绪 `200003`。
 
-#### 6.3.4 下载解析结果 `GET /api/v1/knowledge-documents/parse-result/download?docId=doc_10001&ticket=xxx`
+#### 6.3.4 下载解析结果
+
+接口：`GET /api/v1/knowledge-documents/parse-result/download?docId=doc_10001&ticket=xxx`
 
 Query 参数：`docId` + `ticket`（均必填）。凭证无效/过期 `200004`。
 > 当前阶段：真实结果存储落地前返回统一体（`data` 含 `docId/taskId/downloadPath/format/note`），后续切换为文件流。
 
-### 6.4 检索（2 个接口 + 1 个兼容别名）
+### 6.4 检索
 
-#### 6.4.1 普通检索 `POST /api/v1/knowledge-search/universal-search`
+#### 6.4.1 普通检索
+
+接口：`POST /api/v1/knowledge-search/universal-search`
 
 > 兼容别名：`POST /api/v1/knowledge-search/query` 行为与之一致（deprecated），供既有调用方平滑迁移。
 
@@ -458,7 +484,9 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-search/universal-search \
   -d '{"query":"产品核心能力","kbIds":["kb_10001"],"mode":"qa","searchType":"hybrid","relNum":10,"useRerank":true,"topK":5,"withCitation":true}'
 ```
 
-#### 6.4.2 深度检索 `POST /api/v1/knowledge-search/deep-search`
+#### 6.4.2 深度检索
+
+接口：`POST /api/v1/knowledge-search/deep-search`
 
 Agentic 多轮深度检索：子查询规划、并行召回、反思与带引用回答；权限收敛与普通检索一致（逐库授权，任一拒绝整体 `100403`）。
 
@@ -636,7 +664,7 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 
 > `command` 需指向安装了 `open-ikc-sdk[mcp]` 的 Python 解释器；token 与身份头用于平台鉴权。
 
-### 10.3 工具清单与参数（14 个）
+### 10.3 工具清单与参数
 
 **知识库**
 
@@ -725,7 +753,7 @@ ikc --help                             # 安装后入口（pyproject 注册）
 | 5 | 平台占位未实现（501001） |
 | 6 | 传输层错误（连接 / 超时 / HTTP 状态） |
 
-### 11.4 子命令与示例（14 个）
+### 11.4 子命令与示例
 
 **知识库**
 

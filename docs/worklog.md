@@ -583,3 +583,10 @@
 - 事实修正（代码核实）：MCP 实际注册 14 个工具（`sdk/python/open_ikc_sdk/mcp/server.py`，无 deep_search 工具）、CLI 14 个子命令（无 deep-search 子命令）；同步修正 `docs/API开发手册.md` §1.3/§10/§11 的「15 个」与 deep-search 示例（SDK `client.search.deep_search(...)` 仍存在，仅 MCP/CLI 未封装）。
 - 验证：全量 `pytest tests -q` **209 passed**（沙箱外执行；沙箱内 TestClient 事件循环受限，全量测试无法在沙箱内跑完）。
 - 下一步：已提交推送。github 已同步（48ca9fe..b7a6a6c）；origin（code.tiancloud.com）被环境网络代理拦截（解析到 198.18.0.67，22/443 均关闭），待网络恢复后补推 `git push origin main`。
+
+### 任务：删除 API 开发手册中的「为什么只有这四类」段落
+
+- 用户要求：去除 `docs/API开发手册.md` §1.2 的说明「为什么只有这四类？平台刻意收敛能力面：索引管理等内部流水线接口不对外暴露。如果你发现需要第五类能力，请与平台方沟通，而不是绕过协议自行拼装」。
+- 改动：删除该 blockquote（仅此一处）；手册其余内容不变。
+- 验证：全量 `pytest tests -q` **209 passed**。
+- 下一步：已提交推送（github）。

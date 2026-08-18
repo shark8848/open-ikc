@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -21,10 +22,45 @@ def _heading_plain_text(inline: Token) -> str:
     )
 
 
+_SECTION_REF_RE = re.compile(r"(§\d+(?:\.\d+)*)")
+
+
+def _linkify_section_refs(tokens: list[Token], section_map: dict[str, str]) -> None:
+    """把正文中的「§编号」文本原地替换为指向对应标题锚点的真实链接。"""
+    for tok in tokens:
+        if tok.type != "inline" or not tok.children:
+            continue
+        children: list[Token] = []
+        for child in tok.children:
+            if child.type != "text":
+                children.append(child)
+                continue
+            parts = _SECTION_REF_RE.split(child.content)
+            if len(parts) == 1:
+                children.append(child)
+                continue
+            for part in parts:
+                if not part:
+                    continue
+                m = _SECTION_REF_RE.fullmatch(part)
+                anchor = section_map.get(m.group(1)[1:]) if m else None
+                text_tok = Token("text", "", 0)
+                text_tok.content = part
+                if anchor:
+                    link_open = Token("link_open", "a", 1)
+                    link_open.attrSet("href", f"#{anchor}")
+                    link_close = Token("link_close", "a", -1)
+                    children.extend([link_open, text_tok, link_close])
+                else:
+                    children.append(text_tok)
+        tok.children = children
+
+
 def _render_with_toc(markdown_text: str) -> tuple[str, list[dict[str, str]]]:
     """渲染 markdown，并为 h2/h3/h4 标题注入锚点 id；返回 (body_html, 目录项)。"""
     tokens = _MD.parse(markdown_text)
     toc_items: list[dict[str, str]] = []
+    section_map: dict[str, str] = {}
     seq = 0
     for tok in tokens:
         if tok.type == "heading_open" and tok.tag in ("h2", "h3", "h4"):
@@ -34,7 +70,12 @@ def _render_with_toc(markdown_text: str) -> tuple[str, list[dict[str, str]]]:
             toc_items.append({"id": anchor, "tag": tok.tag, "text": ""})
         elif tok.type == "inline" and toc_items and not toc_items[-1]["text"]:
             # heading_open 之后紧跟的 inline token 即标题内容
-            toc_items[-1]["text"] = _heading_plain_text(tok)
+            text = _heading_plain_text(tok)
+            toc_items[-1]["text"] = text
+            m = re.match(r"^(\d+(?:\.\d+)*)", text)
+            if m:
+                section_map.setdefault(m.group(1), anchor)
+    _linkify_section_refs(tokens, section_map)
     body = _MD.renderer.render(tokens, _MD.options, {})
     return body, toc_items
 
@@ -88,7 +129,7 @@ def render_api_manual_html() -> str:
           .toc .toc-h3 {{ padding-left: 14px; font-size: 0.8rem; }}
           .toc .toc-h4 {{ padding-left: 28px; font-size: 0.78rem; color: #8ba1c5; }}
           article {{ flex: 1; min-width: 0; margin-top: 0; padding: 8px 24px 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }}
-          article h2, article h3 {{ scroll-margin-top: 24px; }}
+          article h2, article h3, article h4 {{ scroll-margin-top: 24px; }}
           @media (max-width: 900px) {{
             .wrap {{ flex-direction: column; }}
             .toc {{ position: static; width: auto; max-height: 320px; }}
@@ -96,7 +137,7 @@ def render_api_manual_html() -> str:
           h1, h2, h3, h4 {{ color: #f2f6ff; margin-top: 1.6em; }}
           article h1 {{ font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; }}
           article h2 {{ font-size: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }}
-          a {{ color: #8dc1ff; }}
+          a {{ color: #8dc1ff; text-decoration: underline; }}
           code {{ background: rgba(255,255,255,0.09); padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }}
           pre {{ background: #0d1428; border: 1px solid #263457; border-radius: 12px; padding: 14px 16px; overflow-x: auto; }}
           pre code {{ background: none; padding: 0; }}

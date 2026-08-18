@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from fastapi.testclient import TestClient
 
@@ -64,6 +65,13 @@ def test_api_manual_page_renders_manual() -> None:
     assert 'class="toc"' in text
     assert 'href="#sec-1"' in text
     assert "目录" in text
+    # 正文「§编号」引用被转换为指向对应标题锚点的真实链接（而非纯文本）
+    h2_quick = re.search(r'<h2 id="(sec-\d+)">2\. 快速开始', text)
+    assert h2_quick
+    assert f'href="#{h2_quick.group(1)}">§2</a>' in text
+    h2_trouble = re.search(r'<h2 id="(sec-\d+)">12\. 常见错误排查</h2>', text)
+    assert h2_trouble
+    assert f'href="#{h2_trouble.group(1)}">§12</a>' in text
 
 
 def test_business_routes_still_require_authentication() -> None:

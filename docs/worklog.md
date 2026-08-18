@@ -690,3 +690,18 @@
 - 测试：SDK `pytest sdk/python/tests -q` **134 passed**（新增 parse_direct/deep_search 客户端与 MCP 用例、search 路径/body 断言更新）；平台 `pytest tests -q` **235 passed**（白名单结构断言补 deep-search/deep_search）；`/tmp/manual_conformance.py` 62/62；e2e 35/35。
 - 文档：README、`docs/API开发手册.md`（§1.3/§10/§11）、`docs/MCP与CLI接口定义.md`（映射表/工具与命令清单/§7 验证/§9 白名单）、`docs/管理Portal设计.md`（§3.4 白名单）、`docs/开放平台SDK集成设计.md`、`sdk/python/README.md` 全部 14→16 并补 parse-direct/deep-search 说明。
 - 下一步：提交推送（github）。
+
+### 任务：排查「最后几次在线测试返回错误」根因并修复环境（2026-08-18 16:xx）
+
+- 现象：Portal 在线测试（MCP/CLI）最近几次返回错误；用户提供 token `4DvPz…`（截断展示）。
+- 根因（三层证据）：
+  1. **端口被旧实例占用**：`/tmp/openikc_platform.log` 显示新实例 `address already in use`；旧 uvicorn（PID 121657，16:03 启动，`--reload`，`scripts/start_open_platform.sh` 启动）一直占用 18000，其 `OPEN_PLATFORM_ADMIN_TOKEN` 为脚本随机生成（`ac2dfc5a…`），且**未配置 `OPEN_PLATFORM_TOKEN`**。
+  2. **业务 token 鉴权回落到 SQLite**：未配环境 token 时 `is_token_valid` 走管理面 DB；`data/open_ikc_platform.db` 中用户 token `4DvPz…` 对应记录 id=2 状态为 `revoked`（仅 id=3 新 token active）→ CLI/MCP 子进程带用户 token 调业务接口一律 `100401`（日志 16:12:51 `request unauthorized POST /api/v1/knowledge-bases/query` 复现）。
+  3. **admin token 错位**：Portal 登录用的 admin token 若 ≠ 旧实例随机值 → 管理面直接 `100401`（curl 复现 `test-admin-token` 被拒）。
+- 修复：停旧实例（kill 121657/121662），用 `OPEN_PLATFORM_TOKEN=4DvPz…` + `OPEN_PLATFORM_ADMIN_TOKEN=test-admin-token` 以 `setsid nohup` 后台重启（进程 125919，日志 `/tmp/openikc_platform.log`），env token 优先于 DB 鉴权。
+- 验证（全绿）：
+  - 在线测试复跑：`/admin/test/cli` kb-list `000000` ok=true、`/admin/test/mcp` sys_catalog `000000`（16 tools）、业务直连 `000000`、错误 admin token `100401`。
+  - E2E `/tmp/mcp_cli_e2e.py` **35/35**（报告重新生成）。
+  - 平台全量 `pytest tests -q` **235 passed**（沙箱外执行）。
+- 环境注意：**Codex 沙箱内 pytest/TestClient 会死锁**（anyio portal 线程在 bwrap 沙箱内 select 挂起，最小 FastAPI TestClient 亦复现），跑 pytest 必须在沙箱外（escalated）。
+- 下一步：Portal 登录 admin token 统一使用 `test-admin-token`；提交推送（github）。

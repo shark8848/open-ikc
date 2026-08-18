@@ -128,6 +128,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | MCP / CLI 接口定义 | `docs/MCP与CLI接口定义.md` |
 | 管理 Portal 设计 | `docs/管理Portal设计.md` |
 | 解析场景分析（需库 / 免库） | `docs/解析场景分析_需库与免库.md` |
+| 知识加工与专业库形态方案（文本 / Wiki / 图谱库） | `docs/知识加工形态优化方案_wiki图谱与解析.md` |
 | 工作日志（跨天上下文） | `docs/worklog.md` |
 
 > 权威顺序：`AGENTS.md` 与当前代码 > `docs/` 设计文档；接口定义以 `/api/catalog`、`/openapi.json` 实时为准。

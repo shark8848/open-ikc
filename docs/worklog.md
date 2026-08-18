@@ -718,3 +718,29 @@
 - 验证：平台 `pytest tests -q` **249 passed**（新增 `tests/test_document_upload.py` 14 例）；`/tmp/manual_conformance.py` **67/67**（错误码 18→20，新增上传 5 例）；线上冒烟（18000）上传→临时访问→100401/100404/100001 全绿；`/api-manual` 与 `/openapi.json` 已含新增章节/路径。
 - 环境：期间发现用户侧 16:30 又启动了 `scripts/start_open_platform.sh` 实例（随机 admin token、未配业务 token，同上次根因），已按用户指定 token（4DvPz… + test-admin-token）重启 18000。
 - 下一步：MCP/CLI 暂未封装 upload（写操作 + 文件参数，按需补充）；提交推送（github）。
+
+### 任务：知识加工形态（普通解析 / Wiki / 图谱）API 优化方案（2026-08-18）
+
+- 需求：分析「知识加工为 wiki、图谱、普通解析」如何优化当前 API 定义，输出方案，重点分析 wiki 与图谱构建。
+- 结论（方案文档：`docs/知识加工形态优化方案_wiki图谱与解析.md`，未落地）：
+  - 现状：解析域仅普通解析（json/markdown/text），无 wiki/图谱概念；`resultFormat.type` 混叠「序列化格式」与「加工形态」两维度。
+  - 核心设计：引入 `productType`（auto/text/wiki/graph）统一加工形态，wiki/graph 仍属**解析能力域**（不新增第五类能力），复用 parse/parse-direct 任务编排、鉴权与幂等链路。
+  - Wiki：`wikiStrategy`（granularity/extractFields/linkMode/dedup/template）+ 页面树/页面/字段/互链产物模型（稳定 ID = docId+stableKey）+ `parse-result/wiki/tree|page` 查询。
+  - 图谱：`graphStrategy`（graphScope/schema/extraction/model/identityResolution/minConfidence/maxEntities）+ 节点/边/证据/置信度模型 + `parse-result/graph/stat|nodes|edges|neighbors|export` 查询；schema 为质量闸门，exact 对齐为增量核心。
+  - 普通解析配套：resultFormat 语义收敛、download 升级真实产物流、query 返回形态摘要。
+  - 分期：P1 productType 协议铺路 → P2 Wiki → P3 图谱 → P4 检索消费侧（依赖真实后端）。
+  - 风险：LLM 成本、图谱噪声、kb 级增量合并一致性、能力边界（图谱是否独立域需产品对齐）。
+- 下一步：待评审；评审通过后按 P1→P2/P3 落地；提交推送（github）。
+
+### 任务：方向修正——Wiki/图谱定义为「专业库形态」（2026-08-18 续）
+
+- 用户决策：wiki、图谱**不是解析产物形态，而是专业的知识库形态（专业库）**。
+- 方案重构（覆盖 `docs/知识加工形态优化方案_wiki图谱与解析.md` v2）：
+  - 核心：知识库新增形态维度 `kbMode`（text/wiki/graph），与归属维度 `kbType`（personal/team/enterprise）正交；缺省 text 兼容现状。
+  - 建库即声明形态：create/update 支持 `kbMode` + `wikiConfig`/`graphSchema`；query/detail 返回形态与配置。
+  - 加工联动：`parse`/`ingest-and-parse` 的 `productType` 缺省跟随库形态，显式跨形态拒绝（100001）；免库 `parse-direct` 保留显式 wiki/graph 一次性加工。
+  - Wiki 库：库级页面树（跨文档合并，pageId=sha1(kbId+stableKey)），`wiki/tree|page|search` 库级只读接口。
+  - 图谱库：库级图谱（graphId=sha1(kbId)，多文档增量融合，entityId=sha1(graphId+type+normalizedName)），`graph/stat|nodes|edges|neighbors|export` 库级接口；graphSchema 为质量闸门，exact 对齐为增量核心。
+  - 检索按库形态路由；text↔wiki 可双向、wiki↔graph 默认拒绝（建议新增 200014 形态冲突码）。
+  - 分期：P1 kbMode 协议 → P2 Wiki 库 → P3 图谱库 → P4 检索消费侧。
+- 下一步：方案评审；通过后 P1 先行落地；提交推送（github）。

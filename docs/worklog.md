@@ -795,3 +795,11 @@
   - 端到端冒烟（临时实例 18001，已停止；期间发现 P2 遗留实例占用端口导致 404，已清理）：CLI `graph-stat`/`graph-nodes`/`graph-neighbors`/`graph-export --to-path`/`graph-edges` 全通；MCP 24 工具齐全，graph 五工具 call_tool 全通。
 - 文档：API 手册（§6.1.8-6.1.12 graph 五接口 + §10/§11 工具与命令 19→24）、README（能力 7→12、实现状态 P3、MCP/CLI 24）、V2 详细定义（A-08~A-12）、`docs/MCP与CLI接口定义.md`（映射表/工具清单/白名单）、`docs/管理Portal设计.md`（白名单）、方案文档 P3 标记落地。
 - 下一步：P4（检索消费侧：wiki 页面检索/图谱多跳，依赖真实检索后端）按业务优先级评审后实施；提交推送（github）。
+
+### 任务：新增 process.md 待办清单并在契约中强调「开始读/完成更新」（2026-08-18）
+
+- 需求：将未完成内容写入 `process.md`，并在契约（AGENTS.md）中强调：开始任务时读取、完成任务时更新。
+- 落地：
+  - 新建根目录 `process.md`：当前未完成事项清单（状态/优先级/事项/下一步），分四类：平台能力（P4 检索消费侧、真实解析引擎、async worker、parse-direct productType、download 产物流）、已知问题/环境遗留（空 kbName 校验、Java SDK 未同步 wiki/graph、E2E 基线、origin 推送权限、18000 用户侧实例、18001 端口管理）、待产品决策（图谱 LLM 成本、图谱域边界）、快速状态。
+  - `AGENTS.md`：新增 **§8.3 process.md 待办清单契约（强制）**（任务开始先读、进行中登记、完成时更新、未闭环必须保留、随任务提交）；§10 文档权威顺序加入 process.md/worklog；§12 快速索引加入 process.md。
+- 下一步：后续任务开工按 §8.3 先读 process.md；闭环项随任务更新移除。

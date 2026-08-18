@@ -20,6 +20,7 @@ from app.core.responses import (
 )
 from app.services.document_store import DOCUMENT_STATUS, DocumentStore
 from app.core.logging import get_logger
+from app.services.graph import GraphService
 from app.services.knowledge_base import KnowledgeBaseService
 from app.services.wiki import WikiService
 from app.services.parse_store import (
@@ -121,25 +122,34 @@ class ParseService:
         ParseService._validate_personal_scope(doc, owner_id)
 
     @staticmethod
-    def _build_wiki_pages_if_wiki_kb(doc) -> None:
-        """Wiki 库解析成功后联动建页：按库 wikiConfig 生成/合并库级页面树（占位正文）。"""
+    def _build_kb_assets_after_parse(doc) -> None:
+        """专业库解析成功后联动构建库级资产：wiki 库按 wikiConfig 建页面树，graph 库按 graphSchema 建图谱。
+
+        建库资产为解析成功后的增强动作，失败不阻断解析主链路（占位阶段，真实引擎接入后补强）。
+        """
         kb_id = getattr(doc, "kb_id", "") or ""
         if not kb_id:
             return
         try:
             kb_record = KnowledgeBaseService.get_or_raise(kb_id)
-            if kb_record.kb_mode != "wiki":
-                return
-            WikiService.build_from_doc(
-                kb_id=kb_id,
-                doc_id=getattr(doc, "doc_id", ""),
-                title=getattr(doc, "doc_title", "") or "未命名文档",
-                tags=list(getattr(doc, "tags", None) or []),
-                wiki_config=dict(kb_record.wiki_config),
-            )
+            doc_id = getattr(doc, "doc_id", "")
+            if kb_record.kb_mode == "wiki":
+                WikiService.build_from_doc(
+                    kb_id=kb_id,
+                    doc_id=doc_id,
+                    title=getattr(doc, "doc_title", "") or "未命名文档",
+                    tags=list(getattr(doc, "tags", None) or []),
+                    wiki_config=dict(kb_record.wiki_config),
+                )
+            elif kb_record.kb_mode == "graph":
+                GraphService.build_from_doc(
+                    kb_id=kb_id,
+                    doc_id=doc_id,
+                    title=getattr(doc, "doc_title", "") or "未命名文档",
+                    graph_schema=dict(kb_record.graph_schema),
+                )
         except Exception:
-            # 建页为解析成功后的增强动作，失败不阻断解析主链路（占位阶段，真实引擎接入后补强）
-            get_logger(__name__).warning("wiki 建页失败，doc_id=%s", getattr(doc, "doc_id", ""))
+            get_logger(__name__).warning("专业库资产构建失败，doc_id=%s", getattr(doc, "doc_id", ""))
 
     @staticmethod
     def parse_direct(payload, *, owner_id: str = "", tenant_id: str = "") -> dict:
@@ -291,7 +301,7 @@ class ParseService:
                 )
             )
             DocumentStore.update_status(doc.doc_id, DOCUMENT_STATUS["SUCCEEDED"])
-            ParseService._build_wiki_pages_if_wiki_kb(doc)
+            ParseService._build_kb_assets_after_parse(doc)
             return parse_response(
                 task_id=task_id,
                 task_status=PARSE_STATUS["SUCCESS"],

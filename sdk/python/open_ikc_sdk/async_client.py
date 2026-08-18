@@ -18,6 +18,7 @@ from .models.knowledge_base import (
     KnowledgeBasePage,
     KnowledgeMetadataField,
 )
+from .models.graph import GraphEdges, GraphExport, GraphNeighbors, GraphNodes, GraphStat
 from .models.parse import (
     DownloadResult,
     DownloadTicket,
@@ -124,7 +125,7 @@ class AsyncOpenIKCClient:
 
 
 class AsyncKnowledgeBaseClient:
-    """知识库域异步客户端：create / update / query / get / wiki_tree / wiki_page / wiki_search。"""
+    """知识库域异步客户端：create / update / query / get / wiki_tree / wiki_page / wiki_search / graph_stat / graph_nodes / graph_edges / graph_neighbors / graph_export。"""
 
     _UPDATE_FIELDS = {"kbName", "kbType", "teamId", "orgId", "kbDesc", "visibility", "metadataSchema"}
 
@@ -234,6 +235,49 @@ class AsyncKnowledgeBaseClient:
             params={"q": q, "tag": tag},
         )
         return WikiSearchData.from_dict(envelope.data)
+
+    async def graph_stat(self, kb_id: str) -> GraphStat:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/graph/stat",
+            path_params={"kb_id": kb_id},
+        )
+        return GraphStat.from_dict(envelope.data)
+
+    async def graph_nodes(self, kb_id: str, entity_type: str = "", page: int = 1, pageSize: int = 20) -> GraphNodes:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/graph/nodes",
+            path_params={"kb_id": kb_id},
+            params={"entityType": entity_type, "page": page, "pageSize": pageSize},
+        )
+        return GraphNodes.from_dict(envelope.data)
+
+    async def graph_edges(self, kb_id: str, relation_type: str = "", page: int = 1, pageSize: int = 20) -> GraphEdges:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/graph/edges",
+            path_params={"kb_id": kb_id},
+            params={"relationType": relation_type, "page": page, "pageSize": pageSize},
+        )
+        return GraphEdges.from_dict(envelope.data)
+
+    async def graph_neighbors(self, kb_id: str, entity_id: str, depth: int = 1) -> GraphNeighbors:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/graph/neighbors",
+            path_params={"kb_id": kb_id},
+            params={"entityId": entity_id, "depth": depth},
+        )
+        return GraphNeighbors.from_dict(envelope.data)
+
+    async def graph_export(self, kb_id: str) -> GraphExport:
+        envelope = await self._client.request(
+            "GET",
+            "/api/v1/knowledge-bases/{kb_id}/graph/export",
+            path_params={"kb_id": kb_id},
+        )
+        return GraphExport.from_dict(envelope.data)
 
 
 class AsyncDocumentClient:

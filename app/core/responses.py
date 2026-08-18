@@ -297,3 +297,140 @@ def wiki_search_response(
             "items": items,
         },
     ))
+
+
+def _graph_node_data(record: Any) -> dict[str, Any]:
+    return {
+        "entityId": record.entity_id,
+        "type": record.entity_type,
+        "name": record.name,
+        "properties": dict(record.properties),
+        "aliases": list(record.aliases),
+        "evidence": list(record.evidence),
+        "confidence": record.confidence,
+        "status": record.status,
+        "createdAt": record.created_at,
+        "updatedAt": record.updated_at,
+    }
+
+
+def _graph_edge_data(record: Any) -> dict[str, Any]:
+    return {
+        "relationId": record.relation_id,
+        "type": record.relation_type,
+        "sourceEntityId": record.source_entity_id,
+        "targetEntityId": record.target_entity_id,
+        "properties": dict(record.properties),
+        "evidence": list(record.evidence),
+        "confidence": record.confidence,
+        "status": record.status,
+        "createdAt": record.created_at,
+        "updatedAt": record.updated_at,
+    }
+
+
+def graph_stat_response(
+    *,
+    kb_id: str,
+    graph_id: str,
+    stat: dict[str, Any],
+    schema_coverage: dict[str, Any],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "graph",
+            "graphId": graph_id,
+            "nodeCount": stat["nodeCount"],
+            "edgeCount": stat["edgeCount"],
+            "entityTypes": stat["entityTypes"],
+            "relationTypes": stat["relationTypes"],
+            "schemaCoverage": schema_coverage,
+        },
+    ))
+
+
+def graph_nodes_response(
+    *,
+    kb_id: str,
+    total: int,
+    page: int,
+    page_size: int,
+    records: list[Any],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "graph",
+            "total": total,
+            "page": page,
+            "pageSize": page_size,
+            "items": [_graph_node_data(record) for record in records],
+        },
+    ))
+
+
+def graph_edges_response(
+    *,
+    kb_id: str,
+    total: int,
+    page: int,
+    page_size: int,
+    records: list[Any],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "graph",
+            "total": total,
+            "page": page,
+            "pageSize": page_size,
+            "items": [_graph_edge_data(record) for record in records],
+        },
+    ))
+
+
+def graph_neighbors_response(
+    *,
+    kb_id: str,
+    entity_id: str,
+    depth: int,
+    center: Any,
+    nodes: list[Any],
+    edges: list[Any],
+) -> dict[str, Any]:
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "graph",
+            "entityId": entity_id,
+            "depth": depth,
+            "center": _graph_node_data(center),
+            "nodes": [_graph_node_data(record) for record in nodes],
+            "edges": [_graph_edge_data(record) for record in edges],
+        },
+    ))
+
+
+def graph_export_response(
+    *,
+    kb_id: str,
+    graph_id: str,
+    content: str,
+) -> dict[str, Any]:
+    total = content.count("\n") + 1 if content else 0
+    return with_trace_id(error_response(
+        CommonErrorCodes.SUCCESS,
+        {
+            "kbId": kb_id,
+            "kbMode": "graph",
+            "graphId": graph_id,
+            "format": "jsonl",
+            "total": total,
+            "content": content,
+        },
+    ))

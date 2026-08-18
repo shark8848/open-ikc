@@ -198,6 +198,191 @@ def test_wiki_search():
     assert result["items"][0]["score"] == 0.9
 
 
+# ---------- 图谱库 ----------
+
+
+def test_graph_stat():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "graphId": "graph_abc123",
+                "nodeCount": 3,
+                "edgeCount": 2,
+                "entityTypes": [{"type": "person", "count": 2}],
+                "relationTypes": [{"type": "works_at", "count": 2}],
+                "schemaCoverage": {"entity": 1.0, "relation": 1.0, "overall": 1.0},
+            }
+        )
+
+    result = call_tool(make_server(handler), "graph_stat", {"kbId": "kb_10001"})
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/stat"
+    assert result["nodeCount"] == 3
+    assert result["entityTypes"][0]["type"] == "person"
+
+
+def test_graph_nodes():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "total": 1,
+                "page": 1,
+                "pageSize": 20,
+                "items": [
+                    {
+                        "entityId": "ent_abc123",
+                        "type": "person",
+                        "name": "张三",
+                        "properties": {"dept": "研发"},
+                        "aliases": ["张三丰"],
+                        "evidence": [{"docId": "doc_1", "chunkId": "chunk_1"}],
+                        "confidence": 0.95,
+                        "status": "active",
+                        "createdAt": "2026-08-01T00:00:00Z",
+                        "updatedAt": "2026-08-02T00:00:00Z",
+                    }
+                ],
+            }
+        )
+
+    result = call_tool(
+        make_server(handler),
+        "graph_nodes",
+        {"kbId": "kb_10001", "entityType": "person", "page": 1, "pageSize": 20},
+    )
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/nodes"
+    assert captured["params"] == {"entityType": "person", "page": "1", "pageSize": "20"}
+    assert result["items"][0]["name"] == "张三"
+    assert result["items"][0]["confidence"] == 0.95
+
+
+def test_graph_edges():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "total": 1,
+                "page": 1,
+                "pageSize": 20,
+                "items": [
+                    {
+                        "relationId": "rel_abc123",
+                        "type": "works_at",
+                        "sourceEntityId": "ent_abc123",
+                        "targetEntityId": "ent_xyz789",
+                        "properties": {"since": "2024"},
+                        "evidence": [{"docId": "doc_1"}],
+                        "confidence": 0.9,
+                        "status": "active",
+                        "createdAt": "2026-08-01T00:00:00Z",
+                        "updatedAt": "2026-08-02T00:00:00Z",
+                    }
+                ],
+            }
+        )
+
+    result = call_tool(
+        make_server(handler),
+        "graph_edges",
+        {"kbId": "kb_10001", "relationType": "works_at", "page": 1, "pageSize": 20},
+    )
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/edges"
+    assert captured["params"] == {"relationType": "works_at", "page": "1", "pageSize": "20"}
+    assert result["items"][0]["relationId"] == "rel_abc123"
+    assert result["items"][0]["sourceEntityId"] == "ent_abc123"
+
+
+def test_graph_neighbors():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "entityId": "ent_abc123",
+                "depth": 1,
+                "center": {
+                    "entityId": "ent_abc123",
+                    "type": "person",
+                    "name": "张三",
+                    "properties": {},
+                    "aliases": [],
+                    "evidence": [],
+                    "confidence": 0.95,
+                    "status": "active",
+                    "createdAt": "2026-08-01T00:00:00Z",
+                    "updatedAt": "2026-08-02T00:00:00Z",
+                },
+                "nodes": [],
+                "edges": [
+                    {
+                        "relationId": "rel_abc123",
+                        "type": "works_at",
+                        "sourceEntityId": "ent_abc123",
+                        "targetEntityId": "ent_xyz789",
+                        "properties": {},
+                        "evidence": [],
+                        "confidence": 0.9,
+                        "status": "active",
+                        "createdAt": "2026-08-01T00:00:00Z",
+                        "updatedAt": "2026-08-02T00:00:00Z",
+                    }
+                ],
+            }
+        )
+
+    result = call_tool(
+        make_server(handler),
+        "graph_neighbors",
+        {"kbId": "kb_10001", "entityId": "ent_abc123", "depth": 1},
+    )
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/neighbors"
+    assert captured["params"] == {"entityId": "ent_abc123", "depth": "1"}
+    assert result["center"]["name"] == "张三"
+    assert result["edges"][0]["relationId"] == "rel_abc123"
+
+
+def test_graph_export():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "graphId": "graph_abc123",
+                "format": "jsonl",
+                "total": 2,
+                "content": '{"type":"entity","entityId":"ent_abc123"}\n{"type":"relation","relationId":"rel_abc123"}',
+            }
+        )
+
+    result = call_tool(make_server(handler), "graph_export", {"kbId": "kb_10001"})
+    assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/export"
+    assert result["format"] == "jsonl"
+    assert result["total"] == 2
+    assert result["content"].startswith('{"type":"entity"')
+
+
 # ---------- 文档 ----------
 
 
@@ -466,6 +651,11 @@ def test_tool_inventory_matches_contract():
         "wiki_tree",
         "wiki_page",
         "wiki_search",
+        "graph_stat",
+        "graph_nodes",
+        "graph_edges",
+        "graph_neighbors",
+        "graph_export",
         "doc_ingest",
         "doc_ingest_and_parse",
         "doc_get",

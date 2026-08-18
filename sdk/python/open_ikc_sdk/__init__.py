@@ -27,6 +27,7 @@ from .errors import (
 from .headers import CallerIdentity
 from .models.document import DocumentInfo, DocumentIngestAndParseResult, DocumentIngestResult, DocumentSource
 from .models.knowledge_base import KnowledgeBase, KnowledgeBasePage, KnowledgeMetadataField
+from .models.graph import GraphEdge, GraphEdges, GraphExport, GraphNeighbors, GraphNode, GraphNodes, GraphStat, GraphTypeCount
 from .models.parse import DownloadResult, DownloadTicket, ParseResult, ParseTask
 from .models.search import SearchResult, SearchResultItem
 from .models.wiki import WikiPageData, WikiPageDetail, WikiSearchData, WikiSearchHit, WikiTreeData, WikiTreeNode
@@ -57,6 +58,14 @@ __all__ = [
     "WikiPageDetail",
     "WikiSearchData",
     "WikiSearchHit",
+    "GraphTypeCount",
+    "GraphStat",
+    "GraphNode",
+    "GraphNodes",
+    "GraphEdge",
+    "GraphEdges",
+    "GraphNeighbors",
+    "GraphExport",
     "generate_trace_id",
     "OpenIKCError",
     "OpenIKCTransportError",

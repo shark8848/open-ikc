@@ -2,8 +2,9 @@ from __future__ import annotations
 
 """MCP Server（stdio）：将 OpenIKC 开放平台现有 REST 接口封装为 MCP 工具。
 
-工具清单与 SDK ``OpenIKCClient`` 领域方法一一对应（19 个）：
+工具清单与 SDK ``OpenIKCClient`` 领域方法一一对应（24 个）：
 kb_create / kb_update / kb_query / kb_get / wiki_tree / wiki_page / wiki_search /
+graph_stat / graph_nodes / graph_edges / graph_neighbors / graph_export /
 doc_ingest / doc_ingest_and_parse / doc_get / parse_start / parse_direct / parse_query /
 parse_issue_ticket / parse_download / search_query / deep_search / sys_catalog / sys_error_codes。
 
@@ -191,6 +192,63 @@ def build_server(client: OpenIKCClient) -> MCPServer:
             tag: 按页面标签精确过滤，可选。
         """
         return _model_to_dict(client.knowledge_bases.wiki_search(kbId, q=q, tag=tag))
+
+    @mcp.tool()
+    def graph_stat(kbId: str) -> dict[str, Any]:
+        """查询图谱库摘要（节点/边计数、类型分布与 schema 覆盖率）。
+
+        Args:
+            kbId: 图谱知识库 ID（kbMode=graph）。
+        """
+        return _model_to_dict(client.knowledge_bases.graph_stat(kbId))
+
+    @mcp.tool()
+    def graph_nodes(kbId: str, entityType: str = "", page: int = 1, pageSize: int = 20) -> dict[str, Any]:
+        """分页查询图谱实体节点（支持按实体类型过滤）。
+
+        Args:
+            kbId: 图谱知识库 ID。
+            entityType: 按实体类型过滤，可选。
+            page: 页码，从 1 开始。
+            pageSize: 每页数量（最大 100）。
+        """
+        return _model_to_dict(
+            client.knowledge_bases.graph_nodes(kbId, entity_type=entityType, page=page, pageSize=pageSize)
+        )
+
+    @mcp.tool()
+    def graph_edges(kbId: str, relationType: str = "", page: int = 1, pageSize: int = 20) -> dict[str, Any]:
+        """分页查询图谱关系边（支持按关系类型过滤）。
+
+        Args:
+            kbId: 图谱知识库 ID。
+            relationType: 按关系类型过滤，可选。
+            page: 页码，从 1 开始。
+            pageSize: 每页数量（最大 100）。
+        """
+        return _model_to_dict(
+            client.knowledge_bases.graph_edges(kbId, relation_type=relationType, page=page, pageSize=pageSize)
+        )
+
+    @mcp.tool()
+    def graph_neighbors(kbId: str, entityId: str, depth: int = 1) -> dict[str, Any]:
+        """查询实体邻域（depth 1/2），返回中心节点、可达节点与覆盖边。
+
+        Args:
+            kbId: 图谱知识库 ID。
+            entityId: 中心实体 ID（由 graph_nodes 返回）。
+            depth: 邻域深度：1 或 2。
+        """
+        return _model_to_dict(client.knowledge_bases.graph_neighbors(kbId, entity_id=entityId, depth=depth))
+
+    @mcp.tool()
+    def graph_export(kbId: str) -> dict[str, Any]:
+        """全量导出图谱（jsonl 内容，含 deprecated 记录）。
+
+        Args:
+            kbId: 图谱知识库 ID。
+        """
+        return _model_to_dict(client.knowledge_bases.graph_export(kbId))
 
     # ---------- 文档 ----------
 

@@ -29,8 +29,8 @@
 | **REST** | 纯 HTTP + JSON | 任何语言、curl/Postman 调试、需要全量字段控制 | 最低，看 §2 快速开始 |
 | **Python SDK** | `open-ikc-sdk`，类型提示 + 异常映射 + 同步/异步 | Python 应用（FastAPI/Django/脚本） | 低，见 §9.1 |
 | **Java SDK** | `io.openikc:open-ikc-sdk`，零第三方依赖 | Java 17+ 后端服务 | 低，见 §9.2 |
-| **MCP Server** | 19 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
-| **CLI** | 19 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
+| **MCP Server** | 24 个工具，供 AI Agent 调用 | Claude Desktop / Cursor 等 AI 客户端 | 低，见 §10 |
+| **CLI** | 24 个子命令，全局选项 + 退出码约定 | 运维脚本、快速验证、CI 冒烟 | 最低，见 §11 |
 
 > 选择建议：**想最快跑通** → 快速开始用 curl 或 CLI；**写正式代码** → 选对应语言的 SDK（错误码自动映射为异常）；**给 AI 助手用** → MCP。
 
@@ -413,6 +413,51 @@ Query 参数：
 
 > Wiki 库页面由文档解析成功后自动构建：`kbMode=wiki` 的库执行 `sync` 解析（§6.3.1）或 `ingest-and-parse`（§6.2.2）时，按库 `wikiConfig` 切页并按 `dedup`（`merge`/`overwrite`/`skip`）跨文档合并，页面 ID 由 `kbId + 标题规范化键` 稳定派生，重复加工自动去重；`async` 任务待真实解析引擎落地后执行建页。
 
+#### 6.1.8 查询图谱库摘要
+
+`GET /api/v1/knowledge-bases/{kb_id}/graph/stat`：查询图谱库（`kbMode=graph`）的库级图谱摘要与 schema 覆盖率。
+
+响应 `data`：`{kbId, kbMode("graph"), graphId, nodeCount, edgeCount, entityTypes[], relationTypes[], schemaCoverage}`。
+
+- `graphId`：`graph_ + sha1(kbId)[:12]`，随库生命周期稳定；
+- `entityTypes[]` / `relationTypes[]`：`{type, count}` 类型分布（活跃记录）；
+- `schemaCoverage`：`{entity, relation, overall}` 命中 `graphSchema` 声明类型的占比（0–1，治理指标），空图谱返回 1.0。
+
+#### 6.1.9 查询图谱节点
+
+`GET /api/v1/knowledge-bases/{kb_id}/graph/nodes`：分页查询实体节点，支持按 `entityType` 过滤。
+
+Query 参数：`entityType`（可选）、`page`（默认 1）、`pageSize`（默认 20，最大 100）。
+
+响应 `data`：`{kbId, kbMode("graph"), total, page, pageSize, items[]}`；`items[]` 元素：`{entityId, type, name, properties, aliases, evidence[], confidence, status, createdAt, updatedAt}`。
+
+- `entityId`：`ent_ + sha1(graphId:type:normalizedName)[:12]`，`(type, normalizedName)` 为对齐唯一键，重复加工自动合并而非重复建点；
+- `evidence[]`：`{docId, pageId?, chunkId?, offset?, text?}` 证据，可回链原文。
+
+#### 6.1.10 查询图谱关系
+
+`GET /api/v1/knowledge-bases/{kb_id}/graph/edges`：分页查询关系边，支持按 `relationType` 过滤。
+
+Query 参数：`relationType`（可选）、`page`（默认 1）、`pageSize`（默认 20，最大 100）。
+
+响应 `data`：`{kbId, kbMode("graph"), total, page, pageSize, items[]}`；`items[]` 元素：`{relationId, type, sourceEntityId, targetEntityId, properties, evidence[], confidence, status, createdAt, updatedAt}`。
+
+#### 6.1.11 查询实体邻域
+
+`GET /api/v1/knowledge-bases/{kb_id}/graph/neighbors`：按 `entityId` 查询实体邻域（`depth` 仅支持 1/2），供实体中心消费。
+
+Query 参数：`entityId`（必填）、`depth`（默认 1，最大 2）。
+
+响应 `data`：`{kbId, kbMode("graph"), entityId, depth, center, nodes[], edges[]}`；`center` 为中心节点，`nodes[]` 为可达节点（含中心），`edges[]` 为邻域内覆盖边。实体不存在返回 `100404`。
+
+#### 6.1.12 导出图谱全量
+
+`GET /api/v1/knowledge-bases/{kb_id}/graph/export`：全量导出库级图谱（jsonl，每行一条 entity/relation 记录，含 deprecated，保审计）。
+
+响应 `data`：`{kbId, kbMode("graph"), graphId, format("jsonl"), total, content}`；`content` 为 jsonl 字符串，可直接落盘。当前以内联返回承载；下载凭证链路待与解析下载统一落地。
+
+> 图谱库由文档解析成功后自动构建：`kbMode=graph` 的库执行 `sync` 解析（§6.3.1）或 `ingest-and-parse`（§6.2.2）时，按库 `graphSchema` 抽取实体/关系并做库级增量融合（`(type, normalizedName)` 对齐、证据挂接、置信度取高、旧记录标记 deprecated）；`async` 任务待真实解析引擎落地后执行建图。占位阶段单文档生成一个实体节点，真实抽取引擎接入后产出实体/关系。
+
 ### 6.2 文档
 
 #### 6.2.1 接入知识源
@@ -749,7 +794,7 @@ client.close();
 
 ## 10. MCP Server 接入
 
-MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），19 个工具与业务接口一一对应（知识库 7：kb_create/kb_update/kb_query/kb_get/wiki_tree/wiki_page/wiki_search）。
+MCP 是对现有 REST 接口的上层封装（**不新增第五类接口**），24 个工具与业务接口一一对应（知识库 12：kb_create/kb_update/kb_query/kb_get/wiki_tree/wiki_page/wiki_search/graph_stat/graph_nodes/graph_edges/graph_neighbors/graph_export）。
 
 ### 10.1 运行方式
 
@@ -796,6 +841,11 @@ python -m open_ikc_sdk.mcp --transport sse        # 其他传输方式
 | `wiki_tree` | `kbId`(必填), `page`=1, `pageSize`=20 | 查询 Wiki 库页面树（仅 `kbMode=wiki`） |
 | `wiki_page` | `kbId`(必填), `pageId`(必填) | 查询 Wiki 页面详情（正文/字段/互链/来源） |
 | `wiki_search` | `kbId`(必填), `q`="", `tag`="" | 检索 Wiki 库页面 |
+| `graph_stat` | `kbId`(必填) | 查询图谱库摘要（节点/边计数 + schema 覆盖率） |
+| `graph_nodes` | `kbId`(必填), `entityType`="", `page`=1, `pageSize`=20 | 分页查询实体节点 |
+| `graph_edges` | `kbId`(必填), `relationType`="", `page`=1, `pageSize`=20 | 分页查询关系边 |
+| `graph_neighbors` | `kbId`(必填), `entityId`(必填), `depth`=1 | 查询实体邻域（depth 1/2） |
+| `graph_export` | `kbId`(必填) | 导出图谱全量（jsonl） |
 
 **文档**
 
@@ -889,6 +939,11 @@ ikc kb-get kb_10001
 ikc wiki-tree kb_10001 --page 1 --page-size 20
 ikc wiki-page kb_10001 --page-id wiki_xxx
 ikc wiki-search kb_10001 --q 请假 --tag 制度
+ikc graph-stat kb_10001
+ikc graph-nodes kb_10001 --entity-type person --page 1 --page-size 20
+ikc graph-edges kb_10001 --relation-type works_at
+ikc graph-neighbors kb_10001 --entity-id ent_xxx --depth 2
+ikc graph-export kb_10001 --to-path ./graph.jsonl
 ```
 
 **文档**（`source` 以 JSON 字符串接收，复杂参数同理）

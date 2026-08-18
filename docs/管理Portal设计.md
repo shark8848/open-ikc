@@ -61,7 +61,7 @@ portal/                           # 前端（Vite 8 + React 18 + TS），构建�
 ### 3.4 MCP/CLI 在线测试（mcp_cli_test.py）
 
 - subprocess 真实执行 `.venv/bin/python -m open_ikc_sdk.mcp` / `.venv/bin/python -m open_ikc_sdk.cli`。
-- **命令/工具白名单（只读）**：CLI 为 `kb-list`/`kb-get`/`wiki-tree`/`wiki-page`/`wiki-search`/`doc-get`/`parse-query`/`sys-catalog`/`sys-error-codes`/`search-query`/`deep-search`；MCP 为 `sys_catalog`/`sys_error_codes`/`kb_get`/`kb_query`/`wiki_tree`/`wiki_page`/`wiki_search`/`doc_get`/`parse_query`/`parse_issue_ticket`/`search_query`/`deep_search`。禁止任意 shell 与写操作。
+- **命令/工具白名单（只读）**：CLI 为 `kb-list`/`kb-get`/`wiki-tree`/`wiki-page`/`wiki-search`/`graph-stat`/`graph-nodes`/`graph-edges`/`graph-neighbors`/`graph-export`/`doc-get`/`parse-query`/`sys-catalog`/`sys-error-codes`/`search-query`/`deep-search`；MCP 为 `sys_catalog`/`sys_error_codes`/`kb_get`/`kb_query`/`wiki_tree`/`wiki_page`/`wiki_search`/`graph_stat`/`graph_nodes`/`graph_edges`/`graph_neighbors`/`graph_export`/`doc_get`/`parse_query`/`parse_issue_ticket`/`search_query`/`deep_search`。禁止任意 shell 与写操作。
 - **参数级白名单**：每个命令/工具仅允许声明过的 flag / 参数 key（含位置参数数量上限），越界参数在进入 subprocess 前即被拒绝；MCP 冒烟支持传工具参数（`args`，JSON 注入子进程，避免转义问题）。
 - **超时**：默认 20s、上限 120s（`timeoutSeconds` 可调）；token 从请求上下文注入子进程环境变量，不落库。
 - `GET /admin/test/whitelist` 返回 `{cli, mcpTools, cliArgs, mcpArgs}`：前两者为命令/工具清单，后两者为各自允许的参数明细（Portal 据此渲染可选参数提示）。

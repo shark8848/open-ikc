@@ -163,6 +163,158 @@ def test_wiki_search_json():
     assert json.loads(result.output)["items"][0]["pageId"] == "wiki_abc123"
 
 
+def test_graph_stat_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/graph/stat"
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "graphId": "graph_abc123",
+                "nodeCount": 3,
+                "edgeCount": 2,
+                "entityTypes": [{"type": "person", "count": 2}],
+                "relationTypes": [{"type": "works_at", "count": 2}],
+                "schemaCoverage": {"entity": 1.0, "relation": 1.0, "overall": 1.0},
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["--json", "graph-stat", "kb_10001"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["nodeCount"] == 3
+
+
+def test_graph_nodes_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/graph/nodes"
+        assert dict(request.url.params) == {"entityType": "person", "page": "2", "pageSize": "10"}
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "total": 1,
+                "page": 2,
+                "pageSize": 10,
+                "items": [
+                    {
+                        "entityId": "ent_abc123",
+                        "type": "person",
+                        "name": "张三",
+                        "properties": {},
+                        "aliases": [],
+                        "evidence": [],
+                        "confidence": 0.95,
+                        "status": "active",
+                        "createdAt": "2026-08-01T00:00:00Z",
+                        "updatedAt": "2026-08-02T00:00:00Z",
+                    }
+                ],
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(
+        app,
+        ["--json", "graph-nodes", "kb_10001", "--entity-type", "person", "--page", "2", "--page-size", "10"],
+    )
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["items"][0]["name"] == "张三"
+
+
+def test_graph_edges_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/graph/edges"
+        assert dict(request.url.params) == {"relationType": "works_at", "page": "1", "pageSize": "20"}
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "total": 1,
+                "page": 1,
+                "pageSize": 20,
+                "items": [
+                    {
+                        "relationId": "rel_abc123",
+                        "type": "works_at",
+                        "sourceEntityId": "ent_abc123",
+                        "targetEntityId": "ent_xyz789",
+                        "properties": {},
+                        "evidence": [],
+                        "confidence": 0.9,
+                        "status": "active",
+                        "createdAt": "2026-08-01T00:00:00Z",
+                        "updatedAt": "2026-08-02T00:00:00Z",
+                    }
+                ],
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["--json", "graph-edges", "kb_10001", "--relation-type", "works_at"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["items"][0]["relationId"] == "rel_abc123"
+
+
+def test_graph_neighbors_json():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/graph/neighbors"
+        assert dict(request.url.params) == {"entityId": "ent_abc123", "depth": "1"}
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "entityId": "ent_abc123",
+                "depth": 1,
+                "center": {
+                    "entityId": "ent_abc123",
+                    "type": "person",
+                    "name": "张三",
+                    "properties": {},
+                    "aliases": [],
+                    "evidence": [],
+                    "confidence": 0.95,
+                    "status": "active",
+                    "createdAt": "2026-08-01T00:00:00Z",
+                    "updatedAt": "2026-08-02T00:00:00Z",
+                },
+                "nodes": [],
+                "edges": [],
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["--json", "graph-neighbors", "kb_10001", "--entity-id", "ent_abc123"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["center"]["name"] == "张三"
+
+
+def test_graph_export_to_path():
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/v1/knowledge-bases/kb_10001/graph/export"
+        return ok_response(
+            {
+                "kbId": "kb_10001",
+                "kbMode": "graph",
+                "graphId": "graph_abc123",
+                "format": "jsonl",
+                "total": 2,
+                "content": '{"type":"entity","entityId":"ent_abc123"}\n{"type":"relation","relationId":"rel_abc123"}',
+            }
+        )
+
+    init_app(client=make_client(handler))
+    result = runner.invoke(app, ["graph-export", "kb_10001", "--to-path", "/tmp/ikc_graph_export.jsonl"])
+    assert result.exit_code == 0, result.output
+    assert "已导出 2 条记录" in result.output
+    import os
+
+    assert os.path.exists("/tmp/ikc_graph_export.jsonl")
+    with open("/tmp/ikc_graph_export.jsonl", "r", encoding="utf-8") as handle:
+        assert handle.read() == '{"type":"entity","entityId":"ent_abc123"}\n{"type":"relation","relationId":"rel_abc123"}'
+    os.remove("/tmp/ikc_graph_export.jsonl")
+
+
 def test_doc_ingest_json_source():
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.url.path == "/api/v1/knowledge-documents/ingest"

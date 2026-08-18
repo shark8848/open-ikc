@@ -81,7 +81,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 | 能力 | 路由前缀 | 接口数 | 典型场景 |
 | --- | --- | --- | --- |
-| 知识库 | `/api/v1/knowledge-bases` | 7 | 组织与管理知识空间（个人/团队/企业），支持形态 `kbMode`：文本库 / Wiki 库 / 图谱库；Wiki 库提供页面树 / 页面详情 / 库内检索（`wiki/*`） |
+| 知识库 | `/api/v1/knowledge-bases` | 12 | 组织与管理知识空间（个人/团队/企业），支持形态 `kbMode`：文本库 / Wiki 库 / 图谱库；Wiki 库提供 `wiki/*`（页面树/详情/检索），图谱库提供 `graph/*`（摘要/节点/边/邻域/导出） |
 | 文档 | `/api/v1/knowledge-documents` | 5 | 接入 URL / 文件 / 目录 / 压缩包为可解析文档；上传文档 7 天暂存并返回临时访问地址 |
 | 解析 | `/api/v1/knowledge-documents/parse*` | 5 | 解析为结构化结果，支持异步任务、凭证与下载；支持免知识库独立解析（`parse-direct`） |
 | 检索 | `/api/v1/knowledge-search` | 2 + 1 兼容别名 | 普通检索（证据列表）与深度检索（Agentic 多轮 + 带引用回答） |
@@ -98,8 +98,8 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | REST | 任何语言、curl/Postman 调试、需全量字段控制 | 最低 | §1.4 / 手册 §6 |
 | Python SDK | Python 应用（FastAPI/Django/脚本），类型安全 + 异常映射 | 低 | §4 |
 | Java SDK | Java 17+ 后端服务，零第三方依赖 | 低 | §4 |
-| MCP Server | Claude Desktop / Cursor 等 AI 客户端（19 个工具） | 低 | §4 |
-| CLI | 运维脚本、快速验证、CI 冒烟（19 个子命令） | 最低 | §4 |
+| MCP Server | Claude Desktop / Cursor 等 AI 客户端（24 个工具） | 低 | §4 |
+| CLI | 运维脚本、快速验证、CI 冒烟（24 个子命令） | 最低 | §4 |
 
 ## 3. 文档导航
 
@@ -137,8 +137,8 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 - **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`），四大能力类型安全封装：同步/异步客户端、异常映射、trace 透传、MCP/CLI 同源；[sdk/python/README.md](sdk/python/README.md)。
 - **Java SDK**：`sdk/java/`（Maven，Java 17，零第三方依赖，`io.openikc:open-ikc-sdk:1.0.0`），同协议同错误码；[sdk/java/README.md](sdk/java/README.md)，设计见 [docs/开放平台JavaSDK集成设计.md](docs/开放平台JavaSDK集成设计.md)。
-- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），19 个工具，供 Claude 等 LLM 直接调用平台能力（含 Wiki 库 `wiki_tree`/`wiki_page`/`wiki_search`）。
-- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），19 个子命令，全局选项 + 退出码约定（含 Wiki 库 `wiki-tree`/`wiki-page`/`wiki-search`）。
+- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），24 个工具，供 Claude 等 LLM 直接调用平台能力（含 Wiki 库 `wiki_*` 与图谱库 `graph_*`）。
+- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），24 个子命令，全局选项 + 退出码约定（含 Wiki 库 `wiki-*` 与图谱库 `graph-*`）。
 - 完整能力映射 / 环境变量 / 工具与命令清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
 
 ## 5. 配置参考
@@ -290,7 +290,7 @@ cd /home/open-ikc && .venv/bin/python -m pytest tests -q
 
 | 能力 | 状态 |
 | --- | --- |
-| 知识库 | 已落地：进程内存储 + 业务校验 + AUTHZ；创建返回真实 `kbId`，同名冲突 `100409`，个人/团队/企业库按数据范围收敛；`kbMode`（text/wiki/graph）形态协议 + `wikiConfig`/`graphSchema` 配置与校验，wiki↔graph 互转拒绝 `200014`（P1）；**Wiki 库已落地（P2）**：库级页面树存储（`pageId=sha1(kbId+稳定键)`）、跨文档 dedup 合并（merge/overwrite/skip）、增量废弃，`wiki/tree|page|search` 只读接口，`sync` 解析成功后自动建页 |
+| 知识库 | 已落地：进程内存储 + 业务校验 + AUTHZ；创建返回真实 `kbId`，同名冲突 `100409`，个人/团队/企业库按数据范围收敛；`kbMode`（text/wiki/graph）形态协议 + `wikiConfig`/`graphSchema` 配置与校验，wiki↔graph 互转拒绝 `200014`（P1）；**Wiki 库已落地（P2）**：库级页面树存储（`pageId=sha1(kbId+稳定键)`）、跨文档 dedup 合并（merge/overwrite/skip）、增量废弃，`wiki/tree|page|search` 只读接口，`sync` 解析成功后自动建页；**图谱库已落地（P3）**：库级图谱（`graphId=sha1(kbId)`）、实体/关系稳定 ID（`(type,normalizedName)` 对齐）、证据挂接与置信度、增量废弃，`graph/stat|nodes|edges|neighbors|export` 只读接口，`sync` 解析成功后自动建图 |
 | 文档 | 已落地：`ingest` / `ingest-and-parse` / 详情查询 / 上传暂存（`upload`，7 天 TTL + 临时访问地址，惰性过期清理），知识库归属校验 + 幂等登记 + AUTHZ |
 | 解析 | 已落地：异步任务与内联结果、结果查询 / 下载凭证 / 下载，进程内任务与结果存储 + AUTHZ；`parse-direct` 免库独立解析（不建库、不登记文档，仅创建者可查询/下载） |
 | 检索 | 已落地：普通检索（`universal-search`，后端可切 `in_process` / `ur` / `openai`）+ 深度检索（`deep-search`，依赖下游 DeepSearch）；`/query` 为普通检索兼容别名 |

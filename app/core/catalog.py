@@ -38,6 +38,31 @@ API_CATALOG = [
                 "path": "/api/v1/knowledge-bases/{kb_id}/wiki/search",
                 "summary": "检索 Wiki 库页面",
             },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/graph/stat",
+                "summary": "查询图谱库摘要",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/graph/nodes",
+                "summary": "查询图谱节点",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/graph/edges",
+                "summary": "查询图谱关系",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/graph/neighbors",
+                "summary": "查询实体邻域",
+            },
+            {
+                "method": "GET",
+                "path": "/api/v1/knowledge-bases/{kb_id}/graph/export",
+                "summary": "导出图谱全量",
+            },
         ],
     },
     {

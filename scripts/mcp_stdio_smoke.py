@@ -54,6 +54,7 @@ async def _smoke(base_url: str, token: str) -> int:
             expected = {
                 "kb_create", "kb_update", "kb_query", "kb_get",
                 "wiki_tree", "wiki_page", "wiki_search",
+                "graph_stat", "graph_nodes", "graph_edges", "graph_neighbors", "graph_export",
                 "doc_ingest", "doc_ingest_and_parse", "doc_get",
                 "parse_start", "parse_direct", "parse_query", "parse_issue_ticket", "parse_download",
                 "search_query", "deep_search", "sys_catalog", "sys_error_codes",

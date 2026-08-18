@@ -349,3 +349,176 @@ def test_async_wiki_search():
         await client.close()
 
     asyncio.run(main())
+
+
+GRAPH_STAT_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "graph",
+    "graphId": "graph_abc123",
+    "nodeCount": 3,
+    "edgeCount": 2,
+    "entityTypes": [{"type": "person", "count": 2}],
+    "relationTypes": [{"type": "works_at", "count": 2}],
+    "schemaCoverage": {"entity": 1.0, "relation": 1.0, "overall": 1.0},
+}
+
+GRAPH_NODE_ITEM = {
+    "entityId": "ent_abc123",
+    "type": "person",
+    "name": "张三",
+    "properties": {"dept": "研发"},
+    "aliases": ["张三丰"],
+    "evidence": [{"docId": "doc_1", "chunkId": "chunk_1"}],
+    "confidence": 0.95,
+    "status": "active",
+    "createdAt": "2026-08-01T00:00:00Z",
+    "updatedAt": "2026-08-02T00:00:00Z",
+}
+
+GRAPH_NODES_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "graph",
+    "total": 1,
+    "page": 1,
+    "pageSize": 20,
+    "items": [GRAPH_NODE_ITEM],
+}
+
+GRAPH_EDGE_ITEM = {
+    "relationId": "rel_abc123",
+    "type": "works_at",
+    "sourceEntityId": "ent_abc123",
+    "targetEntityId": "ent_xyz789",
+    "properties": {"since": "2024"},
+    "evidence": [{"docId": "doc_1"}],
+    "confidence": 0.9,
+    "status": "active",
+    "createdAt": "2026-08-01T00:00:00Z",
+    "updatedAt": "2026-08-02T00:00:00Z",
+}
+
+GRAPH_EDGES_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "graph",
+    "total": 1,
+    "page": 1,
+    "pageSize": 20,
+    "items": [GRAPH_EDGE_ITEM],
+}
+
+GRAPH_NEIGHBORS_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "graph",
+    "entityId": "ent_abc123",
+    "depth": 1,
+    "center": GRAPH_NODE_ITEM,
+    "nodes": [GRAPH_NODE_ITEM],
+    "edges": [GRAPH_EDGE_ITEM],
+}
+
+GRAPH_EXPORT_DATA = {
+    "kbId": "kb_10001",
+    "kbMode": "graph",
+    "graphId": "graph_abc123",
+    "format": "jsonl",
+    "total": 2,
+    "content": '{"type":"entity","entityId":"ent_abc123"}\n{"type":"relation","relationId":"rel_abc123"}',
+}
+
+
+def test_async_graph_stat():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            return ok_response(GRAPH_STAT_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.graph_stat("kb_10001")
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/stat"
+        assert result.kbMode == "graph"
+        assert result.nodeCount == 3
+        assert result.entityTypes[0].type == "person"
+        assert result.schemaCoverage["overall"] == 1.0
+        await client.close()
+
+    asyncio.run(main())
+
+
+def test_async_graph_nodes():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            captured["params"] = dict(request.url.params)
+            return ok_response(GRAPH_NODES_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.graph_nodes("kb_10001", entity_type="person", page=2, pageSize=10)
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/nodes"
+        assert captured["params"] == {"entityType": "person", "page": "2", "pageSize": "10"}
+        assert result.items[0].name == "张三"
+        assert result.items[0].confidence == 0.95
+        await client.close()
+
+    asyncio.run(main())
+
+
+def test_async_graph_edges():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            captured["params"] = dict(request.url.params)
+            return ok_response(GRAPH_EDGES_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.graph_edges("kb_10001", relation_type="works_at")
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/edges"
+        assert captured["params"] == {"relationType": "works_at", "page": "1", "pageSize": "20"}
+        assert result.items[0].sourceEntityId == "ent_abc123"
+        await client.close()
+
+    asyncio.run(main())
+
+
+def test_async_graph_neighbors():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            captured["params"] = dict(request.url.params)
+            return ok_response(GRAPH_NEIGHBORS_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.graph_neighbors("kb_10001", entity_id="ent_abc123", depth=1)
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/neighbors"
+        assert captured["params"] == {"entityId": "ent_abc123", "depth": "1"}
+        assert result.center.name == "张三"
+        assert result.edges[0].relationId == "rel_abc123"
+        await client.close()
+
+    asyncio.run(main())
+
+
+def test_async_graph_export():
+    async def main():
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["path"] = request.url.path
+            return ok_response(GRAPH_EXPORT_DATA)
+
+        client = make_client(handler)
+        result = await client.knowledge_bases.graph_export("kb_10001")
+        assert captured["path"] == "/api/v1/knowledge-bases/kb_10001/graph/export"
+        assert result.format == "jsonl"
+        assert result.total == 2
+        assert result.content.startswith('{"type":"entity"')
+        await client.close()
+
+    asyncio.run(main())

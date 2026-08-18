@@ -18,6 +18,11 @@
 | 知识库 | `knowledge_bases.wiki_tree` | `wiki_tree` | `wiki-tree` |
 | 知识库 | `knowledge_bases.wiki_page` | `wiki_page` | `wiki-page` |
 | 知识库 | `knowledge_bases.wiki_search` | `wiki_search` | `wiki-search` |
+| 知识库 | `knowledge_bases.graph_stat` | `graph_stat` | `graph-stat` |
+| 知识库 | `knowledge_bases.graph_nodes` | `graph_nodes` | `graph-nodes` |
+| 知识库 | `knowledge_bases.graph_edges` | `graph_edges` | `graph-edges` |
+| 知识库 | `knowledge_bases.graph_neighbors` | `graph_neighbors` | `graph-neighbors` |
+| 知识库 | `knowledge_bases.graph_export` | `graph_export` | `graph-export` |
 | 文档 | `documents.ingest` | `doc_ingest` | `doc-ingest` |
 | 文档 | `documents.ingest_and_parse` | `doc_ingest_and_parse` | `doc-ingest-and-parse` |
 | 文档 | `documents.get` | `doc_get` | `doc-get` |
@@ -65,7 +70,7 @@ python -m open_ikc_sdk.mcp --base-url http://127.0.0.1:18000 --token <token>
 python -m open_ikc_sdk.mcp --transport sse
 ```
 
-- 工具名（19 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `wiki_tree` / `wiki_page` / `wiki_search` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_direct` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `deep_search` / `sys_catalog` / `sys_error_codes`。
+- 工具名（24 个）：`kb_create` / `kb_update` / `kb_query` / `kb_get` / `wiki_tree` / `wiki_page` / `wiki_search` / `graph_stat` / `graph_nodes` / `graph_edges` / `graph_neighbors` / `graph_export` / `doc_ingest` / `doc_ingest_and_parse` / `doc_get` / `parse_start` / `parse_direct` / `parse_query` / `parse_issue_ticket` / `parse_download` / `search_query` / `deep_search` / `sys_catalog` / `sys_error_codes`。
 - 工具返回：JSON 序列化 dict（复用 SDK 模型 `to_dict()` / `dataclasses.asdict`）。
 - 错误：SDK `OpenIKCError` 子类，由 MCP 运行时转为工具错误；错误信息含 `errCode` / `errMsg` / `traceId`。
 - 客户端配置（Claude Desktop / Claude Code 等）：stdio 命令指向 `python -m open_ikc_sdk.mcp`，并注入上述环境变量。
@@ -137,6 +142,11 @@ ikc --help
 | `wiki_tree` | `kbId`(必填), `page`=1, `pageSize`=20 | 查询 Wiki 库页面树（仅 `kbMode=wiki`，只读） |
 | `wiki_page` | `kbId`(必填), `pageId`(必填) | 查询 Wiki 页面详情（正文/字段/互链/来源） |
 | `wiki_search` | `kbId`(必填), `q`="", `tag`="" | 检索 Wiki 库页面（标题命中加权 > 正文命中） |
+| `graph_stat` | `kbId`(必填) | 查询图谱库摘要（节点/边计数 + schema 覆盖率） |
+| `graph_nodes` | `kbId`(必填), `entityType`="", `page`=1, `pageSize`=20 | 分页查询实体节点 |
+| `graph_edges` | `kbId`(必填), `relationType`="", `page`=1, `pageSize`=20 | 分页查询关系边 |
+| `graph_neighbors` | `kbId`(必填), `entityId`(必填), `depth`=1 | 查询实体邻域（depth 仅 1/2） |
+| `graph_export` | `kbId`(必填) | 导出图谱全量（jsonl） |
 
 ### 3.2 文档
 
@@ -196,6 +206,11 @@ ikc kb-get kb_10001
 ikc wiki-tree kb_10001 --page 1 --page-size 20
 ikc wiki-page kb_10001 --page-id wiki_xxx
 ikc wiki-search kb_10001 --q 请假 --tag 制度
+ikc graph-stat kb_10001
+ikc graph-nodes kb_10001 --entity-type person --page 1 --page-size 20
+ikc graph-edges kb_10001 --relation-type works_at
+ikc graph-neighbors kb_10001 --entity-id ent_xxx --depth 2
+ikc graph-export kb_10001 --to-path ./graph.jsonl
 ```
 
 ### 4.2 文档
@@ -247,10 +262,10 @@ ikc sys-error-codes
 - SDK 测试：`pytest sdk/python/tests -q` 全部通过（**134 passed**）。
 - 新增测试覆盖：
   - `test_bootstrap.py`：`client_from_env` 环境变量 → 客户端 / token / 身份头组装（7 例）。
-  - `test_mcp_tools.py`：19 个工具逐一断言请求路径 / body / 返回 JSON（httpx.MockTransport，不起服务，mcp 2.0 `call_tool` 异步调用）。
+  - `test_mcp_tools.py`：24 个工具逐一断言请求路径 / body / 返回 JSON（httpx.MockTransport，不起服务，mcp 2.0 `call_tool` 异步调用）。
   - `test_cli.py`：子命令解析、`--json` 输出、错误退出码映射、下载落盘（13 例）。
 - **端到端冒烟**（真实平台，`scripts/mcp_stdio_smoke.py`）：以官方 mcp 2.0 `ClientSession + stdio_client` 连接 `python -m open_ikc_sdk.mcp --transport stdio`，验证
-  `initialize（server_info=open-ikc）→ list_tools（19 工具齐全）→ call_tool(sys_catalog) → call_tool(kb_create)` 全链路通过。
+  `initialize（server_info=open-ikc）→ list_tools（24 工具齐全）→ call_tool(sys_catalog) → call_tool(kb_create)` 全链路通过。
   用法：先 `bash scripts/start_open_platform.sh` 启动平台，再 `.venv/bin/python scripts/mcp_stdio_smoke.py [--token <token>]`。
 
 ## 8. MCP 2.0 适配要点（mcp>=2.0）
@@ -267,7 +282,7 @@ ikc sys-error-codes
 - `POST /admin/test/mcp`：body `{tool, args?, token?, baseUrl?, timeoutSeconds?}`。subprocess 启动 `python -m open_ikc_sdk.mcp`（stdio），走
   `initialize → list_tools → call_tool(tool, args)` 三步冒烟，返回结构化步骤结果；`args` 为工具参数 JSON 对象（key 须在工具白名单允许范围，如 `kb_get` 需 `{"kbId":"kb_10001"}`）。
 - `POST /admin/test/cli`：body `{command, args[]?, token?, baseUrl?, identity?, timeoutSeconds?}` 执行白名单 CLI 命令，捕获 stdout/stderr/退出码。
-- `GET /admin/test/whitelist`：返回 `{cli, mcpTools, cliArgs, mcpArgs}`。只读白名单：CLI 为 `kb-list` / `kb-get` / `wiki-tree` / `wiki-page` / `wiki-search` / `doc-get` / `parse-query` / `sys-catalog` / `sys-error-codes` / `search-query` / `deep-search`；MCP 为 `sys_catalog` / `sys_error_codes` / `kb_get` / `kb_query` / `wiki_tree` / `wiki_page` / `wiki_search` / `doc_get` / `parse_query` / `parse_issue_ticket` / `search_query` / `deep_search`。禁止任意 shell 与写操作。
+- `GET /admin/test/whitelist`：返回 `{cli, mcpTools, cliArgs, mcpArgs}`。只读白名单：CLI 为 `kb-list` / `kb-get` / `wiki-tree` / `wiki-page` / `wiki-search` / `graph-stat` / `graph-nodes` / `graph-edges` / `graph-neighbors` / `graph-export` / `doc-get` / `parse-query` / `sys-catalog` / `sys-error-codes` / `search-query` / `deep-search`；MCP 为 `sys_catalog` / `sys_error_codes` / `kb_get` / `kb_query` / `wiki_tree` / `wiki_page` / `wiki_search` / `graph_stat` / `graph_nodes` / `graph_edges` / `graph_neighbors` / `graph_export` / `doc_get` / `parse_query` / `parse_issue_ticket` / `search_query` / `deep_search`。禁止任意 shell 与写操作。
 - 安全约束：命令/工具 + 参数双重白名单 + 超时（默认 20s，上限 120s）；token 从请求上下文注入子进程环境变量，不落库；统一响应壳 `errCode=000000` 表示执行成功（非子进程退出码）。
 - 执行实现：`app/core/admin/mcp_cli_test.py`，subprocess 经 `starlette.concurrency.run_in_threadpool` 放线程池，避免阻塞平台事件循环。
 - 该能力属管理面（需 `OPEN_PLATFORM_ADMIN_TOKEN`），不进入业务 `catalog.py`。详见 `docs/管理Portal设计.md`。

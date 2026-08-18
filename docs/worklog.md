@@ -776,3 +776,22 @@
   - 端到端冒烟（临时实例 18001，已停止）：REST 建 wiki 库→ingest→sync parse 建页；CLI `wiki-tree`/`wiki-page`/`wiki-search` 全通；MCP 19 工具齐全，三 wiki 工具 call_tool 全通。
 - 文档：API 手册（§6.1.5-6.1.7 wiki 三接口 + §6 全部「接口：」并入正文、§10/§11 工具与命令 16→19）、README（能力 4→7、实现状态 P2）、V2 详细定义（A-05/A-06/A-07）、`docs/MCP与CLI接口定义.md`（映射表/工具清单/白名单）、`docs/管理Portal设计.md`（白名单）、方案文档 P2 标记落地。
 - 下一步：P3（图谱库）按业务优先级评审后实施；提交推送（github）。
+
+### 任务：P3 落地——图谱库（库级图谱 + stat/nodes/edges/neighbors/export + parse 联动 + MCP/CLI 覆盖）（2026-08-18）
+
+- 需求：按方案 P3 落地图谱库；保持「MCP/CLI 完整覆盖所有 API」。
+- 平台侧（`docs/知识加工形态优化方案_wiki图谱与解析.md` P3 全部落地）：
+  - `app/services/graph_store.py`：`GraphNodeRecord`/`GraphRelationRecord` + `GraphStore`（稳定 ID 增量合并、邻域 BFS、统计、jsonl 导出、增量废弃）；稳定 ID：`graphId=graph_+sha1(kbId)[:12]`、`entityId=ent_+sha1(graphId:type:normalizedName)[:12]`、`relationId=rel_+sha1(...)`，`(type,normalizedName)` 为对齐唯一键。
+  - `app/services/graph.py`（`GraphService`：stat/nodes/edges/neighbors/export 只读视图 + schema 覆盖率 + `build_from_doc` 联动）；`app/schemas/graph.py`；`app/core/responses.py` 五响应构造。
+  - 路由（`app/routers/knowledge_base.py` + catalog）：`GET /api/v1/knowledge-bases/{kb_id}/graph/stat|nodes|edges|neighbors|export`（只读，AUTHZ 沿用库权限；非 graph 形态 `100001`、实体不存在 `100404`、depth 限 1/2）。
+  - parse 联动：`ParseService._build_kb_assets_after_parse`（原 wiki 钩子泛化）——wiki 库建页、graph 库建图（占位：单文档生成 schema 首个实体类型节点，真实抽取引擎接入后产出实体/关系）。
+- SDK/MCP/CLI（子代理完成，写范围 `sdk/python/**`）：
+  - `models/graph.py`（8 模型）、`client.py`/`async_client.py` 五方法、MCP 五工具（`graph_stat`/`graph_nodes`/`graph_edges`/`graph_neighbors`/`graph_export`）、CLI 五命令（`graph-stat`/`graph-nodes`/`graph-edges`/`graph-neighbors`/`graph-export`，`--to-path` 落盘 jsonl），工具/命令 19 → 24。
+- 平台在线测试白名单：`app/core/admin/mcp_cli_test.py` 补 CLI graph 五命令 + MCP graph 五工具（参数级白名单）；`scripts/mcp_stdio_smoke.py` expected 19 → 24。
+- 验证（全绿）：
+  - 平台 `pytest tests -q` **282 passed**（新增 `tests/test_graph_library.py` 9 例：形态拒绝/空统计/建图/邻域 depth1+2/404/过滤/分页/导出/catalog）。
+  - SDK `pytest sdk/python/tests -q` **169 passed**（+21）。
+  - 手册一致性 **85/85**（新增 graph 7 例，catalog 23 条对齐）。
+  - 端到端冒烟（临时实例 18001，已停止；期间发现 P2 遗留实例占用端口导致 404，已清理）：CLI `graph-stat`/`graph-nodes`/`graph-neighbors`/`graph-export --to-path`/`graph-edges` 全通；MCP 24 工具齐全，graph 五工具 call_tool 全通。
+- 文档：API 手册（§6.1.8-6.1.12 graph 五接口 + §10/§11 工具与命令 19→24）、README（能力 7→12、实现状态 P3、MCP/CLI 24）、V2 详细定义（A-08~A-12）、`docs/MCP与CLI接口定义.md`（映射表/工具清单/白名单）、`docs/管理Portal设计.md`（白名单）、方案文档 P3 标记落地。
+- 下一步：P4（检索消费侧：wiki 页面检索/图谱多跳，依赖真实检索后端）按业务优先级评审后实施；提交推送（github）。

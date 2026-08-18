@@ -5,7 +5,7 @@ from __future__ import annotations
 入口：``python -m open_ikc_sdk.cli``（安装后可用 ``ikc``）。
 
 子命令分组（与 SDK 领域方法一一对应）：
-- kb: create / update / list / get / wiki-tree / wiki-page / wiki-search
+- kb: create / update / list / get / wiki-tree / wiki-page / wiki-search / graph-stat / graph-nodes / graph-edges / graph-neighbors / graph-export
 - doc: ingest / ingest-and-parse / get
 - parse: start / direct / query / ticket / download
 - search: query / deep-search
@@ -292,6 +292,90 @@ def wiki_search(
     try:
         data = _get_client().knowledge_bases.wiki_search(kb_id, q=q, tag=tag)
         _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("graph-stat")
+def graph_stat(
+    kb_id: str = typer.Argument(..., help="图谱知识库 ID"),
+) -> None:
+    """查询图谱库摘要。"""
+    try:
+        data = _get_client().knowledge_bases.graph_stat(kb_id)
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("graph-nodes")
+def graph_nodes(
+    kb_id: str = typer.Argument(..., help="图谱知识库 ID"),
+    entity_type: str = typer.Option("", "--entity-type", help="按实体类型过滤"),
+    page: int = typer.Option(1, "--page", help="页码"),
+    page_size: int = typer.Option(20, "--page-size", help="每页数量"),
+) -> None:
+    """分页查询图谱实体节点。"""
+    try:
+        data = _get_client().knowledge_bases.graph_nodes(
+            kb_id,
+            entity_type=entity_type,
+            page=page,
+            pageSize=page_size,
+        )
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("graph-edges")
+def graph_edges(
+    kb_id: str = typer.Argument(..., help="图谱知识库 ID"),
+    relation_type: str = typer.Option("", "--relation-type", help="按关系类型过滤"),
+    page: int = typer.Option(1, "--page", help="页码"),
+    page_size: int = typer.Option(20, "--page-size", help="每页数量"),
+) -> None:
+    """分页查询图谱关系边。"""
+    try:
+        data = _get_client().knowledge_bases.graph_edges(
+            kb_id,
+            relation_type=relation_type,
+            page=page,
+            pageSize=page_size,
+        )
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("graph-neighbors")
+def graph_neighbors(
+    kb_id: str = typer.Argument(..., help="图谱知识库 ID"),
+    entity_id: str = typer.Option(..., "--entity-id", help="中心实体 ID（由 graph-nodes 返回）"),
+    depth: int = typer.Option(1, "--depth", help="邻域深度：1 或 2"),
+) -> None:
+    """查询实体邻域。"""
+    try:
+        data = _get_client().knowledge_bases.graph_neighbors(kb_id, entity_id=entity_id, depth=depth)
+        _emit(data)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("graph-export")
+def graph_export(
+    kb_id: str = typer.Argument(..., help="图谱知识库 ID"),
+    to_path: str = typer.Option(None, "--to-path", help="本地落盘路径（省略则打印 JSON）"),
+) -> None:
+    """导出图谱全量（jsonl）。"""
+    try:
+        data = _get_client().knowledge_bases.graph_export(kb_id)
+        if to_path:
+            with open(to_path, "w", encoding="utf-8") as handle:
+                handle.write(data.content)
+            typer.echo(f"已导出 {data.total} 条记录到 {to_path}")
+        else:
+            _emit(data)
     except Exception as exc:
         _handle_error(exc)
 

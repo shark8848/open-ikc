@@ -3,7 +3,7 @@ from __future__ import annotations
 import secrets
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -31,6 +31,9 @@ class KnowledgeBaseRecord:
     scope_key: str
     create_time: str
     update_time: str | None = None
+    kb_mode: str = "text"
+    wiki_config: dict[str, Any] = field(default_factory=dict)
+    graph_schema: dict[str, Any] = field(default_factory=dict)
 
 
 class KnowledgeBaseStore:
@@ -113,11 +116,15 @@ def make_record(
     scope_key: str,
     create_time: str,
     update_time: str | None = None,
+    kb_mode: str = "text",
+    wiki_config: dict[str, Any] | None = None,
+    graph_schema: dict[str, Any] | None = None,
 ) -> KnowledgeBaseRecord:
     return KnowledgeBaseRecord(
         kb_id=kb_id or generate_kb_id(),
         kb_name=kb_name,
         kb_type=kb_type,
+        kb_mode=kb_mode,
         team_id=team_id,
         org_id=org_id,
         kb_desc=kb_desc,
@@ -129,4 +136,6 @@ def make_record(
         scope_key=scope_key,
         create_time=create_time,
         update_time=update_time,
+        wiki_config=dict(wiki_config or {}),
+        graph_schema=dict(graph_schema or {}),
     )

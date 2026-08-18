@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from app.core.error_codes import CommonErrorCodes, KnowledgeBaseException
+from app.core.error_codes import CommonErrorCodes, KnowledgeBaseErrorCodes, KnowledgeBaseException
 from app.core.responses import (
     knowledge_base_create_response,
     knowledge_base_detail_response,
@@ -80,6 +80,7 @@ class KnowledgeBaseService:
         record = make_record(
             kb_name=payload.kbName.strip(),
             kb_type=payload.kbType,
+            kb_mode=payload.kbMode,
             team_id=payload.teamId.strip(),
             org_id=org_id,
             kb_desc=payload.kbDesc.strip(),
@@ -90,6 +91,8 @@ class KnowledgeBaseService:
             tenant_id=tenant_id,
             scope_key=scope_key,
             create_time=_now_iso(),
+            wiki_config=dict(payload.wikiConfig),
+            graph_schema=dict(payload.graphSchema),
         )
         try:
             KnowledgeBaseStore.create(record)
@@ -127,10 +130,22 @@ class KnowledgeBaseService:
 
         _validate_metadata_schema(payload.metadataSchema)
         org_id, scope_key = _resolve_scope(payload.kbType, payload, owner_id, tenant_id)
+        resolved_mode = payload.kbMode or existing.kb_mode
+        if (
+            payload.kbMode is not None
+            and existing.kb_mode in {"wiki", "graph"}
+            and payload.kbMode in {"wiki", "graph"}
+            and existing.kb_mode != payload.kbMode
+        ):
+            raise KnowledgeBaseException(
+                KnowledgeBaseErrorCodes.KB_MODE_CONFLICT,
+                {"field": "kbMode", "reason": "Wiki 库与图谱库之间不支持直接互转，请新建目标形态库"},
+            )
         updated = make_record(
             kb_id=existing.kb_id,
             kb_name=payload.kbName.strip() or existing.kb_name,
             kb_type=payload.kbType,
+            kb_mode=resolved_mode,
             team_id=payload.teamId.strip(),
             org_id=org_id,
             kb_desc=payload.kbDesc.strip() or existing.kb_desc,
@@ -142,6 +157,8 @@ class KnowledgeBaseService:
             scope_key=scope_key,
             create_time=existing.create_time,
             update_time=_now_iso(),
+            wiki_config=dict(payload.wikiConfig) if payload.wikiConfig is not None else dict(existing.wiki_config),
+            graph_schema=dict(payload.graphSchema) if payload.graphSchema is not None else dict(existing.graph_schema),
         )
         try:
             KnowledgeBaseStore.update(updated)
@@ -179,6 +196,8 @@ class KnowledgeBaseService:
         visible: list = []
         for record in records:
             if payload.kbType is not None and record.kb_type != payload.kbType:
+                continue
+            if payload.kbMode is not None and record.kb_mode != payload.kbMode:
                 continue
             if record.kb_type == "personal":
                 if record.owner_id != owner_id:

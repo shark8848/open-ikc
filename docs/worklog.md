@@ -744,3 +744,15 @@
   - 检索按库形态路由；text↔wiki 可双向、wiki↔graph 默认拒绝（建议新增 200014 形态冲突码）。
   - 分期：P1 kbMode 协议 → P2 Wiki 库 → P3 图谱库 → P4 检索消费侧。
 - 下一步：方案评审；通过后 P1 先行落地；提交推送（github）。
+
+### 任务：P1 落地——知识库形态协议 kbMode（2026-08-18）
+
+- 落地内容（`docs/知识加工形态优化方案_wiki图谱与解析.md` P1）：
+  - 知识库新增形态维度 `kbMode`（text/wiki/graph，默认 text），与 `kbType`（personal/team/enterprise）正交；create/update 支持 `kbMode` + `wikiConfig`/`graphSchema`，query 支持 `kbMode` 过滤，detail/列表返回形态与配置。
+  - 校验：`app/schemas/knowledge_base.py` 新增 `validate_wiki_config`（granularity/linkMode/dedup 枚举 + extractFields 数组）与 `validate_graph_schema`（entityTypes/relationTypes 类型必填且不重复、sourceTypes/targetTypes 字符串数组），非法映射 100001。
+  - 更新语义：`kbMode`/`wikiConfig`/`graphSchema` 不传=保持不变；wiki↔graph 互转拒绝，新增错误码 `200014` 库形态冲突（进 registry）。
+  - 存储：`KnowledgeBaseRecord`/`make_record` 增加 kb_mode/wiki_config/graph_schema；响应 `_knowledge_base_data` 与响应模型同步。
+- 验证：`pytest tests -q` **263 passed**（新增 `tests/test_knowledge_base_mode.py` 14 例）；手册一致性 **70/70**（错误码 20→21，新增默认 text/wiki 建库/非法 kbMode 断言）；18001 临时实例冒烟 6/6（默认 text、wiki 库、graph 库、非法 kbMode 100001、wiki→graph 200014、query 按形态过滤）。
+- 文档：API 手册 §6.1/§5.4、V2 详细定义 A-01、README（能力总览 + 实现状态）、方案文档 P1 标记落地。
+- 环境：18000 第三次被用户侧 `scripts/start_open_platform.sh` 实例占用（随机 admin token、未配业务 token），未再强杀；P1 冒烟在 18001 完成并已停止。用户如需 18000 正常使用，用「业务 token + admin token=test-admin-token」重启。
+- 下一步：P2（Wiki 库）/ P3（图谱库）按业务优先级评审后实施；提交推送（github）。

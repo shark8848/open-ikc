@@ -112,10 +112,11 @@ class AdminErrorCodes(BaseErrorCodes):
 class KnowledgeBaseErrorCodes(BaseErrorCodes):
     CREATE_FAILED = ErrorCode("200001", "创建知识库失败", level="business", description="知识库创建业务处理失败")
     UPDATE_FAILED = ErrorCode("200002", "修改知识库失败", level="business", description="知识库更新业务处理失败")
+    KB_MODE_CONFLICT = ErrorCode("200014", "库形态冲突", level="business", description="Wiki 库与图谱库之间不支持直接互转")
 
     @classmethod
     def registry(cls) -> list[ErrorCode]:
-        return super().registry() + [cls.CREATE_FAILED, cls.UPDATE_FAILED]
+        return super().registry() + [cls.CREATE_FAILED, cls.UPDATE_FAILED, cls.KB_MODE_CONFLICT]
 
 
 class DocumentErrorCodes(BaseErrorCodes):

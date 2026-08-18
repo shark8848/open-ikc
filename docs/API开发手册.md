@@ -271,6 +271,7 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 | `503001` | 管理面未启用 | admin | 未配置 `OPEN_PLATFORM_ADMIN_TOKEN`（HTTP 503） |
 | `200001` | 创建知识库失败 | business | 知识库创建失败 |
 | `200002` | 修改知识库失败 | business | 知识库更新失败 |
+| `200014` | 库形态冲突 | business | Wiki 库与图谱库之间不支持直接互转 |
 | `200010` | 接入知识源失败 | business | 文档接入失败 |
 | `200012` | 文档上传失败 | business | 文档暂存上传落盘失败 |
 | `200013` | 暂存文件不存在或已过期 | business | 暂存文件不存在、过期或已被清理 |
@@ -318,16 +319,19 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-search/deep-search \
 | --- | --- | --- | --- |
 | `kbName` | string | ✅ | 知识库名称，同范围（personal 按 owner / team 按 teamId / enterprise 按 orgId 租户）重复返回 `100409` |
 | `kbType` | enum | 否 | `personal`（默认）/ `team` / `enterprise` |
+| `kbMode` | enum | 否 | 库形态：`text`（默认）/ `wiki`（Wiki 库，页面树）/ `graph`（图谱库，实体关系网）；与 `kbType` 正交 |
 | `teamId` | string | 条件必填 | `kbType=team` 时必填，否则 `100001` |
 | `orgId` | string | 否 | `kbType=enterprise` 时建议填写 |
 | `kbDesc` | string | 否 | 描述 |
 | `bizDomain` | string | 否 | 业务域标签，默认 `general` |
 | `visibility` | enum | 否 | `private`（默认）/ `org` |
 | `metadataSchema` | array | 否 | 元数据字段定义（见下） |
+| `wikiConfig` | object | 否 | `kbMode=wiki` 时生效：`granularity`(`auto|heading|section|page`)、`extractFields[]`、`linkMode`(`auto|off`)、`dedup`(`merge|overwrite|skip`)、`template` |
+| `graphSchema` | object | 否 | `kbMode=graph` 时生效：`entityTypes[{type,description}]`、`relationTypes[{type,sourceTypes[],targetTypes[],description}]`（类型必填且不重复） |
 
 `metadataSchema[]` 元素：`name`(必填,库内唯一)、`type`(`string|number|integer|boolean|date|datetime|enum|object`)、`required`、`description`、`defaultValue`、`enum[]`、`pattern`、`minLength`、`maxLength`、`example`。
 
-成功响应 `data` 返回完整知识库对象（含 `kbId`、`createTime`/`updateTime` UTC 时间）。
+成功响应 `data` 返回完整知识库对象（含 `kbId`、`kbMode`、`wikiConfig`、`graphSchema`、`createTime`/`updateTime` UTC 时间）。
 
 ```bash
 curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
@@ -343,8 +347,8 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 接口：`POST /api/v1/knowledge-bases/update`
 
-请求体：`kbId`(必填) + 可修改字段。`kbName`/`kbDesc` 传空字符串表示不修改；`metadataSchema` 为空表示保持不变；`kbType` 变更需同步校验 `teamId`/`orgId`。
-约束：知识库不存在 `100404`；个人库仅创建者可修改（否则 `100403`）；企业库无法识别组织授权 `100403`。
+请求体：`kbId`(必填) + 可修改字段。`kbName`/`kbDesc` 传空字符串表示不修改；`metadataSchema` 为空表示保持不变；`kbType` 变更需同步校验 `teamId`/`orgId`；`kbMode`/`wikiConfig`/`graphSchema` 不传表示保持不变。
+约束：知识库不存在 `100404`；个人库仅创建者可修改（否则 `100403`）；企业库无法识别组织授权 `100403`；`wiki` 与 `graph` 之间互转返回 `200014`（建议新建目标形态库）。
 
 #### 6.1.3 查询知识库列表
 
@@ -355,6 +359,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `kbType` | enum | 过滤类型，不传=全部 |
+| `kbMode` | enum | 过滤库形态（`text`/`wiki`/`graph`），不传=全部 |
 | `teamId` | string | 查看 team 库时必填 |
 | `orgId` | string | 查看 enterprise 库时建议填写，为空用调用主体租户 |
 | `ownerId` | string | 个人库创建者过滤（个人库始终按调用方身份收敛） |

@@ -637,3 +637,17 @@
 - 补测试：`tests/test_system_routes.py` 新增 `test_openapi_docs_pages_available`（/docs、/redoc、/openapi.json 200 且含最新接口）。
 - 验证：全量 `pytest tests -q` **217 passed**。
 - 下一步：已提交推送（github）。
+
+### 任务：API 开发手册全面一致性测试 + 测试报告
+
+- 用户要求：使用 `docs/API开发手册.md` 对平台进行全面完整测试，验证手册准确性与完整性，输出测试报告。
+- 测试方式：TestClient 进程内逐项断言（沙箱外运行）；固定 `OPEN_PLATFORM_TOKEN=test-token` 并隔离管理面 SQLite，避免历史数据干扰。
+- 覆盖：§3.1 在线入口（/api-manual、/api/catalog 等）、§5 全局约定（认证 100401、统一响应壳、23 位 traceId、18 个错误码）、§6 四类业务 15 条路由（知识库 4 / 文档 3 / 解析 5 / 检索 3，含幂等、越权 100403、sync 内联、免库 parse-direct、凭证下载 200003/200004、别名 /query、deep-search 501001）、§7 管理面 503001、§8 系统路由 8 项、手册 §6 ↔ `/api/catalog` 路由清单逐条比对。
+- 结果：**62 用例全部通过（100%）**；报告输出 `docs/测试报告_API开发手册一致性_2026-08-18.md`。
+- 文档修正：§6.4.1 兼容别名 `/knowledge-search/query` 原仅注释提及，已补充为正式接口行，手册与 catalog 完全对齐。
+- 发现项（P2，未改实现，记入报告）：
+  1. 新建知识库 `updateTime` 为 null（未更新语义），建议手册补充说明；
+  2. 空字符串 `kbName` 服务端未做非空校验，可创建空名库，建议补 100001 校验或文档说明；
+  3. sync 解析命中既有 queued 任务时复用状态不强制完成，与手册「sync 请求内完成」存在语义差异，建议确认产品预期并补文档。
+- 测试脚本：`/tmp/manual_conformance.py`（可复跑，报告路径写死为当日文件）。
+- 下一步：全量 pytest 回归后提交推送（github）。

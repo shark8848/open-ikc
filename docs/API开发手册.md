@@ -491,7 +491,7 @@ curl -X POST http://127.0.0.1:18000/api/v1/knowledge-documents/parse-direct \
 
 接口：`POST /api/v1/knowledge-search/universal-search`
 
-> 兼容别名：`POST /api/v1/knowledge-search/query` 行为与之一致（deprecated），供既有调用方平滑迁移。
+接口：`POST /api/v1/knowledge-search/query`（兼容别名，行为与 `universal-search` 一致，deprecated，供既有调用方平滑迁移）
 
 请求体：
 

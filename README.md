@@ -75,6 +75,56 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 > **下一步**：5 分钟全链路（建库 → 接入文档 → 解析轮询 → 检索）见 [API 开发手册 §2](docs/API开发手册.md)，进阶路线（换用 SDK/CLI、深度检索、生产认证、运维）见 §2.6。
 
+### 1.5 Docker 部署（含 HAProxy 代理层）
+
+一键构建镜像（平台 `open-ikc-api:1.0.0` 多阶段 + HAProxy 代理层 `open-ikc-haproxy:1.0.0`）：
+
+```bash
+bash scripts/build_docker.sh                 # 准备 wheel 并构建两个镜像
+bash scripts/build_docker.sh --wheel-only    # 仅准备 ikc-log-center wheel（不执行 docker build）
+```
+
+- 私有依赖 `ikc-log-center==1.4.9`（PyPI 不可得）由脚本自动准备：优先使用 `docker/wheels/` 中已有 wheel，缺失时从 `/home/ikc-log-center` 源码 `v1.4.9` 现场构建（可用 `IKC_LOG_CENTER_REPO` 覆盖路径）。
+- 构建需要网络（PyPI 依赖 + npm registry）；`.dockerignore` 已排除 `.venv/`、`logs/`、`data/`、`portal/node_modules/`、`portal/dist/` 等。
+
+启动整栈（HAProxy 代理层 + 平台）：
+
+```bash
+docker compose up -d
+curl -s http://127.0.0.1:18080/health     # 经 HAProxy 访问平台
+```
+
+生产环境建议先复制配置模板再启动（`gateway_header` 强认证 + 强 token）：
+
+```bash
+cp docker/.env.example .env   # 修改其中 token / stats 密码后执行
+docker compose up -d
+```
+
+| 组件 | 服务 | 端口 | 说明 |
+| --- | --- | --- | --- |
+| HAProxy 代理层 | `haproxy` | `18080`（HTTP 入口）/ `8404`（stats） | 位于前端最外层统一入口，转发到平台；组件见 `docker/haproxy/`（启动时用 `envsubst` 渲染 stats 账号）；stats 见 `http://127.0.0.1:8404/` |
+| 平台 | `app` | `18000`（容器内，不直接对外） | FastAPI 北向 API + `/portal` 管理 Portal + `/docs` 等 |
+
+常用环境变量（`docker compose` 读取当前 shell 或 `.env`）：
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `OPEN_PLATFORM_AUTH_MODE` | `static` | 认证模式；生产建议 `gateway_header` / `oidc_jwt` / `oauth2_introspection` |
+| `OPEN_PLATFORM_TOKEN` | `test-token` | 业务 Bearer token（static 模式比对） |
+| `OPEN_PLATFORM_ADMIN_TOKEN` | `test-admin-token` | 管理面 `/admin/*` 独立 token；未配置时管理面关闭（`503001`） |
+| `HAPROXY_HTTP_PORT` | `18080` | HAProxy 对外 HTTP 端口 |
+| `HAPROXY_STATS_PORT` | `8404` | HAProxy stats 端口 |
+| `HAPROXY_STATS_USER/PASSWORD` | `admin` / `change-me` | HAProxy stats 登录账号，生产务必修改 |
+| `LOG_CENTER_ENABLE` | `false` | 日志中心远程投递（容器内默认关闭，需 `LOG_CENTER_URL` 指向可达服务） |
+
+数据（SQLite）与日志分别挂载到卷 `app_data`（`/app/data`）与 `app_logs`（`/app/logs`）。
+
+> **安全说明**：
+> - HAProxy 已默认剥离客户端伪造的身份头（`X-User-Id` / `X-Tenant-Id` / 角色 / 权限），防止 static 模式下自报身份越权；`gateway_header` 模式下由前置可信网关注入身份，HAProxy 映射示例见 `docker/haproxy.cfg` 注释。
+> - 生产必改：`OPEN_PLATFORM_TOKEN` / `OPEN_PLATFORM_ADMIN_TOKEN` / `HAPROXY_STATS_PASSWORD`，并建议 `OPEN_PLATFORM_AUTH_MODE=gateway_header`（见 `docker/.env.example`）；HAProxy 对外端口建议置于 TLS 终止网关之后。
+> - `/api-manual` 依赖 `docs/API开发手册.md`，该目录已随镜像打包（勿从 `.dockerignore` 排除）。
+
 ## 2. 能力总览
 
 平台刻意收敛能力面，只对外暴露四类业务能力：
@@ -269,7 +319,13 @@ app/
   services/               # 业务编排 + 进程内存储
 portal/                   # 管理 Portal 前端（Vite 8 + React 18 + TS），产物静态挂载于 /portal
 sdk/                      # python/（open-ikc-sdk）、java/（io.openikc:open-ikc-sdk）
-scripts/                  # 启动/停止脚本
+scripts/                  # 启动/停止/Docker 构建脚本
+Dockerfile                # 平台镜像（多阶段：Portal 前端 + FastAPI 后端）
+docker/                   # HAProxy 代理层组件 + 预置依赖 wheel
+  haproxy.cfg             # HAProxy 配置模板：前端入口 / 平台后端 / stats（${HAPROXY_STATS_*} 启动时渲染）
+  haproxy/                # HAProxy 组件镜像（官方镜像 + envsubst 入口）：Dockerfile / haproxy-entrypoint.sh
+  wheels/                 # ikc-log-center 私有依赖 wheel（build_docker.sh 预置）
+docker-compose.yml        # 整栈编排：app + haproxy（HAProxy 对外 18080）
 tests/                    # pytest 测试
 docs/                     # 方案与 AUTHN/AUTHZ 设计（中文）
 ```

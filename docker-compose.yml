@@ -1,0 +1,75 @@
+# open-ikc 平台 Docker 栈：FastAPI 北向平台（app）+ HAProxy 代理层（haproxy）
+#
+# 使用：
+#   1) bash scripts/build_docker.sh        # 预置 log-center wheel 并构建镜像
+#   2) docker compose up -d                # 启动整栈
+#   3) curl -s http://127.0.0.1:18080/health
+#   4) HAProxy stats: http://127.0.0.1:8404/（账号见 HAPROXY_STATS_USER/PASSWORD）
+#
+# 生产必改：OPEN_PLATFORM_TOKEN / OPEN_PLATFORM_ADMIN_TOKEN / HAPROXY_STATS_PASSWORD，
+# 并建议 OPEN_PLATFORM_AUTH_MODE=gateway_header 或 oidc_jwt（见 README §1.5）。
+
+name: open-ikc
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        IKC_LOG_CENTER_VERSION: "${IKC_LOG_CENTER_VERSION:-1.4.9}"
+    image: open-ikc-api:1.0.0
+    restart: unless-stopped
+    environment:
+      # 认证（static 模式仅限内网/测试；生产用 gateway_header / oidc_jwt / oauth2_introspection）
+      OPEN_PLATFORM_AUTH_MODE: "${OPEN_PLATFORM_AUTH_MODE:-static}"
+      OPEN_PLATFORM_TOKEN: "${OPEN_PLATFORM_TOKEN:-test-token}"
+      OPEN_PLATFORM_ADMIN_TOKEN: "${OPEN_PLATFORM_ADMIN_TOKEN:-test-admin-token}"
+      # 鉴权（OPEN_PLATFORM_AUTHZ_ENABLED=true 启用，deny-overrides）
+      OPEN_PLATFORM_AUTHZ_ENABLED: "${OPEN_PLATFORM_AUTHZ_ENABLED:-false}"
+      OPEN_PLATFORM_AUTH_SYSTEM: "${OPEN_PLATFORM_AUTH_SYSTEM:-default}"
+      # 检索下游
+      OPEN_PLATFORM_SEARCH_BACKEND: "${OPEN_PLATFORM_SEARCH_BACKEND:-in_process}"
+      OPEN_PLATFORM_UR_BASE_URL: "${OPEN_PLATFORM_UR_BASE_URL:-http://127.0.0.1:8096}"
+      OPEN_PLATFORM_OPENAI_SEARCH_BASE_URL: "${OPEN_PLATFORM_OPENAI_SEARCH_BASE_URL:-http://127.0.0.1:8088/km/search-api/aiTools/openai/bsapi}"
+      OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS: "${OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS:-10}"
+      OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS: "${OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS:-60}"
+      # 日志中心（容器内默认关闭远程投递；启用前需先部署日志中心并修正 LOG_CENTER_URL）
+      LOG_CENTER_ENABLE: "${LOG_CENTER_ENABLE:-false}"
+      LOG_CENTER_URL: "${LOG_CENTER_URL:-http://127.0.0.1:9315}"
+      LOG_CENTER_TOKEN: "${LOG_CENTER_TOKEN:-}"
+      # 运行数据（SQLite 默认 data/open_ikc_platform.db，挂载卷持久化）
+      OPEN_PLATFORM_DB_PATH: "${OPEN_PLATFORM_DB_PATH:-data/open_ikc_platform.db}"
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+    expose:
+      - "18000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18000/health', timeout=3)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  haproxy:
+    build:
+      context: ./docker/haproxy
+      dockerfile: Dockerfile
+    image: open-ikc-haproxy:1.0.0
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "${HAPROXY_HTTP_PORT:-18080}:80"
+      - "${HAPROXY_STATS_PORT:-8404}:8404"
+    environment:
+      HAPROXY_STATS_USER: "${HAPROXY_STATS_USER:-admin}"
+      HAPROXY_STATS_PASSWORD: "${HAPROXY_STATS_PASSWORD:-change-me}"
+    volumes:
+      - ./docker/haproxy.cfg:/etc/haproxy/haproxy.cfg.tmpl:ro
+
+volumes:
+  app_data:
+  app_logs:

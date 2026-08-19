@@ -21,3 +21,5 @@ portal/vite.config.d.ts
 portal/tsconfig.tsbuildinfo
 # Maven 编译产物
 sdk/java/target/
+# Docker 构建期预置的私有依赖 wheel（scripts/build_docker.sh 自动补制，不入库）
+docker/wheels/*.whl

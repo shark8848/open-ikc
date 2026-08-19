@@ -4,7 +4,36 @@
 > 约定见 `AGENTS.md`「工作日志与每日继承」章节。按日期追加，每天一个条目。
 > 每个工作日 `17:30` 触发例行提交任务（约定见 `AGENTS.md` §8.1）。
 
-## 2026-08-14
+## 2026-08-19
+
+### 任务：Docker 构建脚本 + 前端 HAProxy 代理层
+
+- 需求：增加构建为 Docker 的脚本；在前端（管理 Portal / 北向 API）增加一层 HAProxy 代理层组件并配置好。
+- 新增 `Dockerfile`（多阶段）：Stage1 `node:22-alpine` 构建 Portal（`npm ci` + `npm run build`）→ `/portal/dist`；Stage2 `python:3.12-slim` 先装 log-center wheel 再 `pip install .`，挂载 Portal 产物，uid 1000 非 root 运行，`CMD uvicorn app.main:app :18000`。
+- 新增 `docker/haproxy.cfg`：前端入口 `:80` → 后端 `app:18000`（compose 服务名，健康检查）；安全响应头；stats `:8404`（`${HAPROXY_STATS_USER/PASSWORD}` 环境变量注入）；注释提供 `gateway_header` 模式「剥离/注入身份头」规则与 TLS 透传示例。
+- 新增 `docker-compose.yml`：`app`（构建镜像 + 环境变量透传 + `app_data`/`app_logs` 卷 + healthcheck）+ `haproxy`（官方 `haproxy:3.0-alpine`，对外 `18080`/stats `8404`）；生产建议 gateway_header + 改 stats 密码与平台 token。
+- 新增 `scripts/build_docker.sh`（`--wheel-only` / `--no-cache`）：自动预置私有依赖 `ikc-log-center==1.4.9` wheel —— 优先 `docker/wheels/` 已有 wheel，缺失时从 `/home/ikc-log-center` 源码 tag `v1.4.9` 现场构建（UI 产物 `web/dist` 取当前工作树，因 1.4.9 源码强制 include 该产物）；随后 `docker build`。
+- 新增 `.dockerignore`（排除 `.venv/`、`logs/`、`data/`、`portal/node_modules/`、`portal/dist/` 等）；`docker/wheels/.gitkeep` 占位。
+- 环境遗留：`/home/ikc-log-center/dist/` 仅有 1.4.10 wheel，1.4.9 wheel 缺失 → 已由构建脚本自动补制 `docker/wheels/ikc_log_center-1.4.9-py3-none-any.whl`（v1.4.9 源码 + 当前 web/dist 覆盖构建，SDK 为 1.4.9 代码）。
+- 验证：`bash -n scripts/build_docker.sh` OK；`bash scripts/build_docker.sh --wheel-only` 成功产出 1.4.9 wheel（sha256 与手测一致）；docker 守护进程沙箱内不可达（permission denied），镜像构建与 HAProxy 语法校验需沙箱外批准执行。
+- 文档：README 新增 §1.5 Docker 部署（构建/启动/端口/环境变量/生产建议）与 §7 项目结构；`process.md` 登记 1.4.9 wheel 缺失环境遗留。
+- 下一步：批准后执行 `docker build` + `docker compose up -d` 端到端验证（HAProxy 18080 入口 + stats 8404）；按 §8.2 提交推送。
+
+### 续：Claude Code 只读审查 + P1/P2 闭环 + Docker 端到端验证（2026-08-19）
+
+- 自动审查（`scripts/review_with_claude.sh` → `docs/code-review_2026-08-19.md`）发现 3 P1 / 7 P2，全部闭环：
+  - P1-1 身份头可伪造：`docker/haproxy.cfg` 默认启用 `http-request del-header X-User-Id/X-Tenant-Id/X-User-Roles/X-User-Scopes/X-User-Permissions/X-User-Deny-Permissions`（客户端无法自报身份）；gateway_header 注入示例改为 `X-Auth-*` → 平台默认头名映射（与 `OPEN_PLATFORM_AUTH_HEADER_*` 对齐）。
+  - P1-2 `/api-manual` 容器内失效：`.dockerignore` 移除 `docs`，`Dockerfile` 增加 `COPY docs/ ./docs/`（运行时依赖）。
+  - P1-3 wheel 构建 tag 校验：`scripts/build_docker.sh` 前置 `git rev-parse --verify v<版本>`，缺失时给出明确指引。
+  - P2：`option httpchk GET /health` 统一探测路径；`LOG_CENTER_URL` 默认改 `127.0.0.1:9315`（注释警示先部署日志中心）；`docker/wheels/*.whl` 入 `.gitignore`（保留 `.gitkeep`，构建脚本自动补制）；新增 `docker/.env.example` 生产模板（gateway_header + 强 token）；`pip install .` 依赖锁定列为后续 P2（沿用仓库范围依赖约定）。
+- 验证（沙箱外）：
+  - `pytest tests -q` **282 passed**（24s；沙箱内同套件因网络限制挂起，沙箱外正常）。
+  - 整栈 `docker compose up -d` 端到端：`/health`、`/portal/`（标题 Open IKC）、`/admin/overview`（无 token 100401 / 带 token 000000）、业务 `create` 经 HAProxy 全通；`/api-manual` 返回真实手册（92KB，含快速开始/接口参考/错误排查，容器内 `/app/docs` 已打包）；stats `admin:change-me` 200；身份头剥离验证：带 `X-User-Id: attacker` 建 personal 库，详情 `ownerId` 为空。
+  - 容器身份：app=uid 1000（appuser）、haproxy=uid 99（haproxy 非 root）；新 haproxy 配置（httpchk + del-header）经组件入口 `-c` 语法校验 exit=0；`docker compose config` 解析通过。
+  - 镜像：`open-ikc-api:1.0.0`（多阶段构建首次成功；后续重构建因 Docker Hub `node:22-alpine` 元数据解析持续超时，用现有镜像+docs 层离线补验，网络恢复后重跑 `bash scripts/build_docker.sh` 即可刷新）；`open-ikc-haproxy:1.0.0`（envsubst 组件）正常。
+- 环境备注：Docker Hub 在本次会话中网络时通时断（首次成功、后持续超时），与沙箱无关；栈已 `docker compose down`，18080/8404 端口已释放。
+- 下一步：网络恢复后执行 `bash scripts/build_docker.sh` 全量重建确认；按 §8.2 提交推送。
+
 
 ### 任务：契约文档核查与修补（管理面入契约 + 503001 注册 + 测试约定同步）
 

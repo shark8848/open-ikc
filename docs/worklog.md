@@ -50,6 +50,13 @@
 - 备注：工作区出现与本任务无关的并发改动（wiki 引擎接入：`app/services/openwiki_client.py`、`tests/test_wiki_engine.py` 等），本次仅提交 Docker/HAProxy 相关文件，避免混入。
 - 下一步：网络恢复后全量重建；按 §8.2 提交推送。
 
+### 续4：Docker 构建/启动内容落文档（2026-08-19）
+
+- 新增 `docs/Docker部署与HAProxy.md`：单镜像拓扑与端口、构建（`build_docker.sh` / wheel 预置 / 多阶段）、启动/停止/升级、环境变量表、安全与生产加固（gateway_header + `HAPROXY_INJECT_IDENTITY`、身份头剥离、非 root）、常见问题（构建网络超时、旧 tag 镜像、端口占用等）。
+- README：§1.5 末尾链接部署文档；§3.2 仓库文档表新增一行。
+- 验证：`docs/Docker部署与HAProxy.md` 内容与当前实现一致（拓扑 8080/8404/127.0.0.1:18000、脚本名、默认凭据）；未改动代码，无需重跑测试。
+- 下一步：按 §8.2 提交推送（仅文档文件，不混入并发 wiki 改动）。
+
 
 ### 任务：契约文档核查与修补（管理面入契约 + 503001 注册 + 测试约定同步）
 

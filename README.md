@@ -131,6 +131,8 @@ docker compose up -d
 > - 生产必改：`OPEN_PLATFORM_TOKEN` / `OPEN_PLATFORM_ADMIN_TOKEN` / `HAPROXY_STATS_PASSWORD`（默认凭据启动会输出告警）；对外端口建议置于 TLS 终止网关之后。
 > - `/api-manual` 依赖 `docs/API开发手册.md`，该目录已随镜像打包（勿从 `.dockerignore` 排除）。
 
+> 完整说明（拓扑 / 环境变量 / 生产加固 / 常见问题）：[Docker 部署与 HAProxy 代理层](docs/Docker部署与HAProxy.md)。
+
 ## 2. 能力总览
 
 平台刻意收敛能力面，只对外暴露四类业务能力：
@@ -186,6 +188,7 @@ docker compose up -d
 | 解析场景分析（需库 / 免库） | `docs/解析场景分析_需库与免库.md` |
 | 知识加工与专业库形态方案（文本 / Wiki / 图谱库） | `docs/知识加工形态优化方案_wiki图谱与解析.md` |
 | 工作日志（跨天上下文） | `docs/worklog.md` |
+| Docker 部署与 HAProxy 代理层 | `docs/Docker部署与HAProxy.md` |
 
 > 权威顺序：`AGENTS.md` 与当前代码 > `docs/` 设计文档；接口定义以 `/api/catalog`、`/openapi.json` 实时为准。
 

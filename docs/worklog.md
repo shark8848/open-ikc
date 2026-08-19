@@ -65,6 +65,12 @@
 - 验证：凭据校验逻辑与代码一致（`app/core/admin/auth.py` 用 `secrets.compare_digest` 比对 `OPEN_PLATFORM_ADMIN_TOKEN`；`token_store` 仅用于 `/admin/tokens` CRUD）；未改代码，无需重跑测试。
 - 下一步：按 §8.2 提交推送（仅文档与 .gitignore，不混入并发 wiki 改动）。
 
+### 续6：双远端同步确认（origin 推送权限恢复）（2026-08-19）
+
+- `git push origin main`（code.tiancloud.com）本次成功（`4d0b9e0..efa7e08`），此前 process.md 登记的「origin 推送权限失败」环境遗留已恢复，从待办清单移除。
+- 当前 `github` 与 `origin` 均已同步至 `efa7e08`；工作区仍有并发 wiki 引擎改动未提交（非本任务）。
+- 下一步：无（双远端已同步）。
+
 
 ### 任务：契约文档核查与修补（管理面入契约 + 503001 注册 + 测试约定同步）
 

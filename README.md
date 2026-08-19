@@ -77,10 +77,10 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 
 ### 1.5 Docker 部署（含 HAProxy 代理层）
 
-一键构建镜像（平台 `open-ikc-api:1.0.0` 多阶段 + HAProxy 代理层 `open-ikc-haproxy:1.0.0`）：
+一键构建镜像（平台 + HAProxy 代理层**同一镜像** `open-ikc-api:1.0.0`，多阶段构建）：
 
 ```bash
-bash scripts/build_docker.sh                 # 准备 wheel 并构建两个镜像
+bash scripts/build_docker.sh                 # 准备 wheel 并构建镜像
 bash scripts/build_docker.sh --wheel-only    # 仅准备 ikc-log-center wheel（不执行 docker build）
 ```
 
@@ -94,6 +94,8 @@ docker compose up -d
 curl -s http://127.0.0.1:18080/health     # 经 HAProxy 访问平台
 ```
 
+升级旧镜像时先构建再显式重建（避免复用旧 tag 镜像）：`bash scripts/build_docker.sh && docker compose up -d --build`。
+
 生产环境建议先复制配置模板再启动（`gateway_header` 强认证 + 强 token）：
 
 ```bash
@@ -101,10 +103,12 @@ cp docker/.env.example .env   # 修改其中 token / stats 密码后执行
 docker compose up -d
 ```
 
-| 组件 | 服务 | 端口 | 说明 |
-| --- | --- | --- | --- |
-| HAProxy 代理层 | `haproxy` | `18080`（HTTP 入口）/ `8404`（stats） | 位于前端最外层统一入口，转发到平台；组件见 `docker/haproxy/`（启动时用 `envsubst` 渲染 stats 账号）；stats 见 `http://127.0.0.1:8404/` |
-| 平台 | `app` | `18000`（容器内，不直接对外） | FastAPI 北向 API + `/portal` 管理 Portal + `/docs` 等 |
+| 组件 | 端口 | 说明 |
+| --- | --- | --- |
+| HAProxy 代理层（与平台同镜像） | `18080`（HTTP 入口，容器内 `8080`）/ `8404`（stats） | 容器内唯一对外入口，反向代理到仅监听回环 `127.0.0.1:18000` 的 uvicorn；**平台 API 不直接暴露** |
+| FastAPI 北向平台 | `18000`（仅容器回环） | 北向 API + `/portal` 管理 Portal + `/docs` 等，只能经 HAProxy 访问 |
+
+> HAProxy stats UI 地址 `http://127.0.0.1:8404/`，默认账号 **`admin` / `change-me`**（可用 `HAPROXY_STATS_USER` / `HAPROXY_STATS_PASSWORD` 修改；使用默认凭据时容器日志会输出告警，生产必改）。
 
 常用环境变量（`docker compose` 读取当前 shell 或 `.env`）：
 
@@ -115,14 +119,16 @@ docker compose up -d
 | `OPEN_PLATFORM_ADMIN_TOKEN` | `test-admin-token` | 管理面 `/admin/*` 独立 token；未配置时管理面关闭（`503001`） |
 | `HAPROXY_HTTP_PORT` | `18080` | HAProxy 对外 HTTP 端口 |
 | `HAPROXY_STATS_PORT` | `8404` | HAProxy stats 端口 |
-| `HAPROXY_STATS_USER/PASSWORD` | `admin` / `change-me` | HAProxy stats 登录账号，生产务必修改 |
+| `HAPROXY_STATS_USER/PASSWORD` | `admin` / `change-me` | HAProxy stats UI 登录账号（`http://127.0.0.1:8404/`），生产务必修改 |
 | `LOG_CENTER_ENABLE` | `false` | 日志中心远程投递（容器内默认关闭，需 `LOG_CENTER_URL` 指向可达服务） |
 
 数据（SQLite）与日志分别挂载到卷 `app_data`（`/app/data`）与 `app_logs`（`/app/logs`）。
 
 > **安全说明**：
-> - HAProxy 已默认剥离客户端伪造的身份头（`X-User-Id` / `X-Tenant-Id` / 角色 / 权限），防止 static 模式下自报身份越权；`gateway_header` 模式下由前置可信网关注入身份，HAProxy 映射示例见 `docker/haproxy.cfg` 注释。
-> - 生产必改：`OPEN_PLATFORM_TOKEN` / `OPEN_PLATFORM_ADMIN_TOKEN` / `HAPROXY_STATS_PASSWORD`，并建议 `OPEN_PLATFORM_AUTH_MODE=gateway_header`（见 `docker/.env.example`）；HAProxy 对外端口建议置于 TLS 终止网关之后。
+> - 拓扑为「单镜像 + HAProxy 反代」：uvicorn 只监听 `127.0.0.1:18000`，对外仅暴露 HAProxy（`8080`/`8404`），平台 API 无法被绕过直连。
+> - HAProxy 已默认剥离客户端伪造的身份头（`X-User-Id` / `X-Tenant-Id` / 角色 / 权限），防止 static 模式下自报身份越权。
+> - `gateway_header` 模式：前置可信网关注入 `X-Auth-*` 头并剥离客户端伪造的 `X-Auth-*` / `X-User-*` 头，同时设置 `HAPROXY_INJECT_IDENTITY=1`（见 `docker/.env.example`）启用 HAProxy 头映射；未设置时身份头全部剥离，请求按未认证拒绝。
+> - 生产必改：`OPEN_PLATFORM_TOKEN` / `OPEN_PLATFORM_ADMIN_TOKEN` / `HAPROXY_STATS_PASSWORD`（默认凭据启动会输出告警）；对外端口建议置于 TLS 终止网关之后。
 > - `/api-manual` 依赖 `docs/API开发手册.md`，该目录已随镜像打包（勿从 `.dockerignore` 排除）。
 
 ## 2. 能力总览
@@ -148,8 +154,8 @@ docker compose up -d
 | REST | 任何语言、curl/Postman 调试、需全量字段控制 | 最低 | §1.4 / 手册 §6 |
 | Python SDK | Python 应用（FastAPI/Django/脚本），类型安全 + 异常映射 | 低 | §4 |
 | Java SDK | Java 17+ 后端服务，零第三方依赖 | 低 | §4 |
-| MCP Server | Claude Desktop / Cursor 等 AI 客户端（24 个工具） | 低 | §4 |
-| CLI | 运维脚本、快速验证、CI 冒烟（24 个子命令） | 最低 | §4 |
+| MCP Server | Claude Desktop / Cursor 等 AI 客户端（26 个工具） | 低 | §4 |
+| CLI | 运维脚本、快速验证、CI 冒烟（26 个子命令） | 最低 | §4 |
 
 ## 3. 文档导航
 
@@ -187,8 +193,8 @@ docker compose up -d
 
 - **Python SDK**：`sdk/python/`（包名 `open-ikc-sdk`），四大能力类型安全封装：同步/异步客户端、异常映射、trace 透传、MCP/CLI 同源；[sdk/python/README.md](sdk/python/README.md)。
 - **Java SDK**：`sdk/java/`（Maven，Java 17，零第三方依赖，`io.openikc:open-ikc-sdk:1.0.0`），同协议同错误码；[sdk/java/README.md](sdk/java/README.md)，设计见 [docs/开放平台JavaSDK集成设计.md](docs/开放平台JavaSDK集成设计.md)。
-- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），24 个工具，供 Claude 等 LLM 直接调用平台能力（含 Wiki 库 `wiki_*` 与图谱库 `graph_*`）。
-- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），24 个子命令，全局选项 + 退出码约定（含 Wiki 库 `wiki-*` 与图谱库 `graph-*`）。
+- **MCP Server**：`python -m open_ikc_sdk.mcp`（stdio 默认），26 个工具，供 Claude 等 LLM 直接调用平台能力（含 Wiki 库 `wiki_*` 与图谱库 `graph_*`）。
+- **CLI**：`python -m open_ikc_sdk.cli`（安装后 `ikc`），26 个子命令，全局选项 + 退出码约定（含 Wiki 库 `wiki-*` 与图谱库 `graph-*`）。
 - 完整能力映射 / 环境变量 / 工具与命令清单 / 退出码约定见 [docs/MCP与CLI接口定义.md](docs/MCP与CLI接口定义.md)。
 
 ## 5. 配置参考
@@ -321,11 +327,11 @@ portal/                   # 管理 Portal 前端（Vite 8 + React 18 + TS），�
 sdk/                      # python/（open-ikc-sdk）、java/（io.openikc:open-ikc-sdk）
 scripts/                  # 启动/停止/Docker 构建脚本
 Dockerfile                # 平台镜像（多阶段：Portal 前端 + FastAPI 后端）
-docker/                   # HAProxy 代理层组件 + 预置依赖 wheel
+docker/                   # HAProxy 代理层配置与入口 + 预置依赖 wheel（同镜像）
   haproxy.cfg             # HAProxy 配置模板：前端入口 / 平台后端 / stats（${HAPROXY_STATS_*} 启动时渲染）
-  haproxy/                # HAProxy 组件镜像（官方镜像 + envsubst 入口）：Dockerfile / haproxy-entrypoint.sh
+  entrypoint.sh           # 容器入口：渲染 haproxy 配置，同进程启动 uvicorn(127.0.0.1:18000) + haproxy
   wheels/                 # ikc-log-center 私有依赖 wheel（build_docker.sh 预置）
-docker-compose.yml        # 整栈编排：app + haproxy（HAProxy 对外 18080）
+docker-compose.yml        # 单镜像编排（HAProxy 对外 18080）
 tests/                    # pytest 测试
 docs/                     # 方案与 AUTHN/AUTHZ 设计（中文）
 ```

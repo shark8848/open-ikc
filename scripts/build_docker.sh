@@ -43,7 +43,6 @@ if [[ -z "$VERSION" ]]; then
 fi
 PINNED_WHEEL="ikc_log_center-${VERSION}-py3-none-any.whl"
 IMAGE_TAG="${IMAGE_TAG:-open-ikc-api:1.0.0}"
-HAPROXY_IMAGE_TAG="${HAPROXY_IMAGE_TAG:-open-ikc-haproxy:1.0.0}"
 
 mkdir -p "$WHEELS_DIR"
 
@@ -87,11 +86,8 @@ if [[ "$NO_CACHE" == "1" ]]; then
   build_args+=(--no-cache)
 fi
 
-echo "[docker] 构建平台镜像 $IMAGE_TAG ..."
+echo "[docker] 构建镜像 $IMAGE_TAG（平台 + HAProxy 代理层同镜像）..."
 docker build "${build_args[@]}" -t "$IMAGE_TAG" .
 
-echo "[docker] 构建 HAProxy 代理层镜像 $HAPROXY_IMAGE_TAG ..."
-docker build -t "$HAPROXY_IMAGE_TAG" docker/haproxy
-
-echo "[docker] 构建完成: $IMAGE_TAG / $HAPROXY_IMAGE_TAG"
-echo "[docker] 启动整栈（HAProxy 入口 http://127.0.0.1:18080）：docker compose up -d"
+echo "[docker] 构建完成: $IMAGE_TAG"
+echo "[docker] 启动（HAProxy 入口 http://127.0.0.1:18080）：docker compose up -d"

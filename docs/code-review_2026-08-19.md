@@ -1,83 +1,80 @@
-我在 plan 模式下无法写文件，直接输出报告如下。
-
----
-
-# 代码审查：Docker 构建脚本 + HAProxy 代理层（2026-08-19）
-
-- **审查对象**：未提交工作区改动（`README.md`、`docs/worklog.md`、`process.md` + 未跟踪的 `.dockerignore`、`Dockerfile`、`docker-compose.yml`、`docker/haproxy.cfg`、`docker/haproxy/`、`docker/wheels/`、`scripts/build_docker.sh`、`.vscode/settings.json`）
-- **审查方式**：只读审查，未修改任何文件
-- **已执行验证**：`bash -n` 三个脚本 OK；`docker compose config` 解析 OK（结构、端口、卷、healthcheck、depends_on 正确）；运行时依赖逐个核对（`security.py` / `middlewares.py` / `authz/bridge.py` / `services/search.py` / `services/upload.py` / `api_manual.py` / `token_store.py`）。docker 守护进程沙箱内不可达，镜像构建与 HAProxy 运行期行为未实测（worklog 已注明）。
+# 代码审查报告：Docker 单镜像化（平台 + HAProxy 同容器）改动
 
 ## 结论
 
-方案结构清晰、文档与代码一致性较好。但存在 **3 个 P1**（1 个数据泄露面、1 个授权绕过配置缺陷、1 个功能缺失）与若干 P2，建议修复后合并。
+本次改动将「双容器（平台 `app` + HAProxy 独立镜像）」合并为「单镜像（uvicorn 仅监听回环 `127.0.0.1:18000`，HAProxy 为唯一对外入口）」。整体是**安全改进**：平台 API 无法被绕过直连、身份头剥离顺序正确（`del-header` 先于 `set-header`）、旧 haproxy 组件镜像引用清理干净、信号转发与优雅停机实现基本正确。
+
+**未发现 P0**。但存在 **2 个 P1**：文档推荐的生产认证模式 `gateway_header` 在默认配置下开箱即破（所有请求 100401）；HAProxy stats 默认凭据 `admin/change-me` 暴露在对外端口。另有若干 P2（低端口绑定、镜像复用、文档残留、测试缺口）。
 
 ---
 
-## P1 问题
+## 问题列表
 
-### P1-1 默认 `static` 认证模式下，客户端可伪造身份头访问他人个人知识库 / 暂存文件
+### P1-1｜推荐生产认证模式 `gateway_header` 开箱即坏（功能陷阱，fail-closed）
 
-- **位置**：`docker-compose.yml:25`（`OPEN_PLATFORM_AUTH_MODE: static`）+ `app/core/security.py:141-150`
+- **位置**：`docker/haproxy.cfg:56-72`、`docker/.env.example:4-5`、`README.md:121`（安全说明）
 - **依据**：
-  - compose 默认 `OPEN_PLATFORM_AUTH_MODE=static`、`OPEN_PLATFORM_TOKEN=test-token`（README 公开），对外 18080 部署即默认此配置。
-  - `security.py:141-150` static 模式**仅校验 Bearer token**，`identity/permissions` 全部取自请求头（`security.py:207-226`：`X-User-Id`/`X-Tenant-Id`/`X-User-Roles`/`X-User-Permissions`），`request.state.identity` 随之被填充。
-  - 数据权限收敛**直接信任该身份**：`services/search.py:105-128`（personal 库按 `owner_id != user_id` 拒绝、enterprise 按 `orgId/tenant_id` 拒绝）、`services/upload.py:get_staged_file`（暂存文件 `record.owner_id != owner_id` 拒绝）、`services/knowledge_base.py:180,202-203`。
-  - **攻击路径**：拿到 `test-token` 的客户端 `curl -H "X-User-Id: victim" -H "Authorization: Bearer test-token" .../knowledge-search/universal-search` 即可检索 victim 的个人知识库；`X-Tenant-Id` 可穿透 enterprise 范围；`X-User-Roles`/`X-User-Permissions` 可伪造角色直接命中 AUTHZ deny-overrides 白名单。
-- **修复建议**：
-  1. `docker/haproxy.cfg:54-60` 的「剥离/注入身份头」规则目前**整段注释**——这是 HAProxy 代理层的核心安全职责，gateway_header 模式下应默认启用而非注释。
-  2. **static 模式**（身份无可信来源）应在 HAProxy 入口无条件 `http-request del-header X-User-Id X-Tenant-Id ...`，使 owner 校验退化为「空身份 → 拒绝」，而非「客户端自报身份」。
-  3. 生产默认值建议改为 `gateway_header` + `OPEN_PLATFORM_GATEWAY_REQUIRE_BEARER=true`，或至少 static 模式默认剥离身份头。
+  1. README §1.5 与 `.env.example` 均推荐生产使用 `OPEN_PLATFORM_AUTH_MODE=gateway_header`，`.env.example` 还设置了 `OPEN_PLATFORM_GATEWAY_REQUIRE_BEARER=true`；
+  2. 但 HAProxy 配置默认对 `X-User-Id/X-Tenant-Id/角色/权限` 全部 `del-header`（`haproxy.cfg:58-63`），而 gateway_header 模式的**注入映射是注释掉的**（`haproxy.cfg:67-72`，仅 `X-Auth-* → X-User-*` 示例，未启用）；
+  3. 平台侧 `app/core/security.py:152-158`：`gateway_header` 模式读 `X-User-Id` 头，`identity["user_id"]` 为空即 `return None` → 全局 `100401`。
+  → 按文档推荐配置部署，**所有请求都会被拒 100401**。
+- **加重因素**：单镜像化后 haproxy.cfg 由 volume 挂载改为**烘焙进镜像**（`Dockerfile:51`，compose 不再挂载），启用映射需改文件并**重新构建镜像**——文档未提示这一额外步骤。
+- **修复建议**：三种方案择一——(a) 默认启用映射块（用环境变量/`haproxy.cfg` 内开关控制，如 `if { env(ENABLE_GW_MAPPING) ... }`）；(b) 保持默认剥离但将 `.env.example`/README 明确改为「启用 gateway_header 需取消注释映射并重建镜像，且前置网关必须注入 `X-Auth-*` 头」；(c) 提供 `docker/haproxy.cfg` 按环境变量渲染映射段（与 stats 账号同样的 envsubst 模式）。建议至少补充启动时的显式提示。
 
-> 性质说明：这是**默认部署即存在**的数据越权面。README 措辞为"生产建议改强认证"，但默认值把风险前置，文档与默认配置存在落差。
+### P1-2｜HAProxy stats 默认凭据 `admin/change-me` 且端口对外暴露
 
-### P1-2 `.dockerignore` 排除 `docs/`，`/api-manual` 在容器内失效（免检端点留空壳）
-
-- **位置**：`.dockerignore:15`（`docs`）+ `app/core/api_manual.py:11,103,107-110`
-- **依据**：`api_manual.py:11` 运行时读取 `.../docs/API开发手册.md`；`/api-manual` 注册于 `system_routes.py:34` 且列于 `middlewares.py:22` `AUTH_EXEMPT_PATHS`（对外免鉴权）。`.dockerignore:15` 排除 `docs` → 容器内 `_MANUAL_PATH.exists()` 为 False → 返回「开发手册缺失」占位页。`docs` 是**运行时功能依赖**，非纯文档。
-- **修复建议**：从 `.dockerignore` 移除 `docs`（或仅排除非 `.md` 产物）；若刻意不带手册，应同步删除该免检路由与 catalog 条目，避免留空壳端点。
-
-### P1-3 现场构建 wheel 用 `git archive v1.4.9`，tag 缺失时报错不友好且 `web/dist` 取工作树（含未提交产物）
-
-- **位置**：`scripts/build_docker.sh:64`
-- **依据**：worklog 已记录 `v1.4.9` tag 存在、构建已成功（`docker/wheels/ikc_log_center-1.4.9-py3-none-any.whl`，1,088,263 字节，sha256 与手测一致）。但 tag 缺失时 `git archive` 以非零退出，错误信息不含指引；`git archive` 不包含未提交/未跟踪文件，`web/dist` 用 `cp -r` 覆盖自当前工作树，若上游该产物未提交则产出残缺 UI。
-- **修复建议**：`git archive` 前先 `git -C "$LOG_CENTER_REPO" rev-parse --verify "v${VERSION}"` 校验 tag 并给出明确报错。
+- **位置**：`docker-compose.yml:43-44`（默认值）、`docker-compose.yml:48-49`（`8404:8404` 发布到宿主）、`docker/haproxy.cfg:83`（`stats auth ${HAPROXY_STATS_USER}:${HAPROXY_STATS_PASSWORD}`）
+- **依据**：stats UI（`http://127.0.0.1:8404/`）暴露后端拓扑、各 server 在线/会话/响应时延、连接数等运维信息；若宿主机对公网开放，默认 `admin/change-me` 可被直接登录。README 虽已标注「生产必改」，但属**默认即弱凭据 + 管理端口外露**的组合，且本次拓扑重构后它成了镜像内唯一管理面。该问题在旧双容器架构已存在（非本次回归），但值得一并处理。
+- **修复建议**：(a) 容器启动时检测 `HAPROXY_STATS_PASSWORD` 为默认值时向 stderr 打告警并（可选）拒绝启动 stats；或 (b) 默认不发布 stats 端口、仅允许 `docker exec` 内访问；或 (c) stats `bind` 限制到回环并由运维自行 `-p` 暴露。
 
 ---
 
-## P2 问题
+### P2-1｜非 root（uid 1000）绑定特权端口 80，依赖 Docker 内核参数
 
-| # | 位置 | 问题 | 建议 |
-| --- | --- | --- | --- |
-| P2-1 | `docker/haproxy.cfg:59-60` vs `app/core/security.py:208-213` | 注释示例注入 `x-auth-user-id`/`x-auth-tenant-id`，与平台默认头名 `X-User-Id`/`X-Tenant-Id` 不一致，照抄启用会认证失败/拒绝 | 注释与默认头名对齐，或注明需同步设置 `OPEN_PLATFORM_AUTH_HEADER_USER_ID` 等 |
-| P2-2 | `docker-compose.yml:39` | `LOG_CENTER_URL=http://log-center:9315` 指向栈内不存在的服务，置 `LOG_CENTER_ENABLE=true` 即悬空投递 | 默认值改空或 `127.0.0.1:9315`，README 注明需先部署日志中心 |
-| P2-3 | `docker/haproxy.cfg:50` vs `docker-compose.yml:48-53` | HAProxy `check inter 3s` 探测后端默认 `GET /`（返回 302），compose healthcheck 探 `/health`（每 10s），路径与阈值不一致，启动期易误判 | `server app` 加 `httpchk GET /health`，统一探测路径 |
-| P2-4 | `docker-compose.yml:12,55-71` | `backend server app app:18000` 依赖默认网络 DNS；用户后续自定义网络会解析失败 | 属加固建议，显式声明网络/别名 |
-| P2-5 | `docker/wheels/*.whl` | 1MB 构建产物 wheel（内嵌 web/dist）当前未在 `.gitignore`，`git add .` 会被提交进历史 | `docker/wheels/*.whl` 加入 `.gitignore`，保留 `.gitkeep` |
-| P2-6 | `Dockerfile:33` | `pip install .` 对 `fastapi>=0.115,<1.0` 等范围依赖无锁定，构建不可复现 | 低优先级；如需可复现构建引入 `requirements.lock` |
-| P2-7 | `README.md:§1.5` vs `docker-compose.yml:25` | README 建议生产改 `gateway_header`，默认仍 `static` | 提供生产 `.env.example` 模板，默认即强认证 |
+- **位置**：`Dockerfile:60`（`USER appuser`）、`docker/haproxy.cfg:38`（`bind *:80`）
+- **依据**：haproxy 以 uid 1000 运行，绑定 `<1024` 端口需内核 `net.ipv4.ip_unprivileged_port_start=0`。现代 Docker 默认开启该 sysctl，但**硬化 daemon / Podman / 部分容器运行时**会拒绝 → haproxy 启动失败 → `entrypoint.sh` 因 `set -e` 退出 → `restart: unless-stopped` 崩溃循环。
+- **修复建议**：容器内改用高位端口（如 `bind *:8080`）由 compose 映射 `18080:8080`；或 Dockerfile 加 `--cap-add=net_bind_service`（compose `cap_add`）；或 README 注明运行环境需放开该 sysctl。
+
+### P2-2｜`docker compose up` 可能复用旧架构的过期镜像，健康检查永久失败
+
+- **位置**：`docker-compose.yml:16-22`（`build` + 固定 `image: open-ikc-api:1.0.0`）
+- **依据**：同一 tag 的旧镜像（无 HAProxy、监听 18000）已存在时，`docker compose up -d` 默认**不重建**，直接复用旧镜像。新健康检查改为探测 `127.0.0.1:80`（`docker-compose.yml:55`），旧镜像无人监听 80 → 容器「运行中但永久 unhealthy」，且对外 18080 无服务。README 虽要求先跑 `build_docker.sh`，但用户在升级时仅 `git pull` + `up -d` 即踩坑。
+- **修复建议**：compose 服务加 `pull_policy: build`（或 `docker compose up --build` 写进 README 显式命令）；或升级镜像 tag（如 `1.1.0`）强制区分。
+
+### P2-3｜文档残留：README 目录树仍描述双容器拓扑
+
+- **位置**：`README.md:331`（`docker-compose.yml # 整栈编排：app + haproxy`）
+- **依据**：本次 diff 已更新 README 的组件表与目录树，但 `docker-compose.yml` 行仍写「app + haproxy（HAProxy 对外 18080）」，与实际单容器拓扑矛盾。
+- **修复建议**：改为「单镜像编排（HAProxy 对外 18080）」。
+
+### P2-4｜部署行为变更无任何测试覆盖
+
+- **位置**：`docker/entrypoint.sh`、`Dockerfile`、`docker-compose.yml`（全量）；`tests/` 无 docker/entrypoint/haproxy 相关测试
+- **依据**：AGENTS.md 要求「新增/修改行为必须补测试」。本次改动了容器入口（进程编排、就绪等待、信号转发）、端口拓扑（18000→80）、健康检查链路（直连→经 HAProxy），均无自动化验证。特别是「uvicorn 未就绪时 HAProxy 是否 503」「haproxy 崩溃是否触发容器重启」等路径无覆盖。
+- **修复建议**：新增一个冒烟脚本（非 pytest 也可）：`build_docker.sh` → 起容器 → 断言 `:18080/health` 200、断言容器内 `18000` 从**外部**不可达、断言 stats 默认凭据登录/拒绝。可挂进 `scripts/` 并在 CI 或 worklog 例行执行。
+
+### P2-5｜入口脚本就绪等待无 fail-fast，uvicorn 失联仅靠健康检查兜底
+
+- **位置**：`docker/entrypoint.sh:17-23`（循环不校验最终结果）、`:26-27`（uvicorn 崩溃后 HAProxy 仍常驻）
+- **依据**：健康循环最多 30s 后无条件启动 HAProxy；此后若 uvicorn 崩溃，容器「运行中但 503」，仅 compose healthcheck 能察觉，排障体验差。
+- **修复建议**：循环结束后校验 `kill -0 "$APP_PID"` 与 `/health`，失败则打印日志并以非零退出；或将 `wait "$APP_PID"` 放入子 shell，任一方退出即终止整个容器（`trap` 已具备）。
+
+### P2-6｜`option forwardfor` 与前置网关 XFF 可能叠加
+
+- **位置**：`docker/haproxy.cfg:30`（`option forwardfor`）
+- **依据**：README 拓扑为「TLS 终止网关 → HAProxy」。若上游网关已注入 `X-Forwarded-For`，HAProxy `forwardfor` 会追加自身视角地址，产生双值 XFF，影响依赖客户端 IP 的日志/限流。属轻微。
+- **修复建议**：按需改为 `option forwardfor if-none`（或注释说明叠加语义）。
 
 ---
 
-## 已核验的低风险项
+## 非问题确认（审查通过项）
 
-- `docker compose config` 解析通过；端口映射、卷、healthcheck、`depends_on` 结构正确。
-- `build_docker.sh` 的 `sed` 版本解析与 `pyproject.toml:19` 一致；`--wheel-only`/`--no-cache` 分支正确。
-- `haproxy-entrypoint.sh` 用 `envsubst` 限定变量集（`${HAPROXY_STATS_USER}` `${HAPROXY_STATS_PASSWORD}`），不会误替换其他 `${}`；以非 root `haproxy` 用户启动，最小权限正确。
-- HAProxy stats 需认证、`hide-version` 开启、默认密码 `change-me` 已在文档警示。
-- 安全响应头（nosniff / X-Frame-Options / Referrer-Policy）设置正确。
-- `Dockerfile` 多阶段构建：非 root（uid 1000）、`/app` 属主、`data/logs` 挂卷、wheel 缺失时构建期显式报错（而非静默）均正确。
-- `TraceMiddleware`、`AUTH_EXEMPT_*`、AUTHZ deny-overrides 决策引擎未受本次改动影响；P1-1 根因在**身份来源（请求头）**而非 AUTHZ 引擎本身。
-
-## 修复优先级
-
-| 级别 | 项 | 动作 |
-| --- | --- | --- |
-| P1 | static 模式身份头可伪造 | compose 默认剥离身份头 + gateway_header 默认启用注入规则 + README 同步 |
-| P1 | `.dockerignore` 排除 `docs` 使 `/api-manual` 失效 | 移除排除项或删除免检路由 |
-| P1 | wheel 构建 tag 校验 | 前置 `git rev-parse --verify` |
-| P2 | 头名不一致 / LOG_CENTER_URL 悬空 / healthcheck 路径不一 | 逐一对齐 |
+- **回环绑定的安全性**：uvicorn 绑定容器内 `127.0.0.1:18000`，网络命名空间隔离使其他容器/外部均无法直连，与「唯一入口 HAProxy」声明一致（`entrypoint.sh:14`）。
+- **身份头剥离顺序**：`del-header`（`haproxy.cfg:58-63`）在（注释的）`set-header` 之前执行，网关注入模式启用后顺序正确；剥离对重复/大小写变体头部均生效。
+- **凭据渲染**：`envsubst` 仅替换两个白名单变量，stats 密码含 `$` 等字符不会被二次解释；模板与渲染产物路径（`/etc/haproxy/haproxy.cfg.tmpl` → `/tmp/haproxy.cfg`）对 appuser 可读可写。
+- **信号处理**：`trap TERM/INT` 转发至双进程并 `wait` 等待 uvicorn 优雅退出，`|| true` 防竞态，符合容器优雅停机预期。
+- **AUTHZ/异常链路/schema**：本改动不触碰业务代码，统一响应体、errCode 链路、AUTHZ 映射均无变化。
 
 ---
 
-需要我把这份报告落到 `docs/code-review_2026-08-19_docker.md` 吗？（当前 plan 模式无法写文件，退出后可以。）
+**建议处理顺序**：先修 P1-1（决定默认启用还是明确文档+启动告警），随后 P1-2（默认凭据防护），再补齐 P2-4 冒烟脚本与 P2-2 的 tag/`--build` 提示，其余 P2 按需。

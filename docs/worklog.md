@@ -34,6 +34,22 @@
 - 环境备注：Docker Hub 在本次会话中网络时通时断（首次成功、后持续超时），与沙箱无关；栈已 `docker compose down`，18080/8404 端口已释放。
 - 下一步：网络恢复后执行 `bash scripts/build_docker.sh` 全量重建确认；按 §8.2 提交推送。
 
+### 续3：按要求合并为单镜像（HAProxy 与平台同容器）+ stats 凭据说明（2026-08-19）
+
+- 需求变更：HAProxy 与 open-ikc 合并到**同一镜像**，只经 HAProxy 反向代理，平台 API 不直接暴露。
+- 结构调整：
+  - `Dockerfile`：runtime 阶段 `apt-get install haproxy gettext`，`COPY docker/haproxy.cfg` 为镜像内模板、`COPY docker/entrypoint.sh` 为容器入口，`EXPOSE 80 8404`（18000 不再暴露），`ENTRYPOINT` 启动双进程。
+  - `docker/entrypoint.sh`（新）：envsubst 渲染 stats 凭据到 `/tmp/haproxy.cfg` → 启动 `uvicorn 127.0.0.1:18000`（仅回环）→ 就绪探测 fail-fast（超时/进程退出即容器退出重启）→ 前台运行 haproxy；默认 stats 凭据输出告警；TERM/INT 转发双进程优雅停机。
+  - `docker/haproxy.cfg`：入口 `bind *:8080`（高位端口，避免非 root 绑定 80 依赖内核参数），`option forwardfor if-none`，身份头剥离默认启用；gateway_header 注入映射改为 `if { env(HAPROXY_INJECT_IDENTITY) -m str 1 }` 环境开关（默认关闭=请求按未认证拒绝）。
+  - `docker-compose.yml`：单服务（无独立 haproxy 服务），`18080->8080` + `8404->8404`，healthcheck 经 HAProxy `127.0.0.1:8080/health`；升级提示 `up -d --build`；删除 `docker/haproxy/` 组件目录。
+  - `docker/.env.example`：gateway_header 配置补 `HAPROXY_INJECT_IDENTITY=1` 与前置网关注入 `X-Auth-*` 要求。
+  - `scripts/docker_smoke.sh`（新）：8 项冒烟断言（/health、/portal、admin 鉴权、业务 create、/api-manual、stats 默认凭据 200/错误 401、容器 IP 连 18000 拒绝、非 root uid 1000），`--force-build` 可强制重建。
+- 二轮 Claude Code 只读审查（`docs/code-review_2026-08-19.md` 已更新）：发现 2 P1（gateway_header 推荐配置开箱即坏、stats 默认凭据暴露）与 6 P2，全部闭环：P1-1 用 `HAPROXY_INJECT_IDENTITY` 开关 + 文档/模板同步；P1-2 入口启动告警 + README 强提示；P2 逐一处理（8080 高位端口、`--build` 升级提示、README 目录树残留修正、冒烟脚本、入口 fail-fast、forwardfor if-none）。
+- 验证（沙箱外）：镜像离线叠加层构建（Docker Hub 又超时，最终镜像与规范 Dockerfile 内容一致，网络恢复后 `bash scripts/docker_smoke.sh --force-build` 刷新）；`bash scripts/docker_smoke.sh` **8/8 PASS**；`docker compose config` 解析 OK；栈已清理、18080/8404 释放。
+- HAProxy stats UI 账号：默认 `admin` / `change-me`（`HAPROXY_STATS_USER` / `HAPROXY_STATS_PASSWORD` 可改，compose 默认值见 `docker-compose.yml`，生产模板见 `docker/.env.example`）。
+- 备注：工作区出现与本任务无关的并发改动（wiki 引擎接入：`app/services/openwiki_client.py`、`tests/test_wiki_engine.py` 等），本次仅提交 Docker/HAProxy 相关文件，避免混入。
+- 下一步：网络恢复后全量重建；按 §8.2 提交推送。
+
 
 ### 任务：契约文档核查与修补（管理面入契约 + 503001 注册 + 测试约定同步）
 

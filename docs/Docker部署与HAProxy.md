@@ -70,7 +70,59 @@ docker compose down                 # 停止并清理容器/网络（数据卷�
 
 数据与日志分别挂载到卷 `app_data`（`/app/data`）与 `app_logs`（`/app/logs`）。
 
-## 5. 安全说明与生产加固
+## 5. 管理账号配置（HAProxy UI / 管理 Portal）
+
+> 所有凭据建议写在仓库根目录 `.env`（已被 `.gitignore` 忽略，不入库；可 `cp docker/.env.example .env` 起步），
+> 或启动命令前以环境变量传入。**环境变量在容器创建时注入，修改后必须 `docker compose up -d --force-recreate` 重建容器才生效**。
+
+### 5.1 HAProxy stats UI（用户名 / 密码）
+
+- 默认账号：`admin` / `change-me`，入口 `http://127.0.0.1:8404/`。
+- 修改步骤（无需重建镜像，容器启动时入口脚本 envsubst 渲染）：
+
+```bash
+# 1. 在根目录 .env 中设置
+echo 'HAPROXY_STATS_USER=admin' >> .env
+echo 'HAPROXY_STATS_PASSWORD=你的强密码' >> .env
+
+# 2. 重启容器使环境变量生效
+docker compose up -d --force-recreate
+
+# 3. 验证
+curl -u admin:你的强密码 http://127.0.0.1:8404/      # 200（stats 页面）
+curl -u admin:change-me http://127.0.0.1:8404/       # 401（旧默认密码已失效）
+```
+
+- 说明：stats 账号密码由容器入口脚本在启动时渲染进 HAProxy 配置，**不需要重建镜像**；只有修改 `docker/haproxy.cfg` 本身才需要重新构建镜像。使用默认凭据启动时容器日志会输出告警。
+
+### 5.2 open-ikc 管理 Portal / 管理面 token
+
+- 管理 Portal 登录与管理面 `/admin/*` 使用**同一个管理 token**：环境变量 `OPEN_PLATFORM_ADMIN_TOKEN`（代码层 `secrets.compare_digest` 比对，与业务 API 的 `OPEN_PLATFORM_TOKEN` 相互独立）。
+- 设置 / 修改步骤：
+
+```bash
+# 1. 在根目录 .env 中设置
+echo 'OPEN_PLATFORM_ADMIN_TOKEN=你的强token' >> .env
+
+# 2. 重启容器使环境变量生效
+docker compose up -d --force-recreate
+
+# 3. 验证（Portal 登录输入该 token；管理接口如下验证）
+curl -H "Authorization: Bearer 你的强token" http://127.0.0.1:18080/admin/overview   # errCode=000000
+curl -H "Authorization: Bearer test-admin-token" http://127.0.0.1:18080/admin/overview  # errCode=100401（旧值已失效）
+```
+
+- 说明：
+  - 未配置 `OPEN_PLATFORM_ADMIN_TOKEN` 时管理面默认关闭（`/admin/*` 返回 `503001`）。
+  - token 仅存于容器环境变量，不入库、不落盘明文；容器重建后需重新设置（建议写入 `.env`）。
+  - `/admin/tokens` 创建的 API token（明文仅创建时返回一次、库中存 sha256）用于管理面 API/SDK/MCP/CLI 调用，**不用于 Portal 登录**；Portal 登录只认 `OPEN_PLATFORM_ADMIN_TOKEN`。
+
+### 5.3 业务 API token
+
+- 业务接口（知识库 / 文档 / 解析 / 检索）使用 `OPEN_PLATFORM_TOKEN`：`Authorization: Bearer <OPEN_PLATFORM_TOKEN>`。
+- 修改方式与 5.2 相同（`.env` 中设置后 `docker compose up -d --force-recreate`）；`static` 认证模式下仅校验 Bearer 存在与值一致，生产建议 `gateway_header` / `oidc_jwt`。
+
+## 6. 安全说明与生产加固
 
 1. **唯一入口**：对外只暴露 HAProxy（`18080` / `8404`）；`18000` 仅容器回环，无法被绕过直连。
 2. **身份头防伪**：HAProxy 默认剥离客户端伪造的 `X-User-Id` / `X-Tenant-Id` / 角色 / 权限头，防止 static 模式下自报身份越权。
@@ -79,7 +131,7 @@ docker compose down                 # 停止并清理容器/网络（数据卷�
 5. **TLS**：对外端口建议置于 TLS 终止网关之后（`docker/haproxy.cfg` 提供 `X-Forwarded-Proto` 透传示例）。
 6. **非 root 运行**：容器以 uid 1000（`appuser`）运行；stats 凭据经 envsubst 白名单渲染，不落盘明文。
 
-## 6. 常见问题
+## 7. 常见问题
 
 | 现象 | 原因与处理 |
 | --- | --- |
@@ -87,5 +139,6 @@ docker compose down                 # 停止并清理容器/网络（数据卷�
 | `docker compose up` 后容器一直 `unhealthy` | 复用了同 tag 旧镜像；执行 `bash scripts/build_docker.sh && docker compose up -d --build` |
 | 宿主端口 `18080/8404` 被占用 | 先释放旧栈/进程：`docker compose down`、`ss -ltn \| rg '18080\|8404'` |
 | 业务调用报 `100401` | 确认 `Authorization: Bearer <OPEN_PLATFORM_TOKEN>`；gateway_header 模式未注入身份头时按未认证拒绝 |
+| 修改 token / stats 密码后不生效 | 环境变量在容器创建时注入；需 `docker compose up -d --force-recreate`（仅改 `docker/haproxy.cfg` 才需重建镜像） |
 | `/api-manual` 显示手册缺失 | 镜像未打包 `docs/`（旧镜像）；重建镜像 |
 | 平台 `18000` 无法从外部访问 | 预期行为：平台仅容器回环监听，必须经 HAProxy（`18080`）访问 |

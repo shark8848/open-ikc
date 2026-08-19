@@ -57,6 +57,14 @@
 - 验证：`docs/Docker部署与HAProxy.md` 内容与当前实现一致（拓扑 8080/8404/127.0.0.1:18000、脚本名、默认凭据）；未改动代码，无需重跑测试。
 - 下一步：按 §8.2 提交推送（仅文档文件，不混入并发 wiki 改动）。
 
+### 续5：文档补充「管理账号配置」（HAProxy UI / Portal token）（2026-08-19）
+
+- `docs/Docker部署与HAProxy.md` 新增 §5 管理账号配置：5.1 HAProxy stats UI 用户名/密码修改步骤（`.env` + `--force-recreate`，无需重建镜像，含验证命令）；5.2 管理 Portal / `/admin/*` 的 `OPEN_PLATFORM_ADMIN_TOKEN` 设置与验证；5.3 业务 API token；并明确 Portal 登录只认 `OPEN_PLATFORM_ADMIN_TOKEN`，`/admin/tokens` API token 不用于 Portal 登录；常见问题补充「改 token 后需 --force-recreate」。
+- `README.md` 新增 §1.6 管理账号配置（三组凭据的 `.env` 配置与验证命令），链接部署文档。
+- `.gitignore` 新增 `.env`（文档建议以 `.env` 存凭据，防止误提交真实 token）。
+- 验证：凭据校验逻辑与代码一致（`app/core/admin/auth.py` 用 `secrets.compare_digest` 比对 `OPEN_PLATFORM_ADMIN_TOKEN`；`token_store` 仅用于 `/admin/tokens` CRUD）；未改代码，无需重跑测试。
+- 下一步：按 §8.2 提交推送（仅文档与 .gitignore，不混入并发 wiki 改动）。
+
 
 ### 任务：契约文档核查与修补（管理面入契约 + 503001 注册 + 测试约定同步）
 

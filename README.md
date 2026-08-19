@@ -131,6 +131,28 @@ docker compose up -d
 > - 生产必改：`OPEN_PLATFORM_TOKEN` / `OPEN_PLATFORM_ADMIN_TOKEN` / `HAPROXY_STATS_PASSWORD`（默认凭据启动会输出告警）；对外端口建议置于 TLS 终止网关之后。
 > - `/api-manual` 依赖 `docs/API开发手册.md`，该目录已随镜像打包（勿从 `.dockerignore` 排除）。
 
+### 1.6 管理账号配置（HAProxy UI / 管理 Portal）
+
+凭据写入根目录 `.env`（已被 gitignore，不入库）后重启生效：
+
+```bash
+# HAProxy stats UI（默认 admin / change-me，入口 http://127.0.0.1:8404/）
+echo 'HAPROXY_STATS_USER=admin' >> .env
+echo 'HAPROXY_STATS_PASSWORD=<强密码>' >> .env
+
+# 管理 Portal / 管理面 token（默认 test-admin-token，登录 http://127.0.0.1:18080/portal/）
+echo 'OPEN_PLATFORM_ADMIN_TOKEN=<强token>' >> .env
+
+# 业务 API token（Authorization: Bearer <token>）
+echo 'OPEN_PLATFORM_TOKEN=<强token>' >> .env
+
+docker compose up -d --force-recreate
+```
+
+- 环境变量在容器创建时注入，修改后必须 `--force-recreate` 重建容器；stats 密码由入口脚本启动时渲染，无需重建镜像。
+- 验证：`curl -u admin:<强密码> http://127.0.0.1:8404/` 返回 200；`curl -H "Authorization: Bearer <强token>" http://127.0.0.1:18080/admin/overview` 返回 `errCode=000000`。
+- Portal 登录只认 `OPEN_PLATFORM_ADMIN_TOKEN`；`/admin/tokens` 创建的 API token 用于管理面 API/SDK/MCP/CLI，不用于 Portal 登录。
+
 > 完整说明（拓扑 / 环境变量 / 生产加固 / 常见问题）：[Docker 部署与 HAProxy 代理层](docs/Docker部署与HAProxy.md)。
 
 ## 2. 能力总览

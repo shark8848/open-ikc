@@ -414,6 +414,20 @@ def test_parse_direct_rejects_invalid_source() -> None:
     assert body["errCode"] == "100001"
 
 
+def test_parse_strategy_unknown_fields_passed_through() -> None:
+    """parseStrategy 未知字段保持原 dict 透传语义（模型 extra=allow，任务记录完整保留）。"""
+    payload = _parse_direct_payload(
+        parseStrategy={"docType": "pdf", "x-custom-option": {"enabled": True}},
+        executeMode="sync",
+    )
+    body = _parse_direct(payload)
+    assert body["errCode"] == "000000"
+    task = ParseTaskStore.get_task_by_doc(body["data"]["docId"])
+    assert task is not None
+    assert task.parse_strategy["docType"] == "pdf"
+    assert task.parse_strategy["x-custom-option"] == {"enabled": True}
+
+
 def test_parse_direct_task_not_found() -> None:
     body = _query("pdoc_00000000000000000")
     assert body["errCode"] == "100404"
@@ -430,3 +444,39 @@ def test_catalog_includes_parse_direct() -> None:
         for item in category["routes"]
     ]
     assert "/api/v1/knowledge-documents/parse-direct" in parse_routes
+
+
+def test_parse_strategy_and_result_format_schemas_expandable() -> None:
+    """parseStrategy/resultFormat 与 source 一样是可展开的具体 schema（非裸 object）。"""
+    openapi = client.get("/openapi.json").json()
+    schemas = openapi["components"]["schemas"]
+
+    for request_name in ("ParseDirectRequest", "DocumentParseRequest", "DocumentIngestAndParseRequest"):
+        props = schemas[request_name]["properties"]
+        assert props["parseStrategy"]["$ref"] == "#/components/schemas/ParseStrategy"
+        assert props["resultFormat"]["$ref"] == "#/components/schemas/ResultFormat"
+
+    assert schemas["ParseDirectRequest"]["properties"]["source"]["$ref"] == "#/components/schemas/DocumentSource"
+    assert schemas["DocumentIngestAndParseRequest"]["properties"]["source"]["$ref"] == "#/components/schemas/DocumentSource"
+
+    parse_strategy = schemas["ParseStrategy"]["properties"]
+    assert set(parse_strategy) == {"docType", "parseMethod", "backend", "pageRange", "chunking", "enhancement"}
+    assert "pdf" in parse_strategy["docType"]["enum"]
+    assert parse_strategy["chunking"]["$ref"] == "#/components/schemas/ChunkingConfig"
+
+    def _enum_values(field_schema: dict) -> list:
+        if "enum" in field_schema:
+            return field_schema["enum"]
+        return [v for branch in field_schema.get("anyOf", []) if "enum" in branch for v in branch["enum"]]
+
+    assert "vllm-engine" in _enum_values(parse_strategy["backend"])
+
+    result_format = schemas["ResultFormat"]["properties"]
+    assert set(result_format) == {"type", "includeLayout", "includeImages", "imageEncoding"}
+    assert result_format["type"]["enum"] == ["json", "markdown", "text"]
+    assert _enum_values(result_format["imageEncoding"]) == ["url", "base64"]
+
+    chunking = schemas["ChunkingConfig"]["properties"]
+    assert "chunkSize" in chunking and "chunkOverlap" in chunking
+    assert "parentChunkSize" in chunking and "parentChunkOverlap" in chunking
+    assert "audioVideoChunkDuration" in chunking

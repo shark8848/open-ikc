@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.schemas.parse import validate_parse_strategy, validate_result_format
+from app.schemas.parse import ParseStrategy, ResultFormat, validate_parse_strategy, validate_result_format
 from app.schemas.source import DocumentSource
 
 
@@ -58,13 +58,13 @@ class DocumentIngestRequest(BaseModel):
 
 
 class DocumentIngestAndParseRequest(DocumentIngestRequest):
-    parseStrategy: dict = Field(
-        default_factory=dict,
-        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等，透传。",
+    parseStrategy: ParseStrategy = Field(
+        default_factory=ParseStrategy,
+        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等。",
     )
-    resultFormat: dict = Field(
-        default_factory=dict,
-        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等，透传。",
+    resultFormat: ResultFormat = Field(
+        default_factory=ResultFormat,
+        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等。",
     )
     executeMode: Literal["sync", "async"] = Field(
         "async",
@@ -73,8 +73,8 @@ class DocumentIngestAndParseRequest(DocumentIngestRequest):
 
     @model_validator(mode="after")
     def validate_parse_options(self) -> "DocumentIngestAndParseRequest":
-        validate_parse_strategy(self.parseStrategy)
-        validate_result_format(self.resultFormat)
+        validate_parse_strategy(self.parseStrategy.model_dump(exclude_unset=True))
+        validate_result_format(self.resultFormat.model_dump(exclude_unset=True))
         return self
 
     model_config = ConfigDict(

@@ -5,6 +5,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
+from pydantic import BaseModel
+
 from app.core.error_codes import (
     CommonErrorCodes,
     DocumentException,
@@ -23,6 +25,7 @@ from app.core.logging import get_logger
 from app.services.graph import GraphService
 from app.services.knowledge_base import KnowledgeBaseService
 from app.services.wiki import WikiService
+from app.services import openwiki_client
 from app.services.parse_store import (
     PARSE_STATUS,
     ParseResultRecord,
@@ -46,6 +49,15 @@ def _resolve_result_format(result_format: dict) -> dict:
     resolved = dict(result_format)
     resolved.setdefault("type", "json")
     return resolved
+
+
+def _as_dict(value) -> dict:
+    """parseStrategy/resultFormat 透传归一：兼容 Pydantic 模型与 dict（ingest-and-parse 委托链）。"""
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, BaseModel):
+        return value.model_dump(exclude_unset=True)
+    return dict(value or {})
 
 
 def _simulate_file_data(total_page: int) -> dict:
@@ -122,10 +134,11 @@ class ParseService:
         ParseService._validate_personal_scope(doc, owner_id)
 
     @staticmethod
-    def _build_kb_assets_after_parse(doc) -> None:
+    def _build_kb_assets_after_parse(doc, *, execute_mode: str = "sync") -> None:
         """专业库解析成功后联动构建库级资产：wiki 库按 wikiConfig 建页面树，graph 库按 graphSchema 建图谱。
 
-        建库资产为解析成功后的增强动作，失败不阻断解析主链路（占位阶段，真实引擎接入后补强）。
+        建库资产为解析成功后的增强动作，失败不阻断解析主链路（占位阶段，真实引擎接入后补强）；
+        wiki 库引擎启用时 async 模式提交 openwiki-server 异步任务（引擎 worker 执行）。
         """
         kb_id = getattr(doc, "kb_id", "") or ""
         if not kb_id:
@@ -140,6 +153,7 @@ class ParseService:
                     title=getattr(doc, "doc_title", "") or "未命名文档",
                     tags=list(getattr(doc, "tags", None) or []),
                     wiki_config=dict(kb_record.wiki_config),
+                    async_build=(execute_mode == "async"),
                 )
             elif kb_record.kb_mode == "graph":
                 GraphService.build_from_doc(
@@ -156,7 +170,7 @@ class ParseService:
         """免知识库独立解析：直接解析传入来源，不创建知识库、不登记文档。"""
         doc_id = ParseService._generate_parse_only_doc_id()
         task_id = generate_parse_task_id()
-        result_format = _resolve_result_format(payload.resultFormat)
+        result_format = _resolve_result_format(_as_dict(payload.resultFormat))
         created_at = _now_iso()
         sync = (payload.executeMode or "").strip().lower() == "sync"
 
@@ -170,7 +184,7 @@ class ParseService:
                     kb_id="",
                     parse_status=PARSE_STATUS["SUCCESS"],
                     execute_mode="sync",
-                    parse_strategy=dict(payload.parseStrategy),
+                    parse_strategy=_as_dict(payload.parseStrategy),
                     result_format=result_format,
                     page_count=total_page,
                     chunk_count=total_page * 2,
@@ -216,7 +230,7 @@ class ParseService:
                 kb_id="",
                 parse_status=PARSE_STATUS["QUEUED"],
                 execute_mode="async",
-                parse_strategy=dict(payload.parseStrategy),
+                parse_strategy=_as_dict(payload.parseStrategy),
                 result_format=result_format,
                 owner_id=owner_id,
                 tenant_id=tenant_id,
@@ -242,7 +256,7 @@ class ParseService:
                 {"field": "kbId", "reason": "kbId 与文档所属知识库不一致"},
             )
 
-        result_format = _resolve_result_format(payload.resultFormat)
+        result_format = _resolve_result_format(_as_dict(payload.resultFormat))
         existing = ParseTaskStore.get_task_by_doc(doc.doc_id)
         if existing is not None:
             # 幂等命中：queued/running 复用进行中任务，success 复用已完成任务；失败任务不允许重复发起
@@ -276,7 +290,7 @@ class ParseService:
                     kb_id=doc.kb_id,
                     parse_status=PARSE_STATUS["SUCCESS"],
                     execute_mode="sync",
-                    parse_strategy=dict(payload.parseStrategy),
+                    parse_strategy=_as_dict(payload.parseStrategy),
                     result_format=result_format,
                     page_count=total_page,
                     chunk_count=total_page * 2,
@@ -323,7 +337,7 @@ class ParseService:
                 kb_id=doc.kb_id,
                 parse_status=PARSE_STATUS["QUEUED"],
                 execute_mode="async",
-                parse_strategy=dict(payload.parseStrategy),
+                parse_strategy=_as_dict(payload.parseStrategy),
                 result_format=result_format,
                 owner_id=owner_id,
                 tenant_id=tenant_id,
@@ -331,6 +345,8 @@ class ParseService:
             )
         )
         DocumentStore.update_status(doc.doc_id, DOCUMENT_STATUS["PARSING"])
+        if openwiki_client.openwiki_enabled():
+            ParseService._build_kb_assets_after_parse(doc, execute_mode="async")
         return parse_response(
             task_id=task_id,
             task_status=PARSE_STATUS["QUEUED"],

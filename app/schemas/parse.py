@@ -72,17 +72,107 @@ def validate_result_format(result_format: dict[str, Any]) -> None:
         raise ValueError(f"resultFormat.imageEncoding 非法：{image_encoding}（可选：{'/'.join(sorted(IMAGE_ENCODINGS))}）")
 
 
+class ChunkingConfig(BaseModel):
+    """分段参数（parseStrategy.chunking）：非负整数，缺省不传，由服务端按 chunkStrategy 决定默认值。"""
+
+    chunkSize: int | None = Field(None, ge=0, description="分段长度，chunkStrategy=fixed 时生效。")
+    chunkOverlap: int | None = Field(None, ge=0, description="相邻分段重叠长度。")
+    parentChunkSize: int | None = Field(None, ge=0, description="父分段长度（父子分段模式下）。")
+    parentChunkOverlap: int | None = Field(None, ge=0, description="父分段重叠长度（父子分段模式下）。")
+    audioVideoChunkDuration: int | None = Field(None, ge=0, description="音视频按时长分段（秒）。")
+
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={
+            "example": {
+                "chunkSize": 800,
+                "chunkOverlap": 100,
+            }
+        }
+    )
+
+
+class ParseStrategy(BaseModel):
+    """解析策略对象（parseStrategy）：docType/parseMethod/backend/pageRange/chunking/enhancement。"""
+
+    docType: Literal["auto", "pdf", "docx", "xlsx", "pptx", "txt", "md", "html", "jpg", "png"] = Field(
+        "auto",
+        description="文档类型；auto 由服务端自动识别。",
+    )
+    parseMethod: Literal["auto", "ocr", "txt"] = Field(
+        "auto",
+        description="解析方法：auto 自动、ocr OCR 识别、txt 纯文本提取。",
+    )
+    backend: Literal["pipeline", "vllm-engine"] | None = Field(
+        None,
+        description="解析后端：pipeline 流水线 / vllm-engine 大模型引擎；缺省由服务端选择。",
+    )
+    pageRange: list[str] = Field(
+        default_factory=list,
+        description='页码范围，如 ["1", "3-5"]；空表示全部。',
+    )
+    chunking: ChunkingConfig = Field(
+        default_factory=ChunkingConfig,
+        description="分段参数：chunkSize/chunkOverlap/parentChunkSize/parentChunkOverlap/audioVideoChunkDuration。",
+    )
+    enhancement: dict = Field(
+        default_factory=dict,
+        description="增强解析选项（如表单/公式识别），透传。",
+    )
+
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={
+            "example": {
+                "docType": "pdf",
+                "parseMethod": "auto",
+                "backend": "pipeline",
+                "pageRange": ["1-5"],
+                "chunking": {"chunkSize": 800},
+                "enhancement": {},
+            }
+        }
+    )
+
+
+class ResultFormat(BaseModel):
+    """返回格式对象（resultFormat）：type/includeLayout/includeImages/imageEncoding。"""
+
+    type: Literal["json", "markdown", "text"] = Field(
+        "json",
+        description="返回格式：json 结构化 / markdown 文档 / text 纯文本。",
+    )
+    includeLayout: bool | None = Field(None, description="是否包含版面信息。")
+    includeImages: bool | None = Field(None, description="是否包含图片内容。")
+    imageEncoding: Literal["url", "base64"] | None = Field(
+        None,
+        description="图片编码方式：url 引用 / base64 内嵌；includeImages=true 时生效。",
+    )
+
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={
+            "example": {
+                "type": "json",
+                "includeLayout": True,
+                "includeImages": False,
+                "imageEncoding": "url",
+            }
+        }
+    )
+
+
 class DocumentParseRequest(BaseModel):
     reqId: str = Field("", description="幂等请求标识，建议调用方传入；为空时服务端自动生成。")
     kbId: str = Field(..., description="知识库 ID。")
     docId: str = Field(..., description="文档 ID。")
-    parseStrategy: dict = Field(
-        default_factory=dict,
-        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等，透传。",
+    parseStrategy: ParseStrategy = Field(
+        default_factory=ParseStrategy,
+        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等。",
     )
-    resultFormat: dict = Field(
-        default_factory=dict,
-        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等，透传。",
+    resultFormat: ResultFormat = Field(
+        default_factory=ResultFormat,
+        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等。",
     )
     executeMode: Literal["sync", "async"] = Field(
         "async",
@@ -94,8 +184,8 @@ class DocumentParseRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_parse_options(self) -> "DocumentParseRequest":
-        validate_parse_strategy(self.parseStrategy)
-        validate_result_format(self.resultFormat)
+        validate_parse_strategy(self.parseStrategy.model_dump(exclude_unset=True))
+        validate_result_format(self.resultFormat.model_dump(exclude_unset=True))
         if self.parseMode not in PARSE_MODES:
             raise ValueError(f"parseMode 非法：{self.parseMode}（可选：{'/'.join(sorted(PARSE_MODES))}）")
         if self.chunkStrategy not in CHUNK_STRATEGIES:
@@ -137,13 +227,13 @@ class ParseDirectRequest(BaseModel):
         ...,
         description="待解析来源对象，支持 url/file/directory/archive；免知识库，不登记文档。",
     )
-    parseStrategy: dict = Field(
-        default_factory=dict,
-        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等，透传。",
+    parseStrategy: ParseStrategy = Field(
+        default_factory=ParseStrategy,
+        description="解析策略对象：docType/parseMethod/backend/pageRange/chunking/enhancement 等。",
     )
-    resultFormat: dict = Field(
-        default_factory=dict,
-        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等，透传。",
+    resultFormat: ResultFormat = Field(
+        default_factory=ResultFormat,
+        description="返回格式对象：type/includeLayout/includeImages/imageEncoding 等。",
     )
     executeMode: Literal["sync", "async"] = Field(
         "async",
@@ -155,8 +245,8 @@ class ParseDirectRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_options(self) -> "ParseDirectRequest":
-        validate_parse_strategy(self.parseStrategy)
-        validate_result_format(self.resultFormat)
+        validate_parse_strategy(self.parseStrategy.model_dump(exclude_unset=True))
+        validate_result_format(self.resultFormat.model_dump(exclude_unset=True))
         if self.parseMode not in PARSE_MODES:
             raise ValueError(f"parseMode 非法：{self.parseMode}（可选：{'/'.join(sorted(PARSE_MODES))}）")
         if self.chunkStrategy not in CHUNK_STRATEGIES:

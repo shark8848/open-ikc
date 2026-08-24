@@ -15,6 +15,19 @@
 - 自动审查：`scripts/review_with_claude.sh` → `docs/code-review_2026-08-24.md`；redoc 对齐改动测试覆盖 ✅，P1/P2 均为**未提交的 P3 wiki/graph 存量工作**问题（owner/org_path 授权上下文、unavailable 回退、AUTHZ 映射、async 引擎联动、ensure_wiki 竞态），已登记 process.md，随 P3 收尾一并闭环，不影响本次提交。
 - 下一步：提交推送（github，只含本次任务相关文件 + worklog/process + 审查报告）。
 
+### 任务：parseStrategy/resultFormat 等对象字段补具体定义（与 source 一样可展开）
+
+- 需求：用户反馈免知识库独立解析（`parse-direct`）的 `parseStrategy` 等对象字段没有具体定义，要求像 `source`（DocumentSource）一样定义、可展开查看。
+- 基线确认：`ParseDirectRequest`/`DocumentParseRequest`/`DocumentIngestAndParseRequest` 的 `parseStrategy`/`resultFormat` 原为裸 `dict`，OpenAPI 只生成 `{type: object, additionalProperties: true}`，无 properties 无法展开；`source` 是 `$ref: DocumentSource` 可展开。
+- 落地：
+  - `app/schemas/parse.py` 新增三个强类型模型：`ParseStrategy`（docType/parseMethod/backend 枚举 + pageRange + chunking + enhancement）、`ChunkingConfig`（五个非负整数字段）、`ResultFormat`（type/imageEncoding 枚举 + includeLayout/includeImages），均带 description/example；三个请求模型的 `parseStrategy`/`resultFormat` 由 `dict` 改为引用新模型（`$ref` 可展开）。
+  - 校验兼容：model_validator 仍调 `validate_parse_strategy`/`validate_result_format`（传 `model_dump(exclude_unset=True)`），非法枚举/页码格式仍 100001；`app/schemas/document.py` 的 ingest-and-parse 同步改。
+  - 透传兼容：`ParseService.parse` 有两条调用链（路由传 Pydantic 模型 / `DocumentService` 经 `SimpleNamespace` 传 dict），services 新增 `_as_dict()` 归一 helper，`dict(payload.parseStrategy)` → `_as_dict(payload.parseStrategy)`，保证透传语义不变。
+  - 透传语义补充：模型默认丢弃额外字段，与原 dict 透传不符 → `ParseStrategy`/`ResultFormat`/`ChunkingConfig` 加 `extra="allow"`，并新增未知字段透传测试锁定。
+- 测试：新增 `test_parse_strategy_and_result_format_schemas_expandable`（三请求模型 `$ref` + 属性/枚举断言）与 `test_parse_strategy_unknown_fields_passed_through`（任务记录保留未知字段）；`pytest tests -q` **297 passed**（沙箱外）。
+- 自动审查：claude CLI 两次失败（Execution error / 无响应）、`codex review --uncommitted` 15 分钟超时（审查 agent 沙箱内 TestClient 死锁）→ 按用户指示改用 **Codex 主线程只读审查**，结论已追加至 `docs/code-review_2026-08-24.md`（无 P0/P1；P3-1 错误文案由 Pydantic 生成、P3-2 模型约束与校验双保险，均不影响行为）。
+- 下一步：提交推送（github，只含本次任务相关文件 + worklog + 审查报告）。
+
 ## 2026-08-19
 
 ### 任务：Docker 构建脚本 + 前端 HAProxy 代理层

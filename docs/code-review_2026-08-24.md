@@ -10,6 +10,33 @@
 
 ---
 
+## 追加审查（2026-08-24 第二轮）：parseStrategy/resultFormat 对象字段强类型化
+
+> 评审方式说明：`scripts/review_with_claude.sh` 的 claude CLI 两次失败（`Execution error` / 长时间无响应）；`codex review --uncommitted` 运行 15 分钟超时（审查 agent 在沙箱内跑测试时撞上已知的 TestClient anyio portal 死锁）。最终由 Codex 主线程完成只读审查，结论如下。
+
+### 结论
+
+本轮改动质量良好，无 P0/P1。行为兼容性经两处修正后与改动前一致（`pytest tests -q` **297 passed**）：
+- `parseStrategy`/`resultFormat` 由裸 `dict` 改为强类型模型 `ParseStrategy`/`ResultFormat`/`ChunkingConfig`，OpenAPI 生成可展开的 `$ref` schema（字段描述 + 枚举），与 `DocumentSource` 一致；`ParseDirectRequest`/`DocumentParseRequest`/`DocumentIngestAndParseRequest` 三处同步。
+- 校验兼容：model_validator 保留 `validate_parse_strategy`/`validate_result_format`（传 `model_dump(exclude_unset=True)`），非法枚举/页码格式仍 `100001`。
+- 透传兼容：`ParseService.parse` 双调用链（路由传 Pydantic 模型 / `DocumentService` 经 `SimpleNamespace` 传 dict）经 `_as_dict()` 归一；模型 `extra="allow"` 保留未知字段透传语义（与原 dict 行为一致）。
+
+### 问题
+
+- P3-1 错误消息文案变化：枚举非法时由 Pydantic 生成默认消息（如 `Input should be 'auto', 'pdf', ...`），替代原自定义中文文案；`errCode` 仍 `100001`，无调用方契约影响。可后续在 `Literal` 上收敛自定义消息，不影响本轮。
+- P3-2 模型约束与校验函数重叠：`ge=0` 与 `_validate_parse_strategy` 非负校验双保险，属防御性冗余，可接受。
+
+### 覆盖核对（本轮）
+
+| 改动点 | 覆盖情况 |
+| --- | --- |
+| OpenAPI schema 可展开 | `tests/test_parse.py::test_parse_strategy_and_result_format_schemas_expandable` ✅（三请求模型 `$ref` + 属性/枚举断言） |
+| 未知字段透传 | `test_parse_strategy_unknown_fields_passed_through` ✅（任务记录保留 `x-custom-option`） |
+| 非法枚举/页码格式 | 既有 `test_parse_rejects_invalid_*` 5 例 ✅ |
+| ingest-and-parse / wiki / graph 委托链 | `tests/test_document.py`、`test_wiki_library.py`、`test_graph_library.py` 全绿 ✅ |
+
+---
+
 ## 问题列表
 
 ### P1-1：`owner_id`/`org_path` 授权上下文来自数据库记录，未与调用方身份绑定

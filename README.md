@@ -82,10 +82,12 @@ curl -s -X POST http://127.0.0.1:18000/api/v1/knowledge-bases/create \
 ```bash
 bash scripts/build_docker.sh                 # 准备 wheel 并构建镜像
 bash scripts/build_docker.sh --wheel-only    # 仅准备 ikc-log-center wheel（不执行 docker build）
+bash scripts/build_docker.sh --no-save       # 构建后不导出镜像（默认自动导出）
 ```
 
 - 私有依赖 `ikc-log-center==1.4.9`（PyPI 不可得）由脚本自动准备：优先使用 `docker/wheels/` 中已有 wheel，缺失时从 `/home/ikc-log-center` 源码 `v1.4.9` 现场构建（可用 `IKC_LOG_CENTER_REPO` 覆盖路径）。
 - 构建需要网络（PyPI 依赖 + npm registry）；`.dockerignore` 已排除 `.venv/`、`logs/`、`data/`、`portal/node_modules/`、`portal/dist/` 等。
+- 构建产物自动导出到 `docker/images/`（如 `open-ikc-api_1.0.0.tar.gz`，含平台 + HAProxy 代理层）；离线环境 `docker load -i docker/images/<文件名>` 后即可 `docker compose up -d`。
 
 启动整栈（HAProxy 代理层 + 平台）：
 

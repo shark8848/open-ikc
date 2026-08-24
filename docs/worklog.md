@@ -34,6 +34,21 @@
 - `origin`（code.tiancloud.com）**网络不可达**：22/443 SSH 均被代理网关关闭（`Connection closed by 198.18.0.91`），HTTPS 握手失败（curl exit 35）；`git fetch/push origin` 无法执行，`origin/main` 仍停在 `726a133`。
 - 处置：已登记 process.md 环境遗留（P2），网络恢复后执行 `git push origin main` 补推 `297fb39..ca1855f`。
 
+### 任务：构建镜像带 HAProxy 并保存到 docker/images
+
+- 需求：构建镜像带上 HAProxy，并把构建产物保存到 `docker/images/` 下。
+- 现状确认：应用镜像本就是「单容器内含 HAProxy」（Dockerfile Stage 2 安装 haproxy+gettext，`docker/haproxy.cfg` 模板 + `docker/entrypoint.sh` envsubst 渲染，容器内 HAProxy :8080/:8404 → uvicorn 127.0.0.1:18000）。
+- 落地：
+  - `scripts/build_docker.sh`：新增 `--no-save` 开关；构建完成后自动 `docker save <image> | gzip` 导出到 `docker/images/<镜像tag>.tar.gz`（文件名由 IMAGE_TAG 推导，如 `open-ikc-api_1.0.0.tar.gz`），并提示离线 `docker load -i` 用法；头部注释与 usage 同步。
+  - `.gitignore` 加 `docker/images/`、`.dockerignore` 加 `docker/images`（镜像归档不入库/不进构建上下文）。
+  - README §1.5：补充 `--no-save` 参数与构建产物导出/离线加载说明。
+- 验证（沙箱外）：
+  - `docker build` 成功（基础镜像已缓存，~40s）；导出 `docker/images/open-ikc-api_1.0.0.tar.gz`（97M），`gzip -t` + `docker load -i` 均通过。
+  - 镜像内含 HAProxy 3.0.11、`/etc/haproxy/haproxy.cfg.tmpl`、`/usr/local/bin/open-ikc-entrypoint.sh`。
+  - 端到端冒烟（compose 起停）：宿主 18082 → HAProxy :8080 → `/health` 返回统一体；stats 18404（admin/change-me）返回 Statistics 页；容器 healthcheck healthy；验证后 `docker compose down` 清理。
+  - 环境遗留：`docker/images` 目录曾被残留 nobody 所有者导致导出 Permission denied，已删除重建（sharkyai 所有）；宿主 8404 被 `openwiki-server` 占用（另一系统服务，冒烟用 18404 避开，不影响默认 compose 部署仅本机需注意端口冲突）。
+- 下一步：提交推送（github；origin 网络不可达待恢复后补推）。
+
 ## 2026-08-19
 
 ### 任务：Docker 构建脚本 + 前端 HAProxy 代理层

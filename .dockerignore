@@ -18,6 +18,7 @@ tests
 sdk
 portal/node_modules
 portal/dist
+docker/images
 portal/*.tsbuildinfo
 portal/vite.config.js
 portal/vite.config.d.ts

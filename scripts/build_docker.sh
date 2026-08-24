@@ -12,6 +12,11 @@ set -euo pipefail
 #   bash scripts/build_docker.sh                # 准备 wheel 并 docker build
 #   bash scripts/build_docker.sh --wheel-only   # 仅准备 wheel，不执行 docker build
 #   bash scripts/build_docker.sh --no-cache     # docker build --no-cache
+#   bash scripts/build_docker.sh --no-save      # 构建后不导出镜像到 docker/images/
+#
+# 构建产物：镜像内含平台（FastAPI + Portal）+ HAProxy 代理层（单容器，:80/:8404）。
+# 构建完成后自动 docker save 到 docker/images/<image-tag>.tar.gz，离线部署时
+# `docker load -i docker/images/<image-tag>.tar.gz` 即可加载。
 #
 # 环境变量：
 #   IKC_LOG_CENTER_REPO   log-center 源码仓库路径（默认 /home/ikc-log-center）
@@ -21,15 +26,18 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 WHEELS_DIR="docker/wheels"
+IMAGES_DIR="docker/images"
 LOG_CENTER_REPO="${IKC_LOG_CENTER_REPO:-/home/ikc-log-center}"
 WHEEL_ONLY=0
 NO_CACHE=0
+NO_SAVE=0
 for arg in "$@"; do
   case "$arg" in
     --wheel-only) WHEEL_ONLY=1 ;;
     --no-cache) NO_CACHE=1 ;;
+    --no-save) NO_SAVE=1 ;;
     *)
-      echo "[usage] 未知参数: $arg（支持 --wheel-only / --no-cache）" >&2
+      echo "[usage] 未知参数: $arg（支持 --wheel-only / --no-cache / --no-save）" >&2
       exit 1
       ;;
   esac
@@ -90,4 +98,17 @@ echo "[docker] 构建镜像 $IMAGE_TAG（平台 + HAProxy 代理层同镜像）.
 docker build "${build_args[@]}" -t "$IMAGE_TAG" .
 
 echo "[docker] 构建完成: $IMAGE_TAG"
+
+if [[ "$NO_SAVE" == "1" ]]; then
+  echo "[docker] --no-save 已指定，跳过导出镜像"
+else
+  mkdir -p "$IMAGES_DIR"
+  # 文件名由镜像 tag 推导（如 open-ikc-api:1.0.0 -> open-ikc-api_1.0.0.tar.gz）
+  SAVED_NAME="$(printf '%s' "$IMAGE_TAG" | tr ':/' '__')"
+  SAVED_PATH="$IMAGES_DIR/${SAVED_NAME}.tar.gz"
+  echo "[docker] 导出镜像到 $SAVED_PATH ..."
+  docker save "$IMAGE_TAG" | gzip > "$SAVED_PATH"
+  echo "[docker] 导出完成: $SAVED_PATH（离线部署: docker load -i $SAVED_PATH）"
+fi
+
 echo "[docker] 启动（HAProxy 入口 http://127.0.0.1:18080）：docker compose up -d"

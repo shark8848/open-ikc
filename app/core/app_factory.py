@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import log_center_sdk
 from log_center_sdk.integrations.fastapi import TraceMiddleware
@@ -95,9 +96,54 @@ def _mount_local_docs_static(app: FastAPI) -> None:
     app.mount(_DOCS_STATIC_PREFIX, StaticFiles(directory=str(_DOCS_STATIC_DIR)), name="docs-static")
 
 
+def _redoc_html(
+    *,
+    openapi_url: str,
+    title: str,
+    redoc_js_url: str,
+    redoc_favicon_url: str,
+) -> HTMLResponse:
+    """本地 ReDoc 页面：与 FastAPI get_redoc_html 模板一致，并开启 Schemas 数据模型分组。
+
+    ReDoc 2.x 侧边栏默认只展示标签/操作，不展示 components.schemas；而 Swagger UI 的
+    Models 区会展示全部 schema，导致两个页面「定义」看起来不一致。注入
+    schema-definitions-tag-name（ReDoc standalone 会把元素上的 kebab-case 属性转成
+    camelCase 选项）后，侧边栏新增 Schemas 分组，与 Swagger 目录完全对齐
+    （两者共用同一份 /openapi.json）。
+    """
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+<title>{title}</title>
+<!-- needed for adaptive design -->
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="{redoc_favicon_url}">
+<!--
+ReDoc doesn't change outer page styles
+-->
+<style>
+  body {{
+    margin: 0;
+    padding: 0;
+  }}
+</style>
+</head>
+<body>
+<noscript>
+    ReDoc requires Javascript to function. Please enable it to browse the documentation.
+</noscript>
+<redoc spec-url="{openapi_url}" schema-definitions-tag-name="Schemas"></redoc>
+<script src="{redoc_js_url}"> </script>
+</body>
+</html>
+"""
+    return HTMLResponse(html)
+
+
 def _register_local_docs_routes(app: FastAPI) -> None:
     """注册 /docs、/redoc 与 oauth2-redirect 路由，页面资源全部指向本地静态目录。"""
-    from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
+    from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 
     app.get("/docs", include_in_schema=False)(
         lambda: get_swagger_ui_html(
@@ -109,12 +155,11 @@ def _register_local_docs_routes(app: FastAPI) -> None:
         )
     )
     app.get("/redoc", include_in_schema=False)(
-        lambda: get_redoc_html(
+        lambda: _redoc_html(
             openapi_url="/openapi.json",
             title=f"{app.title} - ReDoc",
             redoc_js_url=f"{_DOCS_STATIC_PREFIX}/redoc/redoc.standalone.js",
             redoc_favicon_url=f"{_DOCS_STATIC_PREFIX}/swagger-ui/favicon-32x32.png",
-            with_google_fonts=False,
         )
     )
     app.get("/docs/oauth2-redirect", include_in_schema=False)(get_swagger_ui_oauth2_redirect_html)

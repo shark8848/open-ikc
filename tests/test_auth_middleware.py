@@ -118,6 +118,8 @@ def test_api_docs_are_accessible_without_auth() -> None:
     redoc = client.get("/redoc")
     assert redoc.status_code == 200
     assert "redoc" in redoc.text.lower()
+    # ReDoc 侧边栏开启 Schemas 数据模型分组，与 Swagger 的 Models 目录对齐（同一份 /openapi.json）
+    assert 'schema-definitions-tag-name="Schemas"' in redoc.text
 
     openapi = client.get("/openapi.json")
     assert openapi.status_code == 200
@@ -125,6 +127,25 @@ def test_api_docs_are_accessible_without_auth() -> None:
 
     oauth_redirect = client.get("/docs/oauth2-redirect")
     assert oauth_redirect.status_code == 200
+
+
+def test_redoc_and_swagger_share_same_openapi_and_schema_catalog() -> None:
+    """/docs 与 /redoc 指向同一份 /openapi.json，且 ReDoc 会像 Swagger 一样展示全部 schema 定义。"""
+    docs = client.get("/docs")
+    redoc = client.get("/redoc")
+    openapi = client.get("/openapi.json")
+    assert docs.status_code == 200 and redoc.status_code == 200 and openapi.status_code == 200
+
+    # 两个页面加载同一份 OpenAPI 定义
+    assert "url: '/openapi.json'" in docs.text
+    assert 'spec-url="/openapi.json"' in redoc.text
+
+    # ReDoc 开启 Schemas 分组；Swagger UI 默认展示 Models，二者目录一致
+    assert 'schema-definitions-tag-name="Schemas"' in redoc.text
+    schemas = openapi.json()["components"]["schemas"]
+    assert len(schemas) >= 70
+    assert "KnowledgeBaseCreateRequest" in schemas
+    assert "KnowledgeBaseResponse" in schemas
 
 
 def test_api_docs_use_local_static_assets_no_external_cdn() -> None:

@@ -4,6 +4,17 @@
 > 约定见 `AGENTS.md`「工作日志与每日继承」章节。按日期追加，每天一个条目。
 > 每个工作日 `17:30` 触发例行提交任务（约定见 `AGENTS.md` §8.1）。
 
+## 2026-08-24
+
+### 任务：检查并纠正 reDocs 与 Swagger 的定义差异（docs UI 对齐）
+
+- 需求：用户反馈 `/docs`（Swagger）与 `/redoc`（ReDoc）的「定义」看起来不一致，要求检查并完整纠正。
+- 排查结论：两个页面共用同一份 `/openapi.json`（OpenAPI 3.1.0，36 路径 / 37 操作 / 76 schema），规范内容本身无差异；差异在 UI 呈现——ReDoc 2.x 侧边栏默认只展示标签/操作，不展示 `components.schemas`，而 Swagger UI 的 Models 区会展示全部 76 个 schema（用 node vm 加载本地 ReDoc bundle 复现：`flatItems` 仅 `{tag:5, operation:37}`，无 schema 项）。
+- 修复：`app/core/app_factory.py` 新增 `_redoc_html()`（与 FastAPI `get_redoc_html` 模板一致），为 `<redoc>` 元素注入 `schema-definitions-tag-name="Schemas"`。ReDoc standalone 会把元素上的 kebab-case 属性转 camelCase 作为选项（已核 bundle 内 `Qw` 实现），修复后侧边栏新增 `Schemas` 分组，`flatItems` 变为 `{tag:6, operation:37, schema:76}`，与 Swagger Models 目录完全对齐。
+- 测试：`tests/test_auth_middleware.py` 新增 `test_redoc_and_swagger_share_same_openapi_and_schema_catalog`，并给既有 docs 测试补 `schema-definitions-tag-name="Schemas"` 断言；`pytest tests -q` **295 passed**（沙箱外运行；沙箱内 TestClient 的 anyio portal 跨线程调用死锁为已知环境问题，见 2026-08-19 条目）。
+- 自动审查：`scripts/review_with_claude.sh` → `docs/code-review_2026-08-24.md`；redoc 对齐改动测试覆盖 ✅，P1/P2 均为**未提交的 P3 wiki/graph 存量工作**问题（owner/org_path 授权上下文、unavailable 回退、AUTHZ 映射、async 引擎联动、ensure_wiki 竞态），已登记 process.md，随 P3 收尾一并闭环，不影响本次提交。
+- 下一步：提交推送（github，只含本次任务相关文件 + worklog/process + 审查报告）。
+
 ## 2026-08-19
 
 ### 任务：Docker 构建脚本 + 前端 HAProxy 代理层

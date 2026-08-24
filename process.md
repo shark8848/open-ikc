@@ -19,6 +19,11 @@
 
 | 状态 | 优先级 | 事项 | 下一步 |
 | --- | --- | --- | --- |
+| 未闭环 | P1 | **owner_id/org_path 授权上下文语义**：wiki/graph/kb 路由把库主（record.owner_id）当 `owner_id` 上下文传入，与 AGENTS.md §4.2「owner_id 一律取认证身份」冲突，owner-only 数据权限不可用 | AUTHZ 上下文区分 `owner_id`（认证身份）/ `data_owner_id`（库归属），桥接层与路由统一修正（2026-08-24 审查 P1-1） |
+| 未闭环 | P1 | **`unavailable` 鸭子类型回退脆弱**：`KnowledgeBaseException` 带 `unavailable` 属性被引擎回退逻辑扫描，映射错误码抛的普通异常会被误吞/误透 | 设独立 `EngineUnavailable` 异常类精确捕获（2026-08-24 审查 P1-2） |
+| 未闭环 | P2 | **AUTHZ role→action 映射缺 `knowledge_base:read/write`**：digital_employee 默认映射下 wiki 只读路由必然 100403 | `km_reader` 角色补映射 + 文档（2026-08-24 审查 P2-1） |
+| 未闭环 | P2 | **async 解析引擎联动缺口**：引擎启用时直接返回 QUEUED，无引擎任务 ID、无异步任务查询接口 | 明确 P2-2 async 引擎联动闭环或回退占位（2026-08-24 审查 P2-2） |
+| 未闭环 | P2 | **`ensure_wiki` 乐观创建并发竞态** + `_request` 对 HTTP 4xx 无业务码时无统一错误映射 | 幂等化创建 + 4xx 映射（2026-08-24 审查 P2-3） |
 | 未闭环 | P2 | **空字符串 `kbName` 未做非空校验**：`POST /knowledge-bases/create` 传 `kbName=""` 可创建空名库（conformance finding） | 补服务端非空校验（100001）或手册明确限制 |
 | 未闭环 | P2 | **Java SDK 未同步 wiki/graph**：`sdk/java` 仅基础四类能力，未封装 wiki 三方法与 graph 五方法（Python SDK 已 24 工具/命令） | 按 `sdk/python` 模式补齐 Java 客户端 + 测试 |
 | 待更新 | P3 | **在线测试 E2E 基线**：`/tmp/mcp_cli_e2e.py`（35/35）未随 wiki/graph 扩展；下次全量 E2E 需覆盖 24 工具/命令 | 运行前更新脚本枚举并重跑 |
@@ -35,4 +40,5 @@
 ## 4. 快速状态
 
 - 已落地：P1 kbMode 形态协议（text/wiki/graph）；Docker 构建脚本（`scripts/build_docker.sh`）+ HAProxy 代理层（`docker/haproxy.cfg`、`docker-compose.yml`，对外 18080）；P2 Wiki 库（页面树/检索/parse 联动）；P3 图谱库（stat/nodes/edges/neighbors/export + parse 联动）；Python SDK/MCP/CLI 24 工具/命令全覆盖；文档上传 7 天暂存；在线测试模块。
+- 已落地：reDocs 与 Swagger 定义对齐（ReDoc 侧边栏开启 `schemaDefinitionsTagName=Schemas` 分组，与 Swagger Models 目录一致；2026-08-24）。
 - 文档权威顺序：`AGENTS.md` > 当前代码 > `docs/开放平台接口整体方案_V2_精简.md` + `docs/开放平台接口详细定义_精简版_V2.md` > 本文档与 worklog。

@@ -28,6 +28,12 @@
 - 自动审查：claude CLI 两次失败（Execution error / 无响应）、`codex review --uncommitted` 15 分钟超时（审查 agent 沙箱内 TestClient 死锁）→ 按用户指示改用 **Codex 主线程只读审查**，结论已追加至 `docs/code-review_2026-08-24.md`（无 P0/P1；P3-1 错误文案由 Pydantic 生成、P3-2 模型约束与校验双保险，均不影响行为）。
 - 下一步：提交推送（github，只含本次任务相关文件 + worklog + 审查报告）。
 
+### 续：双远端同步确认（github 已推送，origin 网络不可达）（2026-08-24）
+
+- `git push github main` 成功（`297fb39..ca1855f`），github 与本地 `main` 已同步。
+- `origin`（code.tiancloud.com）**网络不可达**：22/443 SSH 均被代理网关关闭（`Connection closed by 198.18.0.91`），HTTPS 握手失败（curl exit 35）；`git fetch/push origin` 无法执行，`origin/main` 仍停在 `726a133`。
+- 处置：已登记 process.md 环境遗留（P2），网络恢复后执行 `git push origin main` 补推 `297fb39..ca1855f`。
+
 ## 2026-08-19
 
 ### 任务：Docker 构建脚本 + 前端 HAProxy 代理层

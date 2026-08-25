@@ -14,6 +14,12 @@
 - 执行：`/home/ikc-log-center/.venv/bin/python scripts/gen_log_center_test_data.py` → 50000 条全部落库（16655/16731/16614 三节点均衡）。
 - 验证：`GET /api/nodes` 显示 3 个新节点且 log_count 与生成量一致；`/search?level=ERROR` 与 message 子串查询均命中新数据，trace_id/span_id/parent_id 链路完整。
 
+### 任务：向远程日志中心（10.88.155.31）灌入近 3 天 × 3 节点模拟数据
+
+- 需求：向 `http://10.88.155.31:9315` 写入近 3 天模拟日志，每个节点 < 500 条。
+- 执行：复用 `scripts/gen_log_center_test_data.py`，`LOG_CENTER_URL=http://10.88.155.31:9315 DAYS=3 DAILY_LOGS=400` → 1200 条全部落库（node-A 383 / node-B 411 / node-C 406，均 < 500），时间 2026-08-22 14:15 ~ 2026-08-25 14:15。
+- 验证：远程 `GET /api/nodes` 节点 log_count 与生成量一致；`/search?level=CRITICAL` 命中新数据。
+
 ## 2026-08-24
 
 ### 任务：检查并纠正 reDocs 与 Swagger 的定义差异（docs UI 对齐）

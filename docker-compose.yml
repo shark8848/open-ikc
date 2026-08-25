@@ -36,11 +36,9 @@ services:
       OPEN_PLATFORM_OPENAI_SEARCH_BASE_URL: "${OPEN_PLATFORM_OPENAI_SEARCH_BASE_URL:-http://127.0.0.1:8088/km/search-api/aiTools/openai/bsapi}"
       OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS: "${OPEN_PLATFORM_SEARCH_TIMEOUT_SECONDS:-10}"
       OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS: "${OPEN_PLATFORM_DEEP_SEARCH_TIMEOUT_SECONDS:-60}"
-      # 日志中心（默认开启远程投递；LOG_CENTER_URL 默认指向宿主机 docker0 网关，
-      # 适配 ikc-log-center 以 host 网络部署在宿主机的场景；无日志中心时置
-      # LOG_CENTER_ENABLE=false 关闭。entrypoint 会在启动时预检可达性，不可达则 fail-fast）
-      LOG_CENTER_ENABLE: "${LOG_CENTER_ENABLE:-true}"
-      LOG_CENTER_URL: "${LOG_CENTER_URL:-http://172.17.0.1:9315}"
+      # 日志中心（容器内默认关闭远程投递；启用前需先部署日志中心并修正 LOG_CENTER_URL）
+      LOG_CENTER_ENABLE: "${LOG_CENTER_ENABLE:-false}"
+      LOG_CENTER_URL: "${LOG_CENTER_URL:-http://127.0.0.1:9315}"
       LOG_CENTER_TOKEN: "${LOG_CENTER_TOKEN:-}"
       # HAProxy stats 登录账号（默认 admin / change-me，生产必改）
       HAPROXY_STATS_USER: "${HAPROXY_STATS_USER:-admin}"

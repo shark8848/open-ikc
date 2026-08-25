@@ -15,20 +15,6 @@ if [ "${HAPROXY_STATS_USER:-admin}" = "admin" ] && [ "${HAPROXY_STATS_PASSWORD:-
   echo "[warn] HAProxy stats 使用默认凭据 admin/change-me，生产请设置 HAPROXY_STATS_PASSWORD" >&2
 fi
 
-# 日志中心预检：LOG_CENTER_ENABLE=true 时必须可达，不可达则 fail-fast，
-# 避免平台静默降级为本地文件日志（用户无感知）
-if [ "${LOG_CENTER_ENABLE:-false}" = "true" ]; then
-  LC_URL="${LOG_CENTER_URL:-http://127.0.0.1:9315}"
-  if python -c "import urllib.request;urllib.request.urlopen('${LC_URL}/health', timeout=3)" >/dev/null 2>&1; then
-    echo "[info] 日志中心可达: ${LC_URL}"
-  else
-    echo "[error] 日志中心不可达: LOG_CENTER_ENABLE=true 但 ${LC_URL}/health 请求失败" >&2
-    echo "[error] 请确认日志中心已部署，且 LOG_CENTER_URL 指向容器可达地址（宿主机 host 网络部署时用 http://172.17.0.1:9315；Docker Desktop 用 http://host.docker.internal:9315）" >&2
-    echo "[error] 如无需远程日志投递，请设 LOG_CENTER_ENABLE=false 后重启" >&2
-    exit 1
-  fi
-fi
-
 # 平台 API 只监听回环地址，避免绕过 HAProxy 直连
 python -m uvicorn app.main:app --host 127.0.0.1 --port 18000 &
 APP_PID=$!

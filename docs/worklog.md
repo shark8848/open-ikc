@@ -4,6 +4,16 @@
 > 约定见 `AGENTS.md`「工作日志与每日继承」章节。按日期追加，每天一个条目。
 > 每个工作日 `17:30` 触发例行提交任务（约定见 `AGENTS.md` §8.1）。
 
+## 2026-08-25
+
+### 任务：向本地 ikc-log-center 镜像灌入 10 天 × 3 节点模拟测试数据
+
+- 需求：通过测试脚本向本地镜像（容器 `ikc-log-center`，host 网络，`http://127.0.0.1:9315`，v1.4.17）生成 10 天模拟数据，含 3 个不同 IP 节点。
+- 现状：仓库现有 `gen_test_logs_cross_node.py` 仅 2 节点、3.5 小时、2000 条，不满足需求。
+- 改动：新增 `scripts/gen_log_center_test_data.py`（基于 cross_node 脚本扩展）：3 节点（192.168.1.15 node-A: gateway/user-service；192.168.23.10 node-B: order/payment-service；172.16.8.20 node-C: inventory/notification-service），默认最近 10 天 × 每天 5000 条 = 50000 条，跨 3 节点 trace chain，env 可配 `LOG_CENTER_URL`/`DAYS`/`DAILY_LOGS`，batch 100 走 `POST /ingest`。
+- 执行：`/home/ikc-log-center/.venv/bin/python scripts/gen_log_center_test_data.py` → 50000 条全部落库（16655/16731/16614 三节点均衡）。
+- 验证：`GET /api/nodes` 显示 3 个新节点且 log_count 与生成量一致；`/search?level=ERROR` 与 message 子串查询均命中新数据，trace_id/span_id/parent_id 链路完整。
+
 ## 2026-08-24
 
 ### 任务：检查并纠正 reDocs 与 Swagger 的定义差异（docs UI 对齐）

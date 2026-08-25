@@ -122,7 +122,11 @@ docker compose up -d
 | `HAPROXY_HTTP_PORT` | `18080` | HAProxy 对外 HTTP 端口 |
 | `HAPROXY_STATS_PORT` | `8404` | HAProxy stats 端口 |
 | `HAPROXY_STATS_USER/PASSWORD` | `admin` / `change-me` | HAProxy stats UI 登录账号（`http://127.0.0.1:8404/`），生产务必修改 |
-| `LOG_CENTER_ENABLE` | `false` | 日志中心远程投递（容器内默认关闭，需 `LOG_CENTER_URL` 指向可达服务） |
+| `LOG_CENTER_ENABLE` | `true` | 日志中心远程投递；**启动时 entrypoint 预检 `{LOG_CENTER_URL}/health`，不可达则容器 fail-fast**（无需投递时置 `false`） |
+| `LOG_CENTER_URL` | `http://172.17.0.1:9315` | 日志中心地址（容器内访问宿主机 host 网络部署的 log-center 用 docker0 网关；Docker Desktop 用 `http://host.docker.internal:9315`） |
+| `LOG_CENTER_TOKEN` | 空 | 日志中心开启 Bearer 认证时的 token |
+
+> **日志中心连通保障**：容器默认开启远程日志投递（`LOG_CENTER_ENABLE=true`），entrypoint 启动预检不通过会**直接失败退出**（避免静默降级为仅本地文件日志）。部署前提：先启动 ikc-log-center（如 `docker run --network host ikc/log-center:v1.4.17`），并确认 `LOG_CENTER_URL` 在容器内可达。
 
 数据（SQLite）与日志分别挂载到卷 `app_data`（`/app/data`）与 `app_logs`（`/app/logs`）。
 

@@ -20,6 +20,15 @@
 - 执行：复用 `scripts/gen_log_center_test_data.py`，`LOG_CENTER_URL=http://10.88.155.31:9315 DAYS=3 DAILY_LOGS=400` → 1200 条全部落库（node-A 383 / node-B 411 / node-C 406，均 < 500），时间 2026-08-22 14:15 ~ 2026-08-25 14:15。
 - 验证：远程 `GET /api/nodes` 节点 log_count 与生成量一致；`/search?level=CRITICAL` 命中新数据。
 
+### 任务：docker 启动保证日志发布到 ikc-log-center（预检 fail-fast + 网关 URL）
+
+- 需求：启动 open-ikc 镜像时保证日志发布到 ikc-log-center。
+- 根因：`docker-compose.yml` 默认 `LOG_CENTER_ENABLE=false` 且 `LOG_CENTER_URL=http://127.0.0.1:9315`（容器内指向自身，必然不可达）→ SDK 静默降级为仅本地文件日志，用户无感知。
+- 改动：① `docker-compose.yml` 默认 `LOG_CENTER_ENABLE=true`、`LOG_CENTER_URL=http://172.17.0.1:9315`（docker0 网关，适配 log-center 以 host 网络部署在宿主机的现状；无日志中心可置 false）；② `docker/entrypoint.sh` 启动前预检 `{LOG_CENTER_URL}/health`，不可达则 fail-fast 退出（带排查提示），杜绝静默降级；③ `docker/.env.example` 日志中心小节默认启用 + 网关说明；④ README §1.5 环境变量表与「日志中心连通保障」说明。
+- 验证：临时容器（bind mount 新版 entrypoint）——正确 URL 打印 `[info] 日志中心可达` 并正常启动；错误 URL 打印 error 并 exit 1；`LOG_CENTER_ENABLE=true` + 网关 URL 下日志中心 `/api/nodes` 出现容器节点 172.17.0.3（44→218 条），容器→日志中心链路打通。
+- 环境遗留：docker.io registry 不可达（node:22-alpine 拉取超时），镜像无法重建，预检暂以 bind mount 验证；网络恢复后 `bash scripts/build_docker.sh --no-save` 重建使预检进入正式镜像（已登记 process.md）。
+- 注意：本会话 SearchReplace 工具修改未真实落盘（Read 缓存误导），改用 Bash+python 写入后 git diff 验证通过。
+
 ## 2026-08-24
 
 ### 任务：检查并纠正 reDocs 与 Swagger 的定义差异（docs UI 对齐）

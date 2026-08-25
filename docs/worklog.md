@@ -28,6 +28,8 @@
 - 验证：临时容器（bind mount 新版 entrypoint）——正确 URL 打印 `[info] 日志中心可达` 并正常启动；错误 URL 打印 error 并 exit 1；`LOG_CENTER_ENABLE=true` + 网关 URL 下日志中心 `/api/nodes` 出现容器节点 172.17.0.3（44→218 条），容器→日志中心链路打通。
 - 环境遗留：docker.io registry 不可达（node:22-alpine 拉取超时），镜像无法重建，预检暂以 bind mount 验证；网络恢复后 `bash scripts/build_docker.sh --no-save` 重建使预检进入正式镜像（已登记 process.md）。
 - 注意：本会话 SearchReplace 工具修改未真实落盘（Read 缓存误导），改用 Bash+python 写入后 git diff 验证通过。
+- **方案变更（用户确认）**：不修改仓库文件，改为 `docker run` 环境变量方式——docker-compose/entrypoint/.env.example/README 四处修改已回滚（commit `0083a52`）。优化命令为在原 docker run 基础上追加 `-e LOG_CENTER_ENABLE=true -e LOG_CENTER_URL=http://172.17.0.1:9315`（容器内经 docker0 网关访问宿主机 host 网络的 log-center）。
+- 实测：优化命令启动 open-ikc 容器（IP 172.17.0.3），`/health` 正常；日志中心 `/api/nodes` 该节点 log_count 持续增长（218→256+），日志发布链路打通。
 
 ## 2026-08-24
 

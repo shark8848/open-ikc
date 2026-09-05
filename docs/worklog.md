@@ -4,6 +4,70 @@
 > 约定见 `AGENTS.md`「工作日志与每日继承」章节。按日期追加，每天一个条目。
 > 每个工作日 `17:30` 触发例行提交任务（约定见 `AGENTS.md` §8.1）。
 
+## 2026-09-05
+
+### 任务：企业级知识运营数据模型差距分析与总体设计方案（2026-09-05）
+
+- 需求：分析项目当前数据模型是否满足企业级知识运营完整需求（全格式文档管理、解析→全文/向量索引、Wiki 知识库、图谱库、Agent 记忆、企业本体等综合管理），输出更合理的目标数据模型设计方案。
+- 分析结论（代码事实）：
+  - 业务数据全部在进程内 dict（kb/document/parse-task/parse-result/upload/search-index/wiki/graph 八类 `*Store`），重启即失；仅管理面 token/统计落 SQLite（`api_tokens/request_stats/endpoint_agg/token_agg`）；上传文件为 `data/uploads` 7 天暂存。
+  - 协议层 + wiki/graph 形态对象模型（稳定 sha1 ID、来源证据、状态、增量合并、schema 覆盖率）可继承，是后续演进的好基础。
+  - 差距：无业务持久化主库；文档无版本/资产登记/格式家族与多模态接入（图片/音视频/邮件在白名单外）；解析结果与 chunk 仅内存占位（download 为 JSON 壳）；检索索引无注册与「doc 版本→索引」同步状态机；wiki/图谱无版本/审核/发布建模；无本体/分类/术语数据承载；无 Agent 记忆结构；治理审计/密级/文档级 ACL 缺失。
+- 交付：新增 `docs/知识运营数据模型总体设计方案.md`（结论摘要、11 项差距矩阵、目标八域约 30 张核心表设计、存储选型矩阵、现状→目标映射、M0→M3 渐进路线、6 项开放问题）；纯设计文档，不改代码/路由/catalog，无行为变化。
+- 验证：文件结构检查通过（505 行，11 节）；不涉及测试。
+- 下一步：评审后按 M0（业务元数据落库 SQLite→PostgreSQL DSN 抽象，保持 Store 语义与测试隔离）起步，与 process.md 真实解析引擎 / async worker / download 产物流联动。
+
+### 任务：数据模型方案 v2 修订（目录=知识单元 + 结构化内容存储）（2026-09-05 续）
+
+- 用户反馈：①文档存在目录结构，一个目录下算是一份「大知识」；②文档元数据除基础外还有摘要/关键字/标签等；③解析后的内容希望按**文档结构**存储，而不是拆成数据库的不同字段导致表极其复杂。
+- 修订 `docs/知识运营数据模型总体设计方案.md`（v2，446 行）：
+  - 新增一等概念 `knowledge_unit` 目录树（kb→unit→document；directory ingest 还原源目录结构；目录可整体声明元数据、批量接入、整目录加工/检索/权限/生命周期）。
+  - 文档元数据统一为版本化结构文档（`doc_meta`：base/business/derived 三段，摘要/关键字/标签/实体等进 derived；只有过滤/权限语义的少量字段冗余为列）。
+  - 解析内容按 `content_document` 结构化文档（带类型 block 树：页面/标题/段落/表格/图/音视频块/公式…）存储于对象存储/登记表，DB 不再散字段；chunk/全文/向量/wiki/图谱 = 「内容结构 × 版本」的派生视图，可重建。
+  - 全文重排为「少列、结构化、可扩展」模型（核心表 20 余张）；阶段路线与开放问题同步更新。
+- 迭代：按用户要求深化「§5 概念模型」——补齐概念分组总览、完整 ER（kb/unit 目录树、version→content_document→chunk/索引/wiki/graph、ontology 引用、memory_link、subject_acl 授权）、关系基数与约束表、聚合根一致性边界、生命周期与派生方向阅读指引（v2 概念模型，519 行）。
+- 迭代：概念边界修正（用户意见：任务对象不入知识概念）——概念组由七组收敛为六组（治理改为资产横切属性/关系），从 §5 概念模型与 ER 中移除 `ingest_task/parse_task`；`document_version`→`content_document` 改为 0..1 概念关系（`|o--o|`），加工过程标注为物理支撑（§6.4）而非知识概念；§6 开头明示「知识资产表 vs 加工/治理支撑表」两类。
+- 迭代：用户反馈「概念模型图看不到」（Mermaid 未渲染）——新增矢量图 `docs/images/知识运营概念模型.svg`（六层概念 + 加工/治理边界，主链垂直对齐 + 语义/记忆层直角虚线引用），嵌入 §5.2 并保留 Mermaid ER 源码供编辑。
+- 迭代：用户反馈「Mermaid 布局像蜘蛛网」——§5.2 的 Mermaid ER（30+ 条跨层关系线）替换为**分层 flowchart TB**（按 ①-⑥ 层子图自上而下、连线只在相邻层之间、语义/记忆仅保留两条短虚线），并附 classDef 配色；支持/治理关系（doc_index_state/subject_acl/memory_link 等）不铺线，基数语义由 §5.3 承担。
+- 迭代：用户反馈「解析产物按文档形态使用不同结构模板（PPT 与 Word、Video 与 Audio 差异大）」——方案新增 `content_template`（形态产物模板，tmpl_ 前缀，版本化注册：结构单元/块类型/定位键/派生映射）与 `content_document = 模板实例`；§6.3 给出 Word/PPT/PDF/Excel/Video/Audio/Image/MD/Email 模板对照与 docx/pptx/video/audio 四份结构实例；`parse_task` 记录模板命中，chunk 按模板 mapping 切分；§5.1/流程图/SVG 同步补充模板概念。
+- 下一步：待评审；评审通过后按 M0（Repository + 业务元数据落库）起步。
+
+### 任务：数据模型方案概念模型收尾——模板显式入图 + openwiki/semantica 引擎对齐（2026-09-05 续）
+
+- 用户反馈：①概念模型图要**显式体现文档形态模板**（此前 SVG 中 content_template 与 content_document 两个 chip 互相重叠、关系箭头压在 chip 内部文字上，模板关系不可辨）；②Wiki 概念**严格贴合 openwiki-server**、Graph 与 Ontology **严格贴合 semantica-graph-server** 的能力来建模。
+- 引擎能力只读核查（对齐依据，非改动代码）：
+  - openwiki-server：仅 `wiki`（kb 级实例）+ `page` 两层；page 含 pageId/stableKey/parentPageId/level/tags/markdown/links{title,pageId}/docId+sourceDocs/status(active|deprecated)；**无 space/folder/order/版本快照/block 原生语义**；合并 dedup=merge|overwrite|skip，来源证据只到 doc 粒度。
+  - semantica-graph-server：GraphMeta{graphId,name,kbId,tenantId,ownerId,graphSchema,status}；本体即 `graphSchema{entityTypes[],relationTypes[]（可选 sourceTypes/targetTypes）}`（轻 schema + 宽 properties）；entity/relation 稳定 ID sha1 派生、按 docId merge/deprecate（relation 不随 docId 废弃为已知缺口）；检索=符号查询（neighbors depth≤2/paths）；export jsonl `kind=entity|relation`；底层 ontology class（uri/name/subClassOf/properties、OWL 生成器）未接线。
+- 方案修订（`docs/知识运营数据模型总体设计方案.md`，661 行）：
+  - 标题区补 v2.1 修订说明（④任务不入概念层 ⑤形态模板 ⑥wiki/graph/ontology 引擎对齐）；§5.1 概念总览与「引擎对齐基线」注记明确 openwiki/semantica 边界及 open-ikc 超集语义。
+  - §5.2 图 1 图注/alt 更新；§5.3 新增 `content_document → content_template`（N—1，实例化语义）；§5.5 阅读指引补「模板」派生行。
+  - §6.6-6.8 整段以引擎记录为对齐基线（wiki_page↔WikiPageRecord 同构+可空超集；graph/entity/relation↔semantica；ontology 建模为「编译成 graphSchema/OWL 的定义资产」）。
+- 图 v4 重建（`docs/images/知识运营概念模型.svg`，16808 B）：③内容事实层同一行并列 `content_document` 与 `content_template` 并用「使用 · 实例化」箭头（端点贴 chip 边界）；④派生行 chunk/wiki(graph) 三 chip 等距排布消除原 86px 重叠；⑤→④ 仅保留 ontology→graph 一条跨层虚线（graphSchema 类型引用），记忆沉淀改为 memory chip 注记，避免旧版两条交叉虚线成「蜘蛛网」；任务/治理支撑记录不入概念以底部注记呈现。
+- 修复：原 SVG 为**非法 XML**（font-family 内层单引号与外层属性引号冲突，浏览器/查看器可能渲染失败）→ 字体族改双引号内嵌后重新生成，`xml.dom.minidom` 校验通过。
+- 验证：SVG XML well-formed + 几何审计（15 个概念 chip 两两无重叠、均在其分层带内、箭头端点贴 chip 边界）；文档 Mermaid 括号/引号与 subgraph/end 配平；§6.6-6.8 引擎字段与上文只读核查一致。
+- 下一步：方案待评审（v2.1）。注意：仓库存在用户大量并发未提交的 wiki/图谱引擎改动（app/core、routers、sdk 等），收尾**不混入提交**；文档类改动仅在本任务确认后才 commit/push。
+
+### 任务：数据模型方案 v2.2——受控词表治理（标签/专业词库/同义词）+ 知识运营全景图（2026-09-05 续）
+
+- 用户反馈：①刚生成的 SVG 概念图很好，**不要覆盖**，保留为 v1.0 版本；②另生成一张**结合加工执行域与治理支撑域的全景图**；③**标签定义要全局化**：不可重复/歧义、避免乱标注、有治理；④增加**专业词库、同义词库**。
+- 落地：
+  - 图：`docs/images/知识运营概念模型.svg` → 改名为 `知识运营概念模型_v1.0.svg`（内容保持不变，作为概念模型 v1.0 快照）；新增 `docs/images/知识运营全景图_v1.0.svg`（1760×2560）——按流水线分层：接入与登记加工域（接入源/全格式白名单 → ingest_task）→ ①知识组织 → ②文档资产 → 解析加工执行域（parse_task/parse_artifact，命中 content_template）→ ③内容事实 → ④派生资产（chunk/wiki_page(graph)/graph）→ ⑤语义资产含**受控词表**（ontology/taxonomy/tag/term/synonym）/⑥记忆 → **治理支撑域**（subject_acl/audit_log/review_flow/retention_policy）；概念层（彩带）与加工/治理支撑（灰带）视觉分离，物理记录仍不入概念层。
+  - 方案 `docs/知识运营数据模型总体设计方案.md` v2.2（684 行）：§6.8 新增**受控词表**小节——`tag` 全局标签注册（tag_，name_norm 全局唯一、禁自由散标、状态机+审核发布）、`term` 专业词库（term_）、`synonym_set` 同义词库（syn_，aliases 归一指向唯一 canonical），`glossary_term` 并入 term；同步更新 §0/R9/§5.1 语义资产行/§5.3 关系行（tag→标注引用、term/synonym→抽取归一）/§5.5/§7 设计决策 9/§9 映射/§11.1 前缀（tag_/term_/syn_）/§6.3 `doc_meta.tags` 示例改为引用 tag code；§5.2 嵌入图 1（v1.0 快照）+ 图 2（全景图），Mermaid 语义子图补 TAG/TERM/SYN 节点。
+- 验证：全景图 SVG XML well-formed；几何审计（25 个 chip 两两无重叠、无越界）；全部线段/路径（含箭头端点）无穿越 chip 内部；文档 Mermaid 配平、代码围栏成对。
+- 下一步：方案待评审（v2.2）。注：仓库含用户大量并发未提交改动，未混入提交。
+
+### 任务：数据模型方案 v2.3——基于全景图（图 2）全面完善方案全文（2026-09-05 续）
+
+- 用户反馈：以第二张 SVG（知识运营全景图 v1.0）为基准，全面完善整个 `docs/知识运营数据模型总体设计方案.md`，让全景图每个分域都有模型落点。
+- 落地（方案 751 行）：
+  - §0 结论矩阵新增「全景分层」维度；§3 目标总体架构重写为全景分层 ASCII + **「全景分域 → 章节/表」映射表**（接入/解析加工域、①-⑥概念层、治理支撑域逐一标注概念 or 支撑），作为全文阅读索引。
+  - §6.4 改名「加工执行域（接入/解析，物理支撑）与派生切片」：补**接入与登记链路**（接入源 → 白名单/签名 → ingest_task → unit/document/version/file_asset 登记 → 触发 parse_task）与新增 **`ingest_task` 表**（ing_，req_id 幂等/目录还原/mode/统计/状态机）。
+  - §6.10 改名「治理支撑域（横切，非知识概念）」：新增**作用面映射表**（subject_acl/review_flow/audit_log/retention_policy），subject_acl 资源类型扩到受控词表，review_flow 增加 flow_type 枚举，新增**受控词表治理流**（候选 → name_norm 查重/歧义消解 → 审核发布 → 变更/废弃停用）。
+  - §6.6 wiki_page 补注：引擎 `tags[]` 原样 vs open-ikc 受控标注（fields_json 存全局 tag code），避免与禁散标冲突。
+  - §9 补 `ingest_task` 映射行并更新 M1 验收；§10 开放问题新增受控词表运营边界、接入任务规模/断点续传；§11.2 状态机补 ingest_task/tag·term·synonym·taxonomy_term/review_flow；§11.4 术语对照补受控词表与加工/治理支撑记录两行。
+- 验证：文档代码围栏 16 成对、Mermaid 配平（6 subgraph/6 end）；交叉核对引用（图 2 分域 → §6.x 表均存在）。
+- 下一步：方案待评审（v2.3）。注：仓库含用户大量并发未提交改动，未混入提交。
+
 ## 2026-08-25
 
 ### 任务：向本地 ikc-log-center 镜像灌入 10 天 × 3 节点模拟测试数据

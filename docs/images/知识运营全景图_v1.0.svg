@@ -1,0 +1,125 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1760' height='2560' viewBox='0 0 1760 2560'>
+<rect width='1760' height='2560' fill='#ffffff'/>
+<defs><marker id='arr' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0,0 L10,5 L0,10 z' fill='#475569'/></marker><marker id='arrdash' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0,0 L10,5 L0,10 z' fill='#94a3b8'/></marker></defs>
+<text x='880.0' y='44' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='27' font-weight='bold' fill='#0f172a'>企业知识运营全景图（知识概念层 · 加工执行域 · 治理支撑域）</text>
+<text x='880.0' y='74' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='14.5' fill='#64748b'>图例：彩带+白底=知识概念层（①-⑥）；灰带+灰框=加工/治理支撑（物理记录，不入概念层）；⑤ 语义层含受控词表（tag/term/synonym，全局唯一、审核治理）</text>
+<rect x='90' y='110' width='1580' height='240' rx='14' fill='#eef2f7' stroke='#475569' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='137' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#334155'>接入与登记加工域（物理支撑 · 非知识概念）</text>
+<rect x='644.2' y='164.2' width='511.6' height='71.5' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='900.0' y='183.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>接入源 / 全格式白名单</text>
+<text x='900.0' y='200.5' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>目录 / 压缩包 = 整目录（一份大知识）批量；文件 / URL / 对象 = 增量</text>
+<text x='900.0' y='216.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>图片 · office · PDF · md · html · ppt · video · audio · email（§6.1-6.2）</text>
+<rect x='630.7' y='284.9' width='538.7' height='54.2' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='900.0' y='303.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>ingest_task 接入登记（幂等，任务状态机）</text>
+<text x='900.0' y='321.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>目录还原 unit 树 · 登记 document / document_version / file_asset（sha256 去重）</text>
+<line x1='900.0' y1='239.8' x2='900.0' y2='280.9' stroke='#475569' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='600.0' y='249.8' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#475569'>提交接入</text>
+<rect x='90' y='430' width='1580' height='180' rx='14' fill='#eaf2fc' stroke='#1d5fa5' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='457' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#1d5fa5'>① 知识组织层</text>
+<rect x='208.0' y='492.9' width='184.0' height='54.2' rx='10' fill='#ffffff' stroke='#1d5fa5' stroke-width='1.7'/>
+<text x='300.0' y='511.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>subject</text>
+<text x='300.0' y='529.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>用户/团队/组织/应用/Agent</text>
+<rect x='578.9' y='492.9' width='282.2' height='54.2' rx='10' fill='#ffffff' stroke='#1d5fa5' stroke-width='1.7'/>
+<text x='720.0' y='511.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>kb 知识库</text>
+<text x='720.0' y='529.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>归属边界 · 形态 text/wiki/graph · 库配置</text>
+<rect x='1008.4' y='492.9' width='303.2' height='54.2' rx='10' fill='#ffffff' stroke='#1d5fa5' stroke-width='1.7'/>
+<text x='1160.0' y='511.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>unit 目录树 = 大知识</text>
+<text x='1160.0' y='529.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>多级目录；一个目录一份大知识；元数据/授权可继承</text>
+<line x1='395.0' y1='520.0' x2='575.9' y2='520.0' stroke='#475569' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='485.4' y='500.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#475569'>授权 subject_acl</text>
+<line x1='864.1' y1='520.0' x2='1005.4' y2='520.0' stroke='#475569' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='934.8' y='500.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#475569'>归属 / 包含</text>
+<rect x='90' y='690' width='1580' height='200' rx='14' fill='#e7f6f2' stroke='#0e7a66' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='717' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#0e7a66'>② 文档资产层</text>
+<rect x='156.5' y='732.9' width='247.1' height='54.2' rx='10' fill='#ffffff' stroke='#0e7a66' stroke-width='1.7'/>
+<text x='280.0' y='751.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>doc_meta 结构化元数据</text>
+<text x='280.0' y='769.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>base/业务/derived：摘要·关键字·标签</text>
+<rect x='649.8' y='732.9' width='220.4' height='54.2' rx='10' fill='#ffffff' stroke='#0e7a66' stroke-width='1.7'/>
+<text x='760.0' y='751.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>document_version 版本</text>
+<text x='760.0' y='769.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>内容变化锚点 version_id（幂等）</text>
+<rect x='1098.7' y='732.9' width='282.7' height='54.2' rx='10' fill='#ffffff' stroke='#0e7a66' stroke-width='1.7'/>
+<text x='1240.0' y='751.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>document 文档</text>
+<text x='1240.0' y='769.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>归属 unit · 少量过滤列（密级/分类/有效期）</text>
+<rect x='643.1' y='824.9' width='233.7' height='54.2' rx='10' fill='#ffffff' stroke='#0e7a66' stroke-width='1.7'/>
+<text x='760.0' y='843.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>file_asset 文件资产</text>
+<text x='760.0' y='861.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>原始/派生文件 · sha256 · 对象存储</text>
+<line x1='652.8' y1='760.0' x2='400.5' y2='760.0' stroke='#475569' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='526.7' y='748.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#475569'>描述 1:1</text>
+<line x1='1101.7' y1='760.0' x2='867.2' y2='760.0' stroke='#475569' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='984.4' y='748.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#475569'>版本 1..n</text>
+<line x1='760.0' y1='790.1' x2='760.0' y2='820.9' stroke='#475569' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='730.0' y='802.9' text-anchor='end' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#475569'>内容源 1:1</text>
+<line x1='1240.0' y1='551.1' x2='1240.0' y2='728.9' stroke='#1d5fa5' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='1252.0' y='660.0' text-anchor='start' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#1d5fa5'>目录下挂多文档（整目录=大知识）</text>
+<rect x='90' y='970' width='1580' height='220' rx='14' fill='#eef2f7' stroke='#475569' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='997' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#334155'>解析加工执行域（物理支撑 · 非知识概念）</text>
+<rect x='534.6' y='1046.2' width='570.9' height='71.5' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='820.0' y='1065.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>parse_task / parse_artifact（异步任务 · 产物登记）</text>
+<text x='820.0' y='1082.5' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>命中 content_template（docx/pptx/xlsx/pdf/video/audio 形态模板）→ 状态机执行</text>
+<text x='820.0' y='1098.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>产物 kind=content_structure/text/markdown/subtitle/thumbnail → 对象存储 + art_ 登记</text>
+<line x1='760.0' y1='883.1' x2='800.0' y2='1042.2' stroke='#94a3b8' stroke-width='1.8' marker-end='url(#arrdash)' stroke-dasharray='6 4'/>
+<text x='828.0' y='935.0' text-anchor='start' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#94a3b8'>加工输入：version × file_asset（解析源）</text>
+<rect x='90' y='1270' width='1580' height='190' rx='14' fill='#fdf4df' stroke='#b07d1f' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='1297' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#b07d1f'>③ 内容事实层（content_template 形态模板实例化结构）</text>
+<rect x='298.5' y='1330.6' width='723.1' height='78.8' rx='10' fill='#ffffff' stroke='#b07d1f' stroke-width='1.7'/>
+<text x='660.0' y='1351.8' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='17' font-weight='bold' fill='#1e293b'>content_document 内容结构（唯一内容事实）</text>
+<text x='660.0' y='1370.8' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='13' fill='#64748b'>结构由 content_template 定义：docx 章节 / pptx 幻灯片+形状 / video 时间片+字幕 / audio 分段+说话人</text>
+<text x='660.0' y='1387.8' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='13' fill='#64748b'>模板按形态/引擎/版本注册；不拆数据库字段</text>
+<rect x='1184.6' y='1342.9' width='390.8' height='54.2' rx='10' fill='#ffffff' stroke='#b07d1f' stroke-width='1.7'/>
+<text x='1380.0' y='1361.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>content_template 文档形态模板</text>
+<text x='1380.0' y='1379.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>docx/pptx/xlsx/pdf/video/audio 结构各异 · tmpl_ 版本注册</text>
+<line x1='660.0' y1='1123.8' x2='660.0' y2='1326.6' stroke='#94a3b8' stroke-width='1.8' marker-end='url(#arrdash)' stroke-dasharray='6 4'/>
+<text x='700.0' y='1220.0' text-anchor='start' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#94a3b8'>产物登记 → content_document（对象存储）</text>
+<line x1='1029.5' y1='1370.0' x2='1176.6' y2='1370.0' stroke='#b07d1f' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='1103.1' y='1354.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#b07d1f'>使用 · 实例化</text>
+<rect x='90' y='1540' width='1580' height='190' rx='14' fill='#eaf7ec' stroke='#2f7d32' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='1567' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#2f7d32'>④ 派生资产层（可重建）</text>
+<rect x='185.0' y='1617.9' width='261.2' height='54.2' rx='10' fill='#ffffff' stroke='#2f7d32' stroke-width='1.7'/>
+<text x='315.6' y='1636.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>chunk 切片 → index 全文/向量</text>
+<text x='315.6' y='1654.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>检索/证据锚点 · 索引注册 + 同步状态机</text>
+<rect x='594.2' y='1617.9' width='383.0' height='54.2' rx='10' fill='#ffffff' stroke='#2f7d32' stroke-width='1.7'/>
+<text x='785.7' y='1636.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>wiki_page（openwiki）</text>
+<text x='785.7' y='1654.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>页面树 stableKey · dedup merge · 来源 docId/sourceDocs</text>
+<rect x='1125.2' y='1617.9' width='449.7' height='54.2' rx='10' fill='#ffffff' stroke='#2f7d32' stroke-width='1.7'/>
+<text x='1350.0' y='1636.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>graph（semantica）</text>
+<text x='1350.0' y='1654.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>graphSchema 类型 · entity/relation · neighbors/path · 证据到 doc</text>
+<line x1='500.0' y1='1413.4' x2='315.6' y2='1617.9' stroke='#2f7d32' stroke-width='1.8' marker-end='url(#arr)'/>
+<line x1='760.0' y1='1413.4' x2='785.7' y2='1617.9' stroke='#2f7d32' stroke-width='1.8' marker-end='url(#arr)'/>
+<text x='800.0' y='1518.4' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12.5' fill='#2f7d32'>派生（可重建）</text>
+<line x1='1010.0' y1='1413.4' x2='1350.0' y2='1617.9' stroke='#2f7d32' stroke-width='1.8' marker-end='url(#arr)'/>
+<rect x='90' y='1810' width='1210' height='310' rx='14' fill='#f3edfb' stroke='#6246a8' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='1837' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#6246a8'>⑤ 语义资产层 · 受控词表（全局定义资产，治理发布）</text>
+<rect x='1300' y='1810' width='370' height='310' rx='14' fill='#fdefe9' stroke='#c2541e' stroke-width='1.2' stroke-opacity='.6'/><text x='1320' y='1837' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#c2541e'>⑥ 记忆层（Agent）</text>
+<rect x='200.6' y='1842.9' width='458.9' height='54.2' rx='10' fill='#ffffff' stroke='#6246a8' stroke-width='1.7'/>
+<text x='430.0' y='1861.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>graphSchema / ontology class（semantica）</text>
+<text x='430.0' y='1879.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>entityTypes·relationTypes · class uri/name/subClassOf/properties</text>
+<rect x='942.9' y='1842.9' width='344.1' height='54.2' rx='10' fill='#ffffff' stroke='#6246a8' stroke-width='1.7'/>
+<text x='1115.0' y='1861.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>taxonomy 分类树</text>
+<text x='1115.0' y='1879.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>doc_class/枚举受控取值 · metadataSchema enum 引用</text>
+<rect x='262.0' y='1922.9' width='336.1' height='54.2' rx='10' fill='#ffffff' stroke='#6246a8' stroke-width='1.7'/>
+<text x='430.0' y='1941.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>tag 全局标签注册</text>
+<text x='430.0' y='1959.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>全局唯一 name_norm · 防重复/歧义 · 状态机+审核发布</text>
+<rect x='820.8' y='1922.9' width='358.4' height='54.2' rx='10' fill='#ffffff' stroke='#6246a8' stroke-width='1.7'/>
+<text x='1000.0' y='1941.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>term 专业词库</text>
+<text x='1000.0' y='1959.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>词条定义 + 归一唯一 · 领域词义 · 供抽取/检索/元数据引用</text>
+<rect x='520.5' y='2002.9' width='399.1' height='54.2' rx='10' fill='#ffffff' stroke='#6246a8' stroke-width='1.7'/>
+<text x='720.0' y='2021.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>synonym_set 同义词库</text>
+<text x='720.0' y='2039.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>canonical + aliases（全称/缩写/俗称/译文）· 归一指向唯一词条</text>
+<rect x='1325.1' y='1914.2' width='319.7' height='71.5' rx='10' fill='#ffffff' stroke='#c2541e' stroke-width='1.7' stroke-dasharray='6 4'/>
+<text x='1485.0' y='1933.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>memory_store / memory_link 记忆</text>
+<text x='1485.0' y='1950.5' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>Agent 私有 · 非权威 · 独立 TTL · 隔离于企业检索</text>
+<text x='1485.0' y='1966.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>沉淀为 wiki/graph 需审核（review_flow）</text>
+<path d='M600.0,1844.9 L600.0,1770.0 L1400.0,1770.0 L1400.0,1673.1' fill='none' stroke='#6246a8' stroke-width='1.8' stroke-dasharray='6 4' marker-end='url(#arrdash)'/>
+<text x='720.0' y='1762.0' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='12' fill='#6246a8'>graphSchema 类型引用</text>
+<rect x='90' y='2200' width='1580' height='240' rx='14' fill='#eef2f7' stroke='#475569' stroke-width='1.2' stroke-opacity='.6'/><text x='110' y='2227' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='16' font-weight='bold' fill='#334155'>治理支撑域（横切支撑 · 非知识概念）</text>
+<rect x='201.6' y='2257.9' width='276.7' height='54.2' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='340.0' y='2276.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>subject_acl 授权</text>
+<text x='340.0' y='2294.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>目录级可继承 · allow/deny · 检索过滤注入</text>
+<rect x='675.0' y='2257.9' width='210.0' height='54.2' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='780.0' y='2276.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>audit_log 审计</text>
+<text x='780.0' y='2294.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>资源变更审计台账（trace 贯穿）</text>
+<rect x='1093.5' y='2257.9' width='253.0' height='54.2' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='1220.0' y='2276.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>review_flow 审核流</text>
+<text x='1220.0' y='2294.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>标签/词条/本体/wiki/记忆沉淀 审核发布</text>
+<rect x='1400.0' y='2257.9' width='239.9' height='54.2' rx='10' fill='#ffffff' stroke='#475569' stroke-width='1.7'/>
+<text x='1520.0' y='2276.6' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='15' font-weight='bold' fill='#1e293b'>retention_policy 保留策略</text>
+<text x='1520.0' y='2294.1' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='11.5' fill='#64748b'>文件/解析产物/日志保留与清理</text>
+<text x='120' y='2380' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='13' fill='#475569'>映射：subject_acl→知识资产（可继承）；review_flow→受控词表/wiki/本体/记忆沉淀；retention_policy→文件与解析产物；audit_log→全程（审计/版本/审核记录不入概念层）。</text>
+<text x='120' y='2408' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='13' fill='#475569'>受控词表治理：tag / term / synonym 定义全局唯一（name_norm 归一化，禁止重复与歧义）；标注与抽取只允许引用注册 code，禁止自由字符串散标；变更走审核发布。</text>
+<rect x='90' y='2460' width='1580' height='62' rx='12' fill='#f8fafc' stroke='#94a3b8' stroke-width='1.4' stroke-dasharray='7 5'/>
+<text x='880.0' y='2480' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='14' fill='#475569'>知识概念=①-⑥（白底彩框）；接入/解析加工与治理支撑=灰底灰框（ingest_task/parse_task/parse_artifact/subject_acl/audit_log/review_flow/retention_policy 等为物理记录，不入概念层，见 §5/§6.4/§6.10）</text>
+<text x='880.0' y='2504' text-anchor='middle' font-family='"Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif' font-size='13' fill='#94a3b8'>全景图把「概念模型（知识是什么）」与「加工/治理支撑（怎么跑、怎么管）」分层表达：概念层不可绕过内容事实直接改派生；支撑记录驱动概念资产生成与治理（§5.5/§6.4）</text>
+</svg>

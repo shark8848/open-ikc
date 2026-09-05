@@ -26,7 +26,7 @@
 | 未闭环 | P2 | **async 解析引擎联动缺口**：引擎启用时直接返回 QUEUED，无引擎任务 ID、无异步任务查询接口 | 明确 P2-2 async 引擎联动闭环或回退占位（2026-08-24 审查 P2-2） |
 | 未闭环 | P2 | **`ensure_wiki` 乐观创建并发竞态** + `_request` 对 HTTP 4xx 无业务码时无统一错误映射 | 幂等化创建 + 4xx 映射（2026-08-24 审查 P2-3） |
 | 环境 | P2 | **docker.io registry 不可达**：`node:22-alpine` 拉取超时（registry-1.docker.io 被网关拦截），镜像重建受阻 | 日志发布已走 `docker run -e LOG_CENTER_ENABLE=true -e LOG_CENTER_URL=http://172.17.0.1:9315` 环境变量方案（无需重建）；后续 portal/依赖变更需重建镜像时先恢复网络（2026-08-25） |
-| 环境 | P2 | **origin（code.tiancloud.com）网络不可达**：22/443 SSH 与 HTTPS 均被代理网关拦截（198.18.0.91），`git fetch/push origin` 无法执行，双远端同步受阻 | 网络恢复后执行 `git push origin main` 补推 `297fb39..ca1855f` |
+| 已闭环 | P2 | ~~origin（code.tiancloud.com）网络不可达~~：网络已恢复（2026-09-05），已执行 `git push origin main` 同步 `726a133..a3b1450` | 双远端（github+origin）均已同步到 a3b1450 |
 | 未闭环 | P2 | **空字符串 `kbName` 未做非空校验**：`POST /knowledge-bases/create` 传 `kbName=""` 可创建空名库（conformance finding） | 补服务端非空校验（100001）或手册明确限制 |
 | 未闭环 | P2 | **Java SDK 未同步 wiki/graph**：`sdk/java` 仅基础四类能力，未封装 wiki 三方法与 graph 五方法（Python SDK 已 24 工具/命令） | 按 `sdk/python` 模式补齐 Java 客户端 + 测试 |
 | 待更新 | P3 | **在线测试 E2E 基线**：`/tmp/mcp_cli_e2e.py`（35/35）未随 wiki/graph 扩展；下次全量 E2E 需覆盖 24 工具/命令 | 运行前更新脚本枚举并重跑 |

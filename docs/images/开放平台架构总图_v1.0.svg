@@ -137,11 +137,11 @@
 
   <!-- ================= 第 5 层：能力层 ================= -->
   <g>
-    <rect x="200" y="850" width="270" height="64" rx="10" fill="url(#gEmerald)" stroke="#047857" stroke-width="2"/>
+    <rect x="200" y="850" width="270" height="64" rx="10" fill="url(#gEmerald)"/>
     <text x="335" y="876" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">文档采集器</text>
     <text x="335" y="898" text-anchor="middle" font-size="12" fill="#d1fae5">外部文档 / 网页 / 知识库统一适配</text>
 
-    <rect x="200" y="930" width="270" height="60" rx="10" fill="url(#gEmerald)" stroke="#047857" stroke-width="2"/>
+    <rect x="200" y="930" width="270" height="60" rx="10" fill="url(#gEmerald)"/>
     <text x="335" y="954" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">外部检索 Channel</text>
     <text x="335" y="976" text-anchor="middle" font-size="12" fill="#d1fae5">Web / 企业搜索 / 统一适配</text>
 

@@ -1046,3 +1046,7 @@
 ### 任务：架构总图应用层→接入层协议标注补充（2026-09-06）
 
 - 应用层→接入层协议标注由「HTTP / Bearer Token」扩展为「HTTPS API / MCP / CLI（Bearer Token 认证）」，覆盖 API、MCP、CLI 等接入形态。
+
+### 任务：架构总图外部通道组件独立色系（2026-09-06）
+
+- 能力层「文档采集器」「外部检索 Channel」由青色（gCyan）改为翡翠绿（新增 gEmerald #34d399→#059669，描边 #047857、副标题 #d1fae5），与能力层其余青色组件（LLM Gateway/模型服务/Parser Cache/pyuploadX）区分，绿色语义对应「外部接入通道」。

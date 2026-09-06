@@ -134,10 +134,13 @@
 
   <!-- ================= 第 5 层：能力层 ================= -->
   <g>
-    <rect x="200" y="850" width="270" height="140" rx="10" fill="url(#gCyan)" stroke="#0e7490" stroke-width="2"/>
-    <text x="335" y="905" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">文档采集器</text>
-    <text x="335" y="930" text-anchor="middle" font-size="12" fill="#cffafe">采集外部文档 / 网页</text>
-    <text x="335" y="952" text-anchor="middle" font-size="12" fill="#cffafe">外部知识库 / 统一适配</text>
+    <rect x="200" y="850" width="270" height="64" rx="10" fill="url(#gCyan)" stroke="#0e7490" stroke-width="2"/>
+    <text x="335" y="876" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">文档采集器</text>
+    <text x="335" y="898" text-anchor="middle" font-size="12" fill="#cffafe">外部文档 / 网页 / 知识库统一适配</text>
+
+    <rect x="200" y="930" width="270" height="60" rx="10" fill="url(#gCyan)" stroke="#0e7490" stroke-width="2"/>
+    <text x="335" y="954" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">外部检索 Channel</text>
+    <text x="335" y="976" text-anchor="middle" font-size="12" fill="#cffafe">Web / 企业搜索 / 统一适配</text>
 
     <rect x="510" y="850" width="340" height="60" rx="10" fill="url(#gCyan)"/>
     <text x="680" y="874" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">LLM Gateway</text>
@@ -267,6 +270,15 @@
     <text x="1745" y="1072" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">运营分析</text>
     <text x="1745" y="1100" text-anchor="middle" font-size="11" fill="#047857">用量 / token 成本统计</text>
     <text x="1745" y="1122" text-anchor="middle" font-size="11" fill="#047857">库 / 端点维度聚合</text>
+    <text x="1745" y="1142" text-anchor="middle" font-size="11" fill="#047857">知识热度 / 反馈 · 迭代闭环</text>
+
+    <rect x="1662" y="1172" width="166" height="28" rx="6" fill="#a7f3d0"/>
+    <text x="1745" y="1191" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">配置管理</text>
+
+    <rect x="1662" y="1216" width="166" height="76" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="1244" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">配置中心</text>
+    <text x="1745" y="1266" text-anchor="middle" font-size="11" fill="#047857">环境变量 / 运行参数集中管理</text>
+    <text x="1745" y="1284" text-anchor="middle" font-size="11" fill="#047857">模型路由 · 限流阈值 · 开关</text>
 
     <g stroke="#059669" stroke-width="2" stroke-dasharray="4 3">
       <line x1="1645" y1="132" x2="1626" y2="132" marker-end="url(#arrow)"/>

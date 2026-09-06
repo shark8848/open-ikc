@@ -62,9 +62,9 @@
     <text x="490" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">ikc open platform portal</text>
     <text x="490" y="145" text-anchor="middle" font-size="12" fill="#dbeafe">管理 Portal（库 / 文档 / 解析 / 检索 / 监控）</text>
 
-    <rect x="820" y="88" width="600" height="76" rx="10" fill="url(#gBlue)"/>
+    <rect x="820" y="88" width="600" height="76" rx="10" fill="url(#gSlate)"/>
     <text x="1120" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">3rd App 第三方应用</text>
-    <text x="1120" y="145" text-anchor="middle" font-size="12" fill="#dbeafe">业务系统 / 数字员工 / 智能问答前端</text>
+    <text x="1120" y="145" text-anchor="middle" font-size="12" fill="#e2e8f0">业务系统 / 数字员工 / 智能问答前端</text>
   </g>
 
   <!-- ================= 第 2 层：接入层 ================= -->

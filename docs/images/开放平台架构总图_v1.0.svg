@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1360" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gAmber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gVioletLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowRose" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e11d48"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect x="0" y="0" width="1900" height="1360" fill="#f8fafc"/>
+  <text x="950" y="30" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">IKC Open Platform 架构总图</text>
+  <text x="950" y="52" text-anchor="middle" font-size="13" fill="#64748b">v1.0</text>
+
+  <!-- ================= 层带背景 ================= -->
+  <rect x="130" y="66"   width="1490" height="120" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <rect x="130" y="216"  width="1490" height="130" rx="10" fill="#f0fdfa" stroke="#99f6e4"/>
+  <rect x="130" y="386"  width="1490" height="120" rx="10" fill="#fffbeb" stroke="#fde68a"/>
+  <rect x="130" y="536"  width="1490" height="260" rx="10" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <rect x="130" y="826"  width="1490" height="196" rx="10" fill="#ecfeff" stroke="#a5f3fc"/>
+  <rect x="130" y="1046" width="1490" height="255" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+
+  <!-- 层名标签 -->
+  <g font-size="17" font-weight="bold" fill="#334155" text-anchor="middle">
+    <text x="93" y="132" transform="rotate(-90 93 132)">应用层</text>
+    <text x="93" y="287" transform="rotate(-90 93 287)">接入层</text>
+    <text x="93" y="452" transform="rotate(-90 93 452)">调度层</text>
+    <text x="93" y="672" transform="rotate(-90 93 672)">服务引擎层</text>
+    <text x="93" y="907" transform="rotate(-90 93 907)">能力层</text>
+    <text x="93" y="1179" transform="rotate(-90 93 1179)">数据层</text>
+  </g>
+
+  <!-- ================= 第 1 层：应用层 ================= -->
+  <g>
+    <rect x="200" y="88" width="580" height="76" rx="10" fill="url(#gBlue)"/>
+    <text x="490" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">ikc open platform portal</text>
+    <text x="490" y="145" text-anchor="middle" font-size="12" fill="#dbeafe">管理 Portal（库 / 文档 / 解析 / 检索 / 监控）</text>
+
+    <rect x="820" y="88" width="600" height="76" rx="10" fill="url(#gBlue)"/>
+    <text x="1120" y="120" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">3rd App 第三方应用</text>
+    <text x="1120" y="145" text-anchor="middle" font-size="12" fill="#dbeafe">业务系统 / 数字员工 / 智能问答前端</text>
+  </g>
+
+  <!-- ================= 第 2 层：接入层 ================= -->
+  <g>
+    <rect x="200" y="240" width="580" height="84" rx="10" fill="url(#gTeal)"/>
+    <text x="490" y="272" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">open ikc gateway</text>
+    <text x="490" y="296" text-anchor="middle" font-size="12" fill="#ccfbf1">统一响应协议 · 认证鉴权（AUTHN/AUTHZ）· 限流路由 · Trace 追踪</text>
+
+    <rect x="820" y="240" width="600" height="84" rx="10" fill="url(#gTeal)"/>
+    <text x="1120" y="272" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">openikc sdk</text>
+    <text x="1120" y="296" text-anchor="middle" font-size="12" fill="#ccfbf1">Python SDK / Java SDK（面向 3rd App）</text>
+  </g>
+
+  <!-- sdk → gateway -->
+  <line x1="815" y1="282" x2="785" y2="282" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ================= 第 3 层：调度层 ================= -->
+  <g>
+    <rect x="200" y="410" width="460" height="72" rx="10" fill="url(#gAmber)"/>
+    <text x="430" y="440" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">Task 调度器</text>
+    <text x="430" y="462" text-anchor="middle" font-size="12" fill="#fef3c7">任务编排 / 重试 / 优先级</text>
+
+    <rect x="700" y="410" width="280" height="72" rx="10" fill="url(#gAmber)"/>
+    <text x="840" y="440" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">Pipeline 编排</text>
+    <text x="840" y="462" text-anchor="middle" font-size="12" fill="#fef3c7">接入→解析→索引 状态机流水线</text>
+
+    <rect x="1020" y="410" width="400" height="72" rx="10" fill="url(#gAmber)" stroke="#92400e" stroke-width="2"/>
+    <text x="1220" y="440" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">Redis 队列</text>
+    <text x="1220" y="462" text-anchor="middle" font-size="12" fill="#fef3c7">任务队列 / 延迟队列 / 结果回写</text>
+  </g>
+  <!-- 调度层内部箭头 -->
+  <line x1="665" y1="446" x2="695" y2="446" stroke="#92400e" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="985" y1="446" x2="1015" y2="446" stroke="#92400e" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ================= 第 4 层：服务引擎层 ================= -->
+  <g>
+    <rect x="200" y="568" width="290" height="86" rx="10" fill="url(#gViolet)"/>
+    <text x="345" y="600" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">ikc-core-service</text>
+    <text x="345" y="624" text-anchor="middle" font-size="11" fill="#ede9fe">知识库 / 文档接入</text>
+
+    <rect x="510" y="568" width="290" height="86" rx="10" fill="url(#gViolet)"/>
+    <text x="655" y="600" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">ikc-openwiki-service</text>
+    <text x="655" y="624" text-anchor="middle" font-size="11" fill="#ede9fe">Wiki 知识加工 / 词条生成</text>
+
+    <rect x="820" y="568" width="290" height="86" rx="10" fill="url(#gViolet)"/>
+    <text x="965" y="600" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">ikc-graph-service</text>
+    <text x="965" y="624" text-anchor="middle" font-size="11" fill="#ede9fe">知识图谱构建 / 图谱查询</text>
+
+    <rect x="1130" y="568" width="290" height="86" rx="10" fill="url(#gRose)" stroke="#9f1239" stroke-width="2"/>
+    <text x="1275" y="600" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">Universal Retriever</text>
+    <text x="1275" y="624" text-anchor="middle" font-size="11" fill="#ffe4e6">通用/融合检索 · Agentic RAG</text>
+  </g>
+
+  <text x="200" y="684" font-size="13" font-weight="bold" fill="#6d28d9">文档解析引擎（Parse Engines）：</text>
+  <g font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    <rect x="200" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="256.5" y="726">Video</text><text x="256.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">视频解析</text>
+    <rect x="323" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="379.5" y="726">Audio</text><text x="379.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">音频解析</text>
+    <rect x="446" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="502.5" y="726">Image</text><text x="502.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">图像识别</text>
+    <rect x="569" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="625.5" y="726">PPT</text><text x="625.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">幻灯片解析</text>
+    <rect x="692" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="748.5" y="726">PDF</text><text x="748.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">版面解析</text>
+    <rect x="815" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="871.5" y="726">Word</text><text x="871.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">文档解析</text>
+    <rect x="938" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="994.5" y="726">Excel</text><text x="994.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">表格解析</text>
+    <rect x="1061" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="1117.5" y="726">MD</text><text x="1117.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">Markdown</text>
+    <rect x="1184" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)"/><text x="1240.5" y="726">HTML</text><text x="1240.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">网页解析</text>
+    <rect x="1307" y="694" width="113" height="76" rx="8" fill="url(#gVioletLight)" stroke="#4c1d95" stroke-dasharray="4 3"/><text x="1363.5" y="726">…更多</text><text x="1363.5" y="748" font-size="10" font-weight="normal" fill="#ede9fe">可扩展</text>
+  </g>
+
+  <!-- ================= 第 5 层：能力层 ================= -->
+  <g>
+    <rect x="200" y="850" width="270" height="140" rx="10" fill="url(#gCyan)" stroke="#0e7490" stroke-width="2"/>
+    <text x="335" y="905" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">文档采集器</text>
+    <text x="335" y="930" text-anchor="middle" font-size="12" fill="#cffafe">采集外部文档 / 网页</text>
+    <text x="335" y="952" text-anchor="middle" font-size="12" fill="#cffafe">外部知识库 / 统一适配</text>
+
+    <rect x="510" y="850" width="340" height="60" rx="10" fill="url(#gCyan)"/>
+    <text x="680" y="874" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">LLM Gateway</text>
+    <text x="680" y="896" text-anchor="middle" font-size="12" fill="#cffafe">统一大模型网关 · Prompt 管理 · 配额路由</text>
+
+    <line x1="680" y1="912" x2="680" y2="922" stroke="#0e7490" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+    <rect x="510" y="926" width="340" height="64" rx="10" fill="url(#gCyan)"/>
+    <text x="680" y="952" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">模型服务</text>
+    <text x="680" y="976" text-anchor="middle" font-size="12" fill="#cffafe">LLM · vLLM · Embedding · Ranking · ASR</text>
+
+    <rect x="890" y="850" width="210" height="140" rx="10" fill="url(#gCyan)" stroke="#0e7490" stroke-width="2"/>
+    <text x="995" y="905" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">Parser Cache</text>
+    <text x="995" y="930" text-anchor="middle" font-size="12" fill="#cffafe">解析结果缓存</text>
+    <text x="995" y="952" text-anchor="middle" font-size="12" fill="#cffafe">命中复用 / 失效淘汰</text>
+
+    <rect x="1140" y="850" width="280" height="140" rx="10" fill="url(#gCyan)"/>
+    <text x="1280" y="905" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">文件服务引擎（pyuploadX）</text>
+    <text x="1280" y="930" text-anchor="middle" font-size="12" fill="#cffafe">分片上传 / 秒传</text>
+    <text x="1280" y="952" text-anchor="middle" font-size="12" fill="#cffafe">存储抽象 / 下载票据</text>
+  </g>
+
+  <!-- ================= 第 6 层：数据层 ================= -->
+  <g>
+    <rect x="200" y="1076" width="560" height="195" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="480" y="1106" text-anchor="middle" font-size="16" font-weight="bold" fill="#334155">知识资产 Knowledge Assets</text>
+    <g text-anchor="middle">
+      <rect x="220" y="1122" width="160" height="126" rx="8" fill="#e2e8f0"/>
+      <text x="300" y="1170" font-size="14" font-weight="bold" fill="#334155">知识文档</text>
+      <text x="300" y="1195" font-size="11" fill="#64748b">PDF / Word / MD</text>
+      <text x="300" y="1213" font-size="11" fill="#64748b">音视频 / 图片</text>
+      <text x="300" y="1231" font-size="11" fill="#64748b">Wiki 页面（加工产物）</text>
+
+      <rect x="400" y="1122" width="160" height="126" rx="8" fill="#e2e8f0"/>
+      <text x="480" y="1170" font-size="14" font-weight="bold" fill="#334155">结构化数据</text>
+      <text x="480" y="1195" font-size="11" fill="#64748b">表格 / 记录</text>
+      <text x="480" y="1213" font-size="11" fill="#64748b">抽取三元组</text>
+
+      <rect x="580" y="1122" width="160" height="126" rx="8" fill="#e2e8f0"/>
+      <text x="660" y="1170" font-size="14" font-weight="bold" fill="#334155">索引</text>
+      <text x="660" y="1195" font-size="11" fill="#64748b">倒排索引 / 向量</text>
+      <text x="660" y="1213" font-size="11" fill="#64748b">图谱索引</text>
+    </g>
+
+    <rect x="820" y="1076" width="600" height="195" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="1120" y="1106" text-anchor="middle" font-size="16" font-weight="bold" fill="#334155">存储设施 Storage</text>
+    <g text-anchor="middle">
+      <rect x="840" y="1122" width="170" height="126" rx="8" fill="#e2e8f0"/>
+      <text x="925" y="1162" font-size="13" font-weight="bold" fill="#334155">对象存储</text>
+      <text x="925" y="1186" font-size="11" fill="#64748b">MinIO / S3</text>
+      <text x="925" y="1204" font-size="11" fill="#64748b">原始文件 / 中间产物</text>
+      <text x="925" y="1222" font-size="11" fill="#64748b">解析结果 / Wiki 产物快照</text>
+
+      <rect x="1035" y="1122" width="170" height="126" rx="8" fill="#e2e8f0"/>
+      <text x="1120" y="1162" font-size="13" font-weight="bold" fill="#334155">图数据库</text>
+      <text x="1120" y="1186" font-size="11" fill="#64748b">Nebula / Neo4j</text>
+      <text x="1120" y="1204" font-size="11" fill="#64748b">图谱数据</text>
+      <text x="1120" y="1222" font-size="11" fill="#64748b">页面互链投影（派生）</text>
+
+      <rect x="1230" y="1122" width="170" height="126" rx="8" fill="#e2e8f0"/>
+      <text x="1315" y="1162" font-size="13" font-weight="bold" fill="#334155">关系数据库</text>
+      <text x="1315" y="1186" font-size="11" fill="#64748b">PostgreSQL / SQLite</text>
+      <text x="1315" y="1204" font-size="11" fill="#64748b">元数据 · Wiki 页面主存</text>
+      <text x="1315" y="1222" font-size="11" fill="#64748b">页面表 + 版本表</text>
+    </g>
+  </g>
+
+  <!-- 跨层垂直组件：ikc-sdk-lib（接入层～能力层） -->
+  <g>
+    <rect x="1460" y="230" width="140" height="780" rx="14" fill="#fdf2f8" stroke="#ec4899" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="1537" y="620" text-anchor="middle" font-size="17" font-weight="bold" fill="#be185d" transform="rotate(-90 1537 620)">ikc-sdk-lib 组件</text>
+    <text x="1562" y="620" text-anchor="middle" font-size="11" fill="#9d174d" transform="rotate(-90 1562 620)">公共对象模型 / 协议封装 / 通用库</text>
+    <g stroke="#ec4899" stroke-width="2" stroke-dasharray="4 3">
+      <line x1="1455" y1="282" x2="1428" y2="282" marker-end="url(#arrow)"/>
+      <line x1="1455" y1="446" x2="1428" y2="446" marker-end="url(#arrow)"/>
+      <line x1="1455" y1="610" x2="1428" y2="610" marker-end="url(#arrow)"/>
+      <line x1="1455" y1="730" x2="1446" y2="730" marker-end="url(#arrow)"/>
+      <line x1="1455" y1="920" x2="1426" y2="920" marker-end="url(#arrow)"/>
+    </g>
+  </g>
+
+  <!-- 右侧治理与运营：安全与合规 / 知识与质量 / 观测与运营 -->
+  <g>
+    <rect x="1650" y="66" width="190" height="1240" rx="14" fill="#ecfdf5" stroke="#059669" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="1745" y="94" text-anchor="middle" font-size="16" font-weight="bold" fill="#065f46">治理与运营</text>
+
+    <rect x="1662" y="106" width="166" height="28" rx="6" fill="#a7f3d0"/>
+    <text x="1745" y="125" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">安全与合规</text>
+
+    <rect x="1662" y="142" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="176" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">权限 AUTHZ</text>
+    <text x="1745" y="204" text-anchor="middle" font-size="11" fill="#047857">策略引擎 · deny-overrides</text>
+    <text x="1745" y="226" text-anchor="middle" font-size="11" fill="#047857">数据权限 / 租户隔离</text>
+
+    <rect x="1662" y="276" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="310" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">安全合规</text>
+    <text x="1745" y="338" text-anchor="middle" font-size="11" fill="#047857">脱敏 · 水印 · 密钥管理</text>
+    <text x="1745" y="360" text-anchor="middle" font-size="11" fill="#047857">内容合规审查</text>
+
+    <rect x="1662" y="410" width="166" height="28" rx="6" fill="#a7f3d0"/>
+    <text x="1745" y="429" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">知识与质量</text>
+
+    <rect x="1662" y="456" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="490" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">知识生命周期</text>
+    <text x="1745" y="518" text-anchor="middle" font-size="11" fill="#047857">接入→解析→发布→更新</text>
+    <text x="1745" y="540" text-anchor="middle" font-size="11" fill="#047857">废弃 / 归档 状态流转</text>
+
+    <rect x="1662" y="590" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="624" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">评测</text>
+    <text x="1745" y="652" text-anchor="middle" font-size="11" fill="#047857">检索 / 解析 / 生成质量</text>
+    <text x="1745" y="674" text-anchor="middle" font-size="11" fill="#047857">基准集 · 评分报告</text>
+
+    <rect x="1662" y="724" width="166" height="28" rx="6" fill="#a7f3d0"/>
+    <text x="1745" y="743" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">观测与运营</text>
+
+    <rect x="1662" y="770" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="804" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">监控</text>
+    <text x="1745" y="832" text-anchor="middle" font-size="11" fill="#047857">指标采集 / 告警</text>
+    <text x="1745" y="854" text-anchor="middle" font-size="11" fill="#047857">在线并发 / 端点统计</text>
+
+    <rect x="1662" y="904" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="938" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">日志审计</text>
+    <text x="1745" y="966" text-anchor="middle" font-size="11" fill="#047857">统一日志 · 操作审计</text>
+    <text x="1745" y="988" text-anchor="middle" font-size="11" fill="#047857">traceId 全链路追踪</text>
+
+    <rect x="1662" y="1038" width="166" height="116" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="1745" y="1072" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">运营分析</text>
+    <text x="1745" y="1100" text-anchor="middle" font-size="11" fill="#047857">用量 / token 成本统计</text>
+    <text x="1745" y="1122" text-anchor="middle" font-size="11" fill="#047857">库 / 端点维度聚合</text>
+
+    <g stroke="#059669" stroke-width="2" stroke-dasharray="4 3">
+      <line x1="1645" y1="132" x2="1626" y2="132" marker-end="url(#arrow)"/>
+      <line x1="1645" y1="282" x2="1626" y2="282" marker-end="url(#arrow)"/>
+      <line x1="1645" y1="452" x2="1626" y2="452" marker-end="url(#arrow)"/>
+      <line x1="1645" y1="666" x2="1626" y2="666" marker-end="url(#arrow)"/>
+      <line x1="1645" y1="924" x2="1626" y2="924" marker-end="url(#arrow)"/>
+      <line x1="1645" y1="1173" x2="1626" y2="1173" marker-end="url(#arrow)"/>
+    </g>
+  </g>
+
+  <!-- ================= 层间箭头 ================= -->
+  <g stroke="#475569" stroke-width="2.5">
+    <line x1="490"  y1="168" x2="490"  y2="236" marker-end="url(#arrow)"/>
+    <line x1="1120" y1="168" x2="1120" y2="236" marker-end="url(#arrow)"/>
+    <line x1="640"  y1="328" x2="640"  y2="406" marker-end="url(#arrow)"/>
+    <line x1="345"  y1="510" x2="345"  y2="564" marker-end="url(#arrow)"/>
+    <line x1="655"  y1="510" x2="655"  y2="564" marker-end="url(#arrow)"/>
+    <line x1="965"  y1="510" x2="965"  y2="564" marker-end="url(#arrow)"/>
+    <line x1="345"  y1="800" x2="345"  y2="846" marker-end="url(#arrow)"/>
+    <line x1="655"  y1="800" x2="655"  y2="846" marker-end="url(#arrow)"/>
+    <line x1="965"  y1="800" x2="965"  y2="846" marker-end="url(#arrow)"/>
+    <line x1="1275" y1="800" x2="1275" y2="846" marker-end="url(#arrow)"/>
+    <line x1="390"  y1="1026" x2="390"  y2="1072" marker-end="url(#arrow)"/>
+    <line x1="690"  y1="1026" x2="690"  y2="1072" marker-end="url(#arrow)"/>
+    <line x1="1125" y1="1026" x2="1125" y2="1072" marker-end="url(#arrow)"/>
+  </g>
+  <!-- Universal Retriever 同步检索：gateway 直连，不经调度层 -->
+  <path d="M 740 324 L 740 366 L 1000 366 L 1000 548 L 1275 548 L 1275 560" fill="none" stroke="#e11d48" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowRose)"/>
+  <text x="1137" y="540" text-anchor="middle" font-size="12" fill="#e11d48">同步调用（不经调度层）</text>
+
+  <g font-size="12" fill="#475569" text-anchor="middle">
+    <text x="805" y="205">HTTP / Bearer Token</text>
+    <text x="682" y="372">异步任务提交</text>
+    <text x="846" y="542">任务分发</text>
+    <text x="846" y="832">调用能力</text>
+    <text x="846" y="1040">读写数据</text>
+  </g>
+</svg>

@@ -1011,3 +1011,12 @@
   - 新建根目录 `process.md`：当前未完成事项清单（状态/优先级/事项/下一步），分四类：平台能力（P4 检索消费侧、真实解析引擎、async worker、parse-direct productType、download 产物流）、已知问题/环境遗留（空 kbName 校验、Java SDK 未同步 wiki/graph、E2E 基线、origin 推送权限、18000 用户侧实例、18001 端口管理）、待产品决策（图谱 LLM 成本、图谱域边界）、快速状态。
   - `AGENTS.md`：新增 **§8.3 process.md 待办清单契约（强制）**（任务开始先读、进行中登记、完成时更新、未闭环必须保留、随任务提交）；§10 文档权威顺序加入 process.md/worklog；§12 快速索引加入 process.md。
 - 下一步：后续任务开工按 §8.3 先读 process.md；闭环项随任务更新移除。
+
+### 任务：生成分层架构总图 SVG（2026-09-06）
+
+- 产出：`docs/images/开放平台架构总图_v1.0.svg`（六层：应用层 Portal/3rd App → 接入层 gateway+SDK → 调度层 Task/Pipeline/Redis 队列 → 服务引擎层 core/openwiki/graph+各类解析引擎 → 能力层 LLM Gateway/pyuploadX/模型服务 → 数据层 知识资产+存储设施）。
+- 下一步：如需纳入 README 或方案文档引用，待用户确认后调整。
+
+### 任务：架构总图 Universal Retriever 配色区分（2026-09-06）
+
+- 修改 `docs/images/开放平台架构总图_v1.0.svg`：服务引擎层 Universal Retriever 由紫色（gViolet）改为玫瑰红（新增 gRose 渐变 + 深红描边），副标题文字改浅红底色；其「gateway 直连同步调用」虚线链路与标注同步改为玫瑰红（新增 arrowRose 箭头），与其他异步紫色链路形成视觉区分。

@@ -147,7 +147,7 @@
 
     <rect x="510" y="850" width="340" height="60" rx="10" fill="url(#gCyan)"/>
     <text x="680" y="874" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">LLM Gateway</text>
-    <text x="680" y="896" text-anchor="middle" font-size="12" fill="#cffafe">统一大模型网关 · Prompt 管理 · 配额路由</text>
+    <text x="680" y="896" text-anchor="middle" font-size="12" fill="#cffafe">统一大模型网关 · 配额路由</text>
 
     <line x1="680" y1="912" x2="680" y2="922" stroke="#0e7490" stroke-width="2.5" marker-end="url(#arrow)"/>
 

@@ -311,7 +311,7 @@
   <text x="1137" y="540" text-anchor="middle" font-size="12" fill="#e11d48">同步调用（不经调度层）</text>
 
   <g font-size="12" fill="#475569" text-anchor="middle">
-    <text x="805" y="205">HTTP / Bearer Token</text>
+    <text x="805" y="205">HTTPS API / MCP / CLI（Bearer Token 认证）</text>
     <text x="682" y="372">异步任务提交</text>
     <text x="846" y="542">任务分发</text>
     <text x="846" y="832">调用能力</text>

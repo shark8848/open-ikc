@@ -1042,3 +1042,7 @@
 ### 任务：架构总图 SDK 名称规范（2026-09-06）
 
 - 接入层组件名「openikc sdk」改为「open ikc sdk」，与 gateway 命名风格（open ikc gateway）保持一致。
+
+### 任务：架构总图应用层→接入层协议标注补充（2026-09-06）
+
+- 应用层→接入层协议标注由「HTTP / Bearer Token」扩展为「HTTPS API / MCP / CLI（Bearer Token 认证）」，覆盖 API、MCP、CLI 等接入形态。

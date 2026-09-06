@@ -1038,3 +1038,7 @@
 ### 任务：架构总图 3rd App 独立色系（2026-09-06）
 
 - 应用层 3rd App 框由蓝色（gBlue，与 Portal 同色）改为中性灰（gSlate #64748b→#475569），副标题改 #e2e8f0；蓝色保留给自有 Portal，灰色表达外部第三方应用的区分语义。
+
+### 任务：架构总图 SDK 名称规范（2026-09-06）
+
+- 接入层组件名「openikc sdk」改为「open ikc sdk」，与 gateway 命名风格（open ikc gateway）保持一致。

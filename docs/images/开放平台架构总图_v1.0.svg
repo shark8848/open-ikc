@@ -74,7 +74,7 @@
     <text x="490" y="296" text-anchor="middle" font-size="12" fill="#ccfbf1">统一响应协议 · 认证鉴权（AUTHN/AUTHZ）· 限流路由 · Trace 追踪</text>
 
     <rect x="820" y="240" width="600" height="84" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="2" stroke-dasharray="6 4"/>
-    <text x="1120" y="272" text-anchor="middle" font-size="18" font-weight="bold" fill="#be185d">openikc sdk</text>
+    <text x="1120" y="272" text-anchor="middle" font-size="18" font-weight="bold" fill="#be185d">open ikc sdk</text>
     <text x="1120" y="296" text-anchor="middle" font-size="12" fill="#9d174d">Python SDK / Java SDK（面向 3rd App）</text>
   </g>
 

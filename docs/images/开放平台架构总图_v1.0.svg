@@ -39,7 +39,7 @@
   <!-- 背景 -->
   <rect x="0" y="0" width="1900" height="1360" fill="#f8fafc"/>
   <text x="950" y="30" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">IKC Open Platform 架构总图</text>
-  <text x="950" y="52" text-anchor="middle" font-size="13" fill="#64748b">v1.0</text>
+  <text x="950" y="52" text-anchor="middle" font-size="13" fill="#64748b">v6.0</text>
 
   <!-- ================= 层带背景 ================= -->
   <rect x="130" y="66"   width="1490" height="120" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>

@@ -10,7 +10,7 @@
 | 状态 | 优先级 | 事项 | 下一步 |
 | --- | --- | --- | --- |
 | 待评审 | P1 | **企业级知识运营数据模型总体设计方案**（`docs/知识运营数据模型总体设计方案.md` v2）：目录=知识单元树 + 文档版本/结构化元数据（摘要/关键字/标签）+ 解析内容按文档结构存储（不铺列）+ chunk/索引/wiki/graph 派生 + 本体/术语 + Agent 记忆 + 治理审计 | 评审后按方案 M0（业务 store 落 SQLite/可切 PostgreSQL）起步，与真实解析引擎、async worker、download 产物流联动 |
-| 待评审 | P1 | **全平台研发计划 v1.0**（`docs/开放平台研发计划_v1.0.md`）：按六层 + 治理运营横切拆解「子系统/组件 → 组件之下 SDK（具体内容）→ Service 引擎（具体能力）→ 研发内容 → 优先级 → 阶段（9 月/10 月）」，附 SDK / 数据结构设计 / 接口设计 / 对接联调四个专项表 | 评审后填写具体日期（`__/__ – __/__`），并拆成迭代任务；先拍板主库选型与 `content_document` 格式 |
+| 待评审 | P1 | **全平台研发计划 v1.0**（`docs/开放平台研发计划_v1.0.md`）：按六层 + 治理运营横切拆解「子系统/组件 → 组件之下 SDK（具体内容）→ Service 引擎（具体能力）→ 研发内容 → 优先级 → 阶段（9 月/10 月）」，附 SDK / 数据结构设计 / 接口设计 / 对接联调四个专项表；§2 分层明细 260 条（组件 40 / SDK 44 / 引擎能力 48 / 研发任务 128，一行一条），§5 接口 54 条（一行一个） | 评审后填写具体日期（`__/__ – __/__`），并拆成迭代任务；先拍板主库选型与 `content_document` 格式 |
 | 待评审 | P1 | **P4 检索消费侧**：wiki 页面粒度检索（`universal-search` 扩展 `searchMode=page`，可选沿 wiki-link 扩展候选）+ 图谱多跳检索；检索按库形态（text/wiki/graph）路由 | 依赖真实检索后端（`ur`/`openai`）；评审 `docs/知识加工形态优化方案_wiki图谱与解析.md` §8 后实施 |
 | 待落地 | P1 | **主库环境口径落地**：口径已定稿（SQLite 本地测试 / PostgreSQL 集成测试，见 `docs/开放平台研发计划_v1.0.md` §4.1），但 `OPEN_PLATFORM_BIZ_DB_DSN` 尚未在代码中落地；`docker-compose.yml` 无 postgres 服务，无 `@pytest.mark.integration` 门禁 | 落地业务 Repository + DSN 双环境 + compose PG 服务 + CI 两段式（unit@SQLite → integration@PG） |
 | 待落地 | P1 | **真实解析/抽取引擎接入**：`parse` 占位结果（`_simulate_file_data`）、wiki 占位正文（`build_document_pages`）、graph 占位单实体（`build_document_graph`）→ 替换为真实引擎输出（分块/切页/实体关系抽取） | 接入解析引擎后替换占位；同步升级 `parse-result/download` 产物流 |

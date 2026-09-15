@@ -10,6 +10,7 @@
 | 状态 | 优先级 | 事项 | 下一步 |
 | --- | --- | --- | --- |
 | 待评审 | P1 | **企业级知识运营数据模型总体设计方案**（`docs/知识运营数据模型总体设计方案.md` v2）：目录=知识单元树 + 文档版本/结构化元数据（摘要/关键字/标签）+ 解析内容按文档结构存储（不铺列）+ chunk/索引/wiki/graph 派生 + 本体/术语 + Agent 记忆 + 治理审计 | 评审后按方案 M0（业务 store 落 SQLite/可切 PostgreSQL）起步，与真实解析引擎、async worker、download 产物流联动 |
+| 待评审 | P1 | **全平台研发计划 v1.0**（`docs/开放平台研发计划_v1.0.md`）：按六层 + 治理运营横切拆解「子系统/组件 → 组件之下 SDK（具体内容）→ Service 引擎（具体能力）→ 研发内容 → 优先级 → 阶段（9 月/10 月）」，附 SDK / 数据结构设计 / 接口设计 / 对接联调四个专项表 | 评审后填写具体日期（`__/__ – __/__`），并拆成迭代任务；先拍板主库选型与 `content_document` 格式 |
 | 待评审 | P1 | **P4 检索消费侧**：wiki 页面粒度检索（`universal-search` 扩展 `searchMode=page`，可选沿 wiki-link 扩展候选）+ 图谱多跳检索；检索按库形态（text/wiki/graph）路由 | 依赖真实检索后端（`ur`/`openai`）；评审 `docs/知识加工形态优化方案_wiki图谱与解析.md` §8 后实施 |
 | 待落地 | P1 | **真实解析/抽取引擎接入**：`parse` 占位结果（`_simulate_file_data`）、wiki 占位正文（`build_document_pages`）、graph 占位单实体（`build_document_graph`）→ 替换为真实引擎输出（分块/切页/实体关系抽取） | 接入解析引擎后替换占位；同步升级 `parse-result/download` 产物流 |
 | 待落地 | P1 | **async 任务后台执行器**：`executeMode=async` 目前只登记 `queued`，无后台 worker 执行；专业库 async 建页/建图未执行 | 落地任务队列/worker；async 完成后更新任务状态与库资产 |
@@ -45,4 +46,5 @@
 - 已落地：P1 kbMode 形态协议（text/wiki/graph）；Docker 构建脚本（`scripts/build_docker.sh`）+ HAProxy 代理层（`docker/haproxy.cfg`、`docker-compose.yml`，对外 18080）；P2 Wiki 库（页面树/检索/parse 联动）；P3 图谱库（stat/nodes/edges/neighbors/export + parse 联动）；Python SDK/MCP/CLI 24 工具/命令全覆盖；文档上传 7 天暂存；在线测试模块。
 - 已落地：reDocs 与 Swagger 定义对齐（ReDoc 侧边栏开启 `schemaDefinitionsTagName=Schemas` 分组，与 Swagger Models 目录一致；2026-08-24）。
 - 新增：企业级知识运营数据模型总体设计方案（`docs/知识运营数据模型总体设计方案.md` v2.3：目录=知识单元、元数据与解析内容结构化承载、解析产物按文档形态模板（content_template）、wiki↔openwiki 与 graph/ontology↔semantica 引擎对齐、任务对象不入概念层、受控词表治理（tag/term/synonym_set 全局唯一+审核发布）、基于知识运营全景图 v1.0 全文分域对齐（接入/解析加工域 + ①-⑥ 概念层 + 治理支撑域，ingest_task 接入链路）；图：概念模型 v1.0 快照 + 全景图 v1.0；M0→M3 路线，2026-09-05，待评审）。
+- 新增：全平台研发计划 v1.0（`docs/开放平台研发计划_v1.0.md`）——六层 + 治理运营横切的分层组件/SDK/引擎清单，覆盖图中显性块与隐性缺口（限流配额、PipelineRun、配置中心、评测、内容合规、外部采集器/外部检索 Channel、本体引擎、JS/TS SDK、SDK 发布链路），含数据结构设计、接口设计、对接与联调（对端系统）专项及 9 月/10 月两阶段排期，2026-09-15。
 - 文档权威顺序：`AGENTS.md` > 当前代码 > `docs/开放平台接口整体方案_V2_精简.md` + `docs/开放平台接口详细定义_精简版_V2.md` > 本文档与 worklog。

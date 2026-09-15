@@ -32,6 +32,7 @@
 | 未闭环 | P2 | **Java SDK 未同步 wiki/graph**：`sdk/java` 仅基础四类能力，未封装 wiki 三方法与 graph 五方法（Python SDK 已 24 工具/命令） | 按 `sdk/python` 模式补齐 Java 客户端 + 测试 |
 | 待更新 | P3 | **在线测试 E2E 基线**：`/tmp/mcp_cli_e2e.py`（35/35）未随 wiki/graph 扩展；下次全量 E2E 需覆盖 24 工具/命令 | 运行前更新脚本枚举并重跑 |
 | 环境 | P2 | **18000 用户侧实例**：`scripts/start_open_platform.sh` 实例使用随机 admin token 且未配置业务 token（`OPEN_PLATFORM_TOKEN`），在线测试曾因 token 错位失败 | 用户侧以「业务 token + `OPEN_PLATFORM_ADMIN_TOKEN=test-admin-token`」重启 18000 |
+| 环境 | P2 | **origin（code.tiancloud.com）SSH 不可达**：`git push origin main` 报 `Connection closed by 198.18.0.94 port 22`（github 远端正常，2026-09-15） | 待网络恢复后补推 `origin main`（当前本地与 github 已同步到 9e6f8af） |
 | 环境 | P3 | **冒烟实例端口管理**：临时 E2E 使用 18001，需确保无遗留进程占用（本次已清理 P2 遗留实例） | 启动前检查 `ss -ltn | grep 18001` |
 
 ## 3. 待产品决策

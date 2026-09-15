@@ -1098,3 +1098,14 @@
 - §3 SDK 专项、§4.2 数据域、§6 对接联调补充交叉引用说明（汇总视图 vs 原子明细）。
 - 校验：全部表格列数一致（9 列主表 / 8 列接口与对接 / 其余专项表齐整）；文档 589 行。
 - 说明：本次为文档产出，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。
+
+### 任务：研发计划全面校正为 v1.1（组件归属 / 接口 / SDK / 数据口径对齐平台仓）
+
+- 产出 `docs/开放平台研发计划_v1.1.md`（替换 v1.0）：以 `/home/sharkyai/ikc-open-platform` 为平台主体仓全面校正。
+- 组件与路径校正：网关 `app/core/gateway/*`（api_keys / apps / routing / rate_limit / audit / instance_client）+ `middlewares.py` / `security.py` / `trace.py` / `admin/*` / `authz/*` / `db/*`；Portal `portal/`（9 页面 / 4 主题）；开发者 SDK `sdk/python`。
+- 接口校正为**一行一个**：业务 16 条（14 真实转发 + 2 条 501001 占位：`upload`、`issue-download-ticket`）、管理面 24 条、系统面 7 条、待开放（wiki 5 / graph 5 / 索引 2）12 条、内部服务间 6 条，共 89 条，并注明 typed / 泛化转发与 GET+body 待验证项。
+- SDK 校正：平台 SDK 为 `ikc-open-platform-sdk`（0.2.0，业务模型复用 `ikc_sdk.core`），CLI `ikc-op`（15 子命令）、MCP `ikc-op-mcp`（15 工具）；Java SDK 平台仓未提供（坐标待定）、TS SDK 待建；`ikc-sdk-lib==0.6.1`、`ikc-core-sdk==0.1.0`、`ikc-log-center==2.0.30` 为 PyPI 固定依赖。
+- 状态校正：AUTHN 四模式仅 static / gateway_header 已实现（oidc_jwt / oauth2_introspection 未实现）；限流配额为进程内内存实现（待共享化）、日配额计数口径待修；控制面库为 SQLAlchemy 2.0 + SQLite（`OPEN_PLATFORM_DB_PATH`，8 表），无迁移工具。
+- 数据口径（§4.1）重写为平台持久层口径：本地 / 单测 SQLite（`OPEN_PLATFORM_DB_PATH`），集成测试 / 联调 / 生产 PostgreSQL 16（`OPEN_PLATFORM_DB_DSN`，待引入）+ 迁移工具与 CI 两段式；命令改指向 `/home/sharkyai/ikc-open-platform`。
+- 结构：§2 明细 180 条（一行一条：组件 38 / SDK 32 / 引擎能力 38 / 研发任务 72）；文档共 514 行。
+- 说明：本次为文档产出，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。

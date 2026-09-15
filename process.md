@@ -10,7 +10,7 @@
 | 状态 | 优先级 | 事项 | 下一步 |
 | --- | --- | --- | --- |
 | 待评审 | P1 | **企业级知识运营数据模型总体设计方案**（`docs/知识运营数据模型总体设计方案.md` v2）：目录=知识单元树 + 文档版本/结构化元数据（摘要/关键字/标签）+ 解析内容按文档结构存储（不铺列）+ chunk/索引/wiki/graph 派生 + 本体/术语 + Agent 记忆 + 治理审计 | 评审后按方案 M0（业务 store 落 SQLite/可切 PostgreSQL）起步，与真实解析引擎、async worker、download 产物流联动 |
-| 待评审 | P1 | **全平台研发计划 v1.0**（`docs/开放平台研发计划_v1.0.md`）：按六层 + 治理运营横切拆解「子系统/组件 → 组件之下 SDK（具体内容）→ Service 引擎（具体能力）→ 研发内容 → 优先级 → 阶段（9 月/10 月）」，附 SDK / 数据结构设计 / 接口设计 / 对接联调四个专项表；§2 分层明细 260 条（组件 40 / SDK 44 / 引擎能力 48 / 研发任务 128，一行一条），§5 接口 54 条（一行一个） | 评审后填写具体日期（`__/__ – __/__`），并拆成迭代任务；先拍板主库选型与 `content_document` 格式 |
+| 待评审 | P1 | **全平台研发计划 v1.1**（`docs/开放平台研发计划_v1.1.md`）：按六层 + 治理运营横切拆解「子系统/组件 → 组件之下 SDK → Service 引擎 → 研发任务」，附 SDK / 数据结构 / 接口 / 对接联调四个专项；§2 明细 180 条（一行一条）、§5 接口 89 条（一行一个）。组件与路径已全面对齐平台主体仓 `/home/sharkyai/ikc-open-platform`（网关 `app/core/gateway/*`、控制面库 `app/core/db/*`、Portal、`sdk/python`）| 评审后填写具体日期（`__/__ – __/__`）并拆成迭代任务；待拍板：wiki/graph 是否开放、多租户实例映射、配额存储选型 |
 | 待评审 | P1 | **P4 检索消费侧**：wiki 页面粒度检索（`universal-search` 扩展 `searchMode=page`，可选沿 wiki-link 扩展候选）+ 图谱多跳检索；检索按库形态（text/wiki/graph）路由 | 依赖真实检索后端（`ur`/`openai`）；评审 `docs/知识加工形态优化方案_wiki图谱与解析.md` §8 后实施 |
 | 待落地 | P1 | **主库环境口径落地**：口径已定稿（SQLite 本地测试 / PostgreSQL 集成测试，见 `docs/开放平台研发计划_v1.0.md` §4.1），但 `OPEN_PLATFORM_BIZ_DB_DSN` 尚未在代码中落地；`docker-compose.yml` 无 postgres 服务，无 `@pytest.mark.integration` 门禁 | 落地业务 Repository + DSN 双环境 + compose PG 服务 + CI 两段式（unit@SQLite → integration@PG） |
 | 待落地 | P1 | **真实解析/抽取引擎接入**：`parse` 占位结果（`_simulate_file_data`）、wiki 占位正文（`build_document_pages`）、graph 占位单实体（`build_document_graph`）→ 替换为真实引擎输出（分块/切页/实体关系抽取） | 接入解析引擎后替换占位；同步升级 `parse-result/download` 产物流 |
@@ -49,5 +49,6 @@
 - 已落地：reDocs 与 Swagger 定义对齐（ReDoc 侧边栏开启 `schemaDefinitionsTagName=Schemas` 分组，与 Swagger Models 目录一致；2026-08-24）。
 - 新增：企业级知识运营数据模型总体设计方案（`docs/知识运营数据模型总体设计方案.md` v2.3：目录=知识单元、元数据与解析内容结构化承载、解析产物按文档形态模板（content_template）、wiki↔openwiki 与 graph/ontology↔semantica 引擎对齐、任务对象不入概念层、受控词表治理（tag/term/synonym_set 全局唯一+审核发布）、基于知识运营全景图 v1.0 全文分域对齐（接入/解析加工域 + ①-⑥ 概念层 + 治理支撑域，ingest_task 接入链路）；图：概念模型 v1.0 快照 + 全景图 v1.0；M0→M3 路线，2026-09-05，待评审）。
 - 定稿：主库环境口径——SQLite 本地测试 / PostgreSQL 集成测试（`OPEN_PLATFORM_BIZ_DB_DSN`：本地与单测 SQLite，集测/联调/预发/生产 PostgreSQL 16；管理面 `OPEN_PLATFORM_DB_PATH` 继续 SQLite），已写入 `docs/开放平台研发计划_v1.0.md` §4.1 与数据模型方案 §10-2，2026-09-15。
-- 新增：全平台研发计划 v1.0（`docs/开放平台研发计划_v1.0.md`）——六层 + 治理运营横切的分层组件/SDK/引擎清单，覆盖图中显性块与隐性缺口（限流配额、PipelineRun、配置中心、评测、内容合规、外部采集器/外部检索 Channel、本体引擎、JS/TS SDK、SDK 发布链路），含数据结构设计、接口设计、对接与联调（对端系统）专项及 9 月/10 月两阶段排期，2026-09-15。
+- 更新：全平台研发计划 v1.1（`docs/开放平台研发计划_v1.1.md`）——组件归属与路径全面校正为平台主体仓 `/home/sharkyai/ikc-open-platform`（北向 API + 网关 + 管理面 + Portal + 开发者 SDK），接口按平台实现逐条对齐（业务 16 / 管理面 24 / 系统面 7 / 待开放 12 / 内部 6），SDK 校正为 `ikc-open-platform-sdk`（CLI `ikc-op` 15 子命令、MCP `ikc-op-mcp` 15 工具），主库口径按平台持久层重写（SQLAlchemy + `OPEN_PLATFORM_DB_PATH` → 集成测试 `OPEN_PLATFORM_DB_DSN` + PostgreSQL），2026-09-15。
+- 历史：全平台研发计划 v1.0（`docs/开放平台研发计划_v1.0.md`）——六层 + 治理运营横切的分层组件/SDK/引擎清单，覆盖图中显性块与隐性缺口（限流配额、PipelineRun、配置中心、评测、内容合规、外部采集器/外部检索 Channel、本体引擎、JS/TS SDK、SDK 发布链路），含数据结构设计、接口设计、对接与联调（对端系统）专项及 9 月/10 月两阶段排期，2026-09-15。
 - 文档权威顺序：`AGENTS.md` > 当前代码 > `docs/开放平台接口整体方案_V2_精简.md` + `docs/开放平台接口详细定义_精简版_V2.md` > 本文档与 worklog。

@@ -1081,3 +1081,11 @@
 - 关键路径：主库选型 → M0 落库 → `content_template` 冻结 → 真实解析引擎 → async worker + Pipeline → 检索路由 → 联调验收；建议阶段一前两周先拍板「主库选型 + `content_document` 格式」。
 - 同步：`process.md` §1 增「全平台研发计划 v1.0 待评审（P1）」、§4 增快速状态条目。
 - 说明：本次为文档产出，未改代码行为，按 AGENTS.md §13.1「行为有改动时才触发只读审查」跳过 Claude 审查。
+
+### 任务：主库环境口径定稿（SQLite 本地测试 / PostgreSQL 集成测试）
+
+- 修改 `docs/开放平台研发计划_v1.0.md`：新增 §4.1「主库环境口径（定稿：SQLite 本地测试 / PostgreSQL 集成测试）」，含环境矩阵（本地开发 / 单元测试 / 集成测试 / 联调预发生产）、8 条配套约束、执行命令（`pytest tests -q`@SQLite 与 `pytest -m integration`@PostgreSQL 16 容器）与阶段一 P1 待补项（compose PG 服务 + CI 两段式）。原数据域表顺延为 §4.2。
+- 口径要点：`OPEN_PLATFORM_BIZ_DB_DSN` 单变量切环境；业务库与管理面库（`OPEN_PLATFORM_DB_PATH`，继续 SQLite）分离；同一套 SQLAlchemy 模型 + Alembic 迁移，禁止方言分支；JSON 用通用 JSON 类型，全文检索走 ES、向量走 pgvector，不用 SQLite FTS；需 PG 的用例一律 `@pytest.mark.integration`，默认单测不依赖 PG。
+- 联动更新：§2.6 关系数据库行、§7 关键路径（主库选型改为已定稿，仅剩 `content_document` 格式待拍板）、§8 通用验收、§9 风险（拆分出「SQLite/PG 行为差异」「集测依赖 PG 容器」两条）。
+- 同步：`docs/知识运营数据模型总体设计方案.md` §10-2「主库形态」标注已定稿；`process.md` 新增「主库环境口径落地」待办（P1）与快速状态条目。
+- 说明：本次为文档产出，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。

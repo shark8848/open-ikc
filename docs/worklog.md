@@ -1206,3 +1206,14 @@
 - §0.3 阅读路径 SDK 行更新为「平台 SDK · CLI · MCP · 引擎族 SDK → §3（约定见 §3.1）」。
 - 校验：表格列数全部一致（§3 22 行块 9 列、§3.1 9 行块 2 列）；图例与表格间空行齐全；文档 626 行。
 - 说明：仅文档表述调整，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。
+
+### 任务：架构总图升级为 v1.1（引擎 / 服务新增「内部 SDK 层」）
+
+- 产出 `docs/images/开放平台架构总图_v1.1.svg`（1900×1575，308 行；由 v1.0 / 图内 v6.0 重排生成，v1.0 保留不动）。
+- 新增「内部 SDK 层」共 10 处（虚线白底 chip，置于引擎 / 服务本体之上，表示上层只经 SDK 调用）：调度层 `Task 调度器`（客户端 SDK，已实现）；服务引擎层 `ikc-core-sdk`（已实现）、`openwiki-server-sdk`（已实现）、`semantica-sdk`（待建）、`ikc-retriever-sdk`（Universal Retriever，待建）；解析引擎族整族一个 `ikc-parse-sdk`（提交 / 查询 / 产物获取 / 回调验签，待建）；能力层 `ikc-connector-sdk`（文档采集器，待建）、外部检索适配 SDK（外部检索 Channel，待建）、`pyuploadx`（已发布）、`parser-cache-sdk`（待建）。
+- 版面重排：调度层 386–546、服务引擎层 576–896、能力层 926–1170、数据层 1200–1455（原 386–506 / 536–796 / 826–1022 / 1046–1301），层名标签、层间箭头、`Universal Retriever` 同步调用路径（改为经内部 SDK 进入）、`ikc-sdk-lib` 跨层竖条、右侧「治理与运营」面板（分组整体等高下移，卡片随组对齐）全部随之重算。
+- 底部新增图例：虚线框 = 内部 SDK、实心块 = 服务 / 引擎本体，并列出覆盖范围。
+- 命名对齐平台主体仓：图中 `open ikc gateway` / `open ikc sdk` 改为 `ikc-open-platform gateway` / `ikc-open-platform sdk`。
+- 同步 `docs/开放平台研发计划_v1.1.md`：§1 嵌入图换为 v1.1 并补「v1.1 相对 v1.0 差异」说明；§0.2 输入依据与 §0.3 阅读路径同步；§3 新增 `parser-cache-sdk` 行（P2 阶段一）；§2.5 `L4-09` Parser Cache SDK 由「无独立 SDK」改为 `parser-cache-sdk`（待建）。
+- 校验：SVG 通过 XML 解析（viewBox 0 0 1900 1575），10 个内部 SDK 名称齐备；用 cairosvg 渲染 v1.0 / v1.1 对比版面（本机无 CJK 字体，字形为方框，仅用于版式核对）；文档 28 张表列数一致。
+- 说明：仅文档与图调整，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。

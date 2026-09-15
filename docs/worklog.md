@@ -1077,7 +1077,7 @@
 
 - 产出：`docs/开放平台研发计划_v1.0.md`（v1.0，247 行 / 16 张表）：以 `docs/images/开放平台架构总图_v1.0.svg`（图内 v6.0）六层 + 治理运营横切为骨架，逐层列出「子系统/组件 → 组件之下 SDK（具体内容）→ Service 引擎（具体能力）→ 研发内容 → 现状 → 优先级 → 阶段（阶段一 9 月 / 阶段二 10 月）→ 时间（`__/__ – __/__` 待填）→ 交付物」。
 - 隐性补齐（图中未显性、但已由 process.md / 数据模型方案 / 全局契约记为缺口）：限流与配额、PipelineRun 任务对象、配置中心、评测、内容合规审查、文档采集器连接器、外部检索 Channel、本体引擎 ontolith、JS/TS SDK、SDK 制品发布链路。
-- 四个专项表：① SDK 与接入形态（16 项，含 `open-ikc-sdk` Python/Java、MCP 26 工具、CLI 26 子命令、`ikc-sdk-lib`、`ikc_core_sdk`、`openwiki-server-sdk`、待建 `semantica-sdk` / TS SDK、`pyuploadx`、`litellm` 封装、log-center 三语言、`ontolith-sdk`）；② 数据结构设计（12 行，对齐数据模型方案 ①–⑥ 概念层 + 加工执行域 + 治理支撑域与 M0–M3）；③ 接口设计（11 行，四类能力 + wiki/graph + 索引待开放 + 系统/管理面 + 内部服务间 + 契约 G0–G11）；④ 对接与联调（14 行，对端含 ikc-core-service 19000、openwiki-server、semantica、retriever、解析引擎、ikc_extraction、PyUploadX、LLM 网关/模型服务、log-center、IdP、MinIO、PostgreSQL、图库、CI E2E）。
+- 四个专项表：① SDK 与接入形态（16 项，含 `open-ikc-sdk` Python/Java、MCP 26 工具、CLI 26 子命令、`ikc-sdk-lib`、`ikc_core_sdk`、`openwiki-server-sdk`、待建 `semantica-sdk` / TS SDK、`pyuploadx`、`litellm` 封装、log-center 三语言、`ontolith-sdk`）；② 数据结构设计（12 行，对齐数据模型方案 ①–⑥ 概念层 + 加工执行域 + 治理支撑域与 M0–M3）；③ 接口设计（11 行，四类能力 + wiki/graph + 索引待开放 + 系统/管理面 + 内部服务间 + 契约 G0–G11）；④ 对接与联调（14 行，对端含 ikc-core-service 19000、openwiki-server、semantica、retriever、不同解析引擎、PyUploadX、LLM 网关/模型服务、log-center、IdP、MinIO、PostgreSQL、图库、CI E2E）。
 - 关键路径：主库选型 → M0 落库 → `content_template` 冻结 → 真实解析引擎 → async worker + Pipeline → 检索路由 → 联调验收；建议阶段一前两周先拍板「主库选型 + `content_document` 格式」。
 - 同步：`process.md` §1 增「全平台研发计划 v1.0 待评审（P1）」、§4 增快速状态条目。
 - 说明：本次为文档产出，未改代码行为，按 AGENTS.md §13.1「行为有改动时才触发只读审查」跳过 Claude 审查。
@@ -1109,3 +1109,10 @@
 - 数据口径（§4.1）重写为平台持久层口径：本地 / 单测 SQLite（`OPEN_PLATFORM_DB_PATH`），集成测试 / 联调 / 生产 PostgreSQL 16（`OPEN_PLATFORM_DB_DSN`，待引入）+ 迁移工具与 CI 两段式；命令改指向 `/home/sharkyai/ikc-open-platform`。
 - 结构：§2 明细 180 条（一行一条：组件 38 / SDK 32 / 引擎能力 38 / 研发任务 72）；文档共 514 行。
 - 说明：本次为文档产出，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。
+
+### 任务：研发计划解析引擎表述去项目化（只体现不同解析引擎）
+
+- 修改 `docs/开放平台研发计划_v1.1.md`：解析相关表述统一为「不同解析引擎 / 解析引擎族（版面解析 · 表格解析 · 格式转换 · 语音转写 · 结构化抽取）」，不再出现具体抽取 / 转换项目名。
+- 涉及行：§2.4 `L3-28`（引擎能力改为不同解析引擎枚举）、`L3-29`（改为「结构化抽取引擎（多轮 LLM 抽取 + 抽取模板 + 异步回调）」）、§6 对接与联调两条（解析引擎族 / 结构化抽取引擎）、§10 索引两条（通用/融合检索、解析引擎族）。
+- 同步：`docs/worklog.md` 2026-09-15 v1.0 条目中的对端枚举表述一并去项目化。
+- 说明：仅文档表述调整，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。

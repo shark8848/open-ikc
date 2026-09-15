@@ -1155,3 +1155,12 @@
 - 文末 `**版本**：…` 单段长句改为 `## 11. 版本与维护` 表（版本 / 日期 / 主要变化）+ 一行维护约定。
 - 校验：表格由 22 张增至 26 张，列数全部一致；文档 605 行；§2 明细 177 条、§5 接口 90 条、§6 对接 16 条不变。
 - 说明：仅文档结构调整，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。
+
+### 任务：Portal 组件名统一为 `ikc open platform portal`
+
+- 修改 `docs/开放平台研发计划_v1.1.md`：删除 10 处「（平台仓 `portal/`）」限定，组件名统一写作 `ikc open platform portal`（§1 L0 概述 1 处、§2.1 色标图例 1 处与 L0-01–L0-08 共 8 处）。
+- §1 L0 保留「9 页面 / 4 主题」信息，改写为 `ikc open platform portal`（9 页面 / 4 主题）。
+- §6 对接联调「平台侧组件」列由 `portal/` 改为 `ikc open platform portal`；§8 通用验收「同步 README、`portal/` 与 `docs/`」改为「同步 `README.md`、`ikc open platform portal` 与 `docs/`」。
+- 保留的 `portal` 字面量仅为真实路径 / URL：`base=/portal/`、静态挂载 `/portal`、前端内部模块 `portal/src`、§10 代码索引 `/home/sharkyai/ikc-open-platform/portal`。
+- 校验：表格列数全部一致（26 张表）；文档 606 行。
+- 说明：仅文档表述调整，未改代码行为，跳过 Claude 只读审查（AGENTS.md §13.1）。

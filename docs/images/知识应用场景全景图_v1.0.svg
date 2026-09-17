@@ -39,11 +39,26 @@
     <text x="538" y="144" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1d4ed8">RAG</text>
     <g font-size="10.5" fill="#334155" text-anchor="middle">
       <rect x="80" y="182" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="162" y="201">智能客服问答</text>
+      <g transform="translate(94,197)" stroke="#1d4ed8" stroke-width="1.3" fill="none">
+        <path d="M -5 -1 a 5 5 0 0 1 10 0"/>
+        <rect x="-6.5" y="-1" width="3" height="5" rx="1"/>
+        <rect x="3.5" y="-1" width="3" height="5" rx="1"/>
+        <path d="M 5 4 v 1 a 2 2 0 0 1 -2 2 h -2"/>
+      </g>
+      <text x="106" y="201" text-anchor="start">智能客服问答</text>
       <rect x="256" y="182" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="338" y="201">制度 / 政策问答</text>
+      <g transform="translate(270,197)" stroke="#1d4ed8" stroke-width="1.3" fill="none">
+        <path d="M -4 -6 h 5 l 3 3 v 9 h -8 z"/>
+        <line x1="-2" y1="-1" x2="2" y2="-1"/>
+        <line x1="-2" y1="2" x2="2" y2="2"/>
+      </g>
+      <text x="282" y="201" text-anchor="start">制度 / 政策问答</text>
       <rect x="432" y="182" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="514" y="201">FAQ 知识助手</text>
+      <g transform="translate(446,197)">
+        <circle r="6" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
+        <text y="4" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#1d4ed8">?</text>
+      </g>
+      <text x="458" y="201" text-anchor="start">FAQ 知识助手</text>
     </g>
     <text x="80" y="244" font-size="10.5" fill="#64748b">典型用户：知识使用者 · 客户 / 员工</text>
     <text x="80" y="272" font-size="10.5" fill="#64748b">解析产物切片 → 向量 / 倒排检索，答案带引用溯源</text>
@@ -60,11 +75,24 @@
     <text x="538" y="384" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0f766e">Wiki</text>
     <g font-size="10.5" fill="#334155" text-anchor="middle">
       <rect x="80" y="422" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="162" y="441">知识门户全文检索</text>
+      <g transform="translate(94,437)" stroke="#0f766e" stroke-width="1.3" fill="none">
+        <circle cx="-1" cy="-1" r="4.5"/>
+        <line x1="2.5" y1="2.5" x2="6" y2="6"/>
+      </g>
+      <text x="106" y="441" text-anchor="start">知识门户全文检索</text>
       <rect x="256" y="422" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="338" y="441">Wiki 帮助中心</text>
+      <g transform="translate(270,437)" stroke="#0f766e" stroke-width="1.3" fill="none">
+        <path d="M -4 -6 h 5 l 3 3 v 9 h -8 z"/>
+        <text y="4" text-anchor="middle" font-size="7" font-weight="bold" fill="#0f766e" stroke="none">?</text>
+      </g>
+      <text x="282" y="441" text-anchor="start">Wiki 帮助中心</text>
       <rect x="432" y="422" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="514" y="441">词条浏览 / 互链</text>
+      <g transform="translate(446,437)" stroke="#0f766e" stroke-width="1.3" fill="none">
+        <rect x="-8" y="-3" width="7" height="6" rx="1.5"/>
+        <rect x="1" y="-3" width="7" height="6" rx="1.5"/>
+        <line x1="-1" y1="0" x2="1" y2="0"/>
+      </g>
+      <text x="458" y="441" text-anchor="start">词条浏览 / 互链</text>
     </g>
     <text x="80" y="484" font-size="10.5" fill="#64748b">典型用户：全员 · 知识使用者</text>
     <text x="80" y="512" font-size="10.5" fill="#64748b">页面树导航 + 全文检索（searchMode=page），版本可回溯</text>
@@ -80,11 +108,25 @@
     <text x="523" y="644" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0e7490">RAG + Wiki</text>
     <g font-size="10.5" fill="#334155" text-anchor="middle">
       <rect x="80" y="682" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="162" y="701">新人培训知识路径</text>
+      <g transform="translate(94,697)" stroke="#0e7490" stroke-width="1.3" fill="none">
+        <path d="M 0 -5 L 7 -1.5 L 0 2 L -7 -1.5 z"/>
+        <path d="M -3.5 0.5 v 3 c 0 1.5 7 1.5 7 0 v -3"/>
+        <line x1="7" y1="-1.5" x2="7" y2="3"/>
+      </g>
+      <text x="106" y="701" text-anchor="start">新人培训知识路径</text>
       <rect x="256" y="682" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="338" y="701">岗位知识每日推送</text>
+      <g transform="translate(270,697)" stroke="#0e7490" stroke-width="1.3" fill="none">
+        <path d="M 0 -6 a 4.5 4.5 0 0 1 4.5 4.5 c 0 3 1 4 1.5 4.5 h -12 c 0.5 -0.5 1.5 -1.5 1.5 -4.5 a 4.5 4.5 0 0 1 4.5 -4.5 z"/>
+        <path d="M -1.5 5 a 1.5 1.5 0 0 0 3 0"/>
+      </g>
+      <text x="282" y="701" text-anchor="start">岗位知识每日推送</text>
       <rect x="432" y="682" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="514" y="701">考核问答陪练</text>
+      <g transform="translate(446,697)" stroke="#0e7490" stroke-width="1.3" fill="none">
+        <rect x="-5" y="-5.5" width="10" height="12" rx="1.5"/>
+        <rect x="-2.5" y="-7" width="5" height="3" rx="1"/>
+        <path d="M -2.5 0.5 l 2 2 l 3.5 -3.5"/>
+      </g>
+      <text x="458" y="701" text-anchor="start">考核问答陪练</text>
     </g>
     <text x="80" y="744" font-size="10.5" fill="#64748b">典型用户：新员工 · 培训运营</text>
     <text x="80" y="772" font-size="10.5" fill="#64748b">按岗位 / 标签组织知识包，问答陪练基于库内知识作答</text>
@@ -101,11 +143,28 @@
     <text x="1753" y="144" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#9f1239">Agentic RAG</text>
     <g font-size="10.5" fill="#334155" text-anchor="middle">
       <rect x="1300" y="182" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1382" y="201">数字员工办事</text>
+      <g transform="translate(1314,197)" stroke="#9f1239" stroke-width="1.3" fill="none">
+        <rect x="-5" y="-4" width="10" height="8" rx="2"/>
+        <line x1="0" y1="-4" x2="0" y2="-6.5"/>
+        <circle cx="0" cy="-7.3" r="0.8" fill="#9f1239" stroke="none"/>
+        <circle cx="-2" cy="0" r="1" fill="#9f1239" stroke="none"/>
+        <circle cx="2" cy="0" r="1" fill="#9f1239" stroke="none"/>
+      </g>
+      <text x="1326" y="201" text-anchor="start">数字员工办事</text>
       <rect x="1476" y="182" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1558" y="201">工单自动处理</text>
+      <g transform="translate(1490,197)" stroke="#9f1239" stroke-width="1.3" fill="none">
+        <rect x="-7" y="-4" width="14" height="8" rx="1.5"/>
+        <line x1="2" y1="-4" x2="2" y2="4" stroke-dasharray="1.5 1.5"/>
+        <circle cx="-2.5" cy="0" r="0.9" fill="#9f1239" stroke="none"/>
+      </g>
+      <text x="1502" y="201" text-anchor="start">工单自动处理</text>
       <rect x="1652" y="182" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1734" y="201">报告 / 周报生成</text>
+      <g transform="translate(1666,197)" stroke="#9f1239" stroke-width="1.3" fill="none">
+        <path d="M -4 -6.5 h 5 l 3 3 v 10 h -8 z"/>
+        <rect x="-2" y="0" width="1.8" height="3" fill="#9f1239" stroke="none"/>
+        <rect x="0.8" y="-1.5" width="1.8" height="4.5" fill="#9f1239" stroke="none"/>
+      </g>
+      <text x="1678" y="201" text-anchor="start">报告 / 周报生成</text>
     </g>
     <text x="1300" y="244" font-size="10.5" fill="#64748b">典型用户：数字员工平台（workhub）· 3rd App</text>
     <text x="1300" y="272" font-size="10.5" fill="#64748b">多轮检索 + 工具调用（MCP / API），结果带 traceId 可追溯</text>
@@ -122,11 +181,33 @@
     <text x="1753" y="384" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#3730a3">GraphRAG</text>
     <g font-size="10.5" fill="#334155" text-anchor="middle">
       <rect x="1300" y="422" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1382" y="441">关联 / 风险传导分析</text>
+      <g transform="translate(1314,437)" stroke="#3730a3" stroke-width="1.2" fill="none">
+        <circle cx="-4" cy="-3" r="1.8"/>
+        <circle cx="4" cy="-4" r="1.8"/>
+        <circle cx="0" cy="4" r="1.8"/>
+        <line x1="-2.4" y1="-3.6" x2="2.2" y2="-3.8"/>
+        <line x1="-3" y1="-1.5" x2="-1" y2="2.4"/>
+        <line x1="3.2" y1="-2.3" x2="1" y2="2.4"/>
+      </g>
+      <text x="1326" y="441" text-anchor="start">关联 / 风险传导分析</text>
       <rect x="1476" y="422" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1558" y="441">故障根因定位</text>
+      <g transform="translate(1490,437)" stroke="#3730a3" stroke-width="1.2" fill="none">
+        <circle r="5"/>
+        <circle r="1" fill="#3730a3" stroke="none"/>
+        <line x1="0" y1="-7.5" x2="0" y2="-2.5"/>
+        <line x1="0" y1="2.5" x2="0" y2="7.5"/>
+        <line x1="-7.5" y1="0" x2="-2.5" y2="0"/>
+        <line x1="2.5" y1="0" x2="7.5" y2="0"/>
+      </g>
+      <text x="1502" y="441" text-anchor="start">故障根因定位</text>
       <rect x="1652" y="422" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1734" y="441">组织关系挖掘</text>
+      <g transform="translate(1666,437)" stroke="#3730a3" stroke-width="1.2" fill="none">
+        <circle cx="-3" cy="-2.5" r="2.2"/>
+        <path d="M -7.5 5 a 4.5 4.5 0 0 1 9 0"/>
+        <circle cx="3.5" cy="-2" r="2"/>
+        <path d="M 0.5 5 a 4.2 4.2 0 0 1 7.5 -2.5"/>
+      </g>
+      <text x="1678" y="441" text-anchor="start">组织关系挖掘</text>
     </g>
     <text x="1300" y="484" font-size="10.5" fill="#64748b">典型用户：分析师 · 风控 / 运维</text>
     <text x="1300" y="512" font-size="10.5" fill="#64748b">三元组多跳查询 + 邻居扩展，支持 SPARQL / 路径检索</text>
@@ -141,11 +222,26 @@
     <text x="1753" y="644" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#a16207">OAG · 本体</text>
     <g font-size="10.5" fill="#334155" text-anchor="middle">
       <rect x="1300" y="682" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1382" y="701">智能标注 / 打标</text>
+      <g transform="translate(1314,697)" stroke="#a16207" stroke-width="1.2" fill="none">
+        <path d="M -6 -3 a 2 2 0 0 1 2 -2 h 5 l 6 6 l -6 6 h -5 a 2 2 0 0 1 -2 -2 z"/>
+        <circle cx="-3" cy="-2" r="1.2"/>
+      </g>
+      <text x="1326" y="701" text-anchor="start">智能标注 / 打标</text>
       <rect x="1476" y="682" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1558" y="701">跨域语义检索</text>
+      <g transform="translate(1490,697)" stroke="#a16207" stroke-width="1.2" fill="none">
+        <circle r="5.5"/>
+        <ellipse rx="2.2" ry="5.5"/>
+        <line x1="-5.5" y1="0" x2="5.5" y2="0"/>
+        <line x1="4" y1="4" x2="7" y2="7"/>
+      </g>
+      <text x="1502" y="701" text-anchor="start">跨域语义检索</text>
       <rect x="1652" y="682" width="164" height="30" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <text x="1734" y="701">概念对齐推荐</text>
+      <g transform="translate(1666,697)" stroke="#a16207" stroke-width="1.2" fill="none">
+        <path d="M -7 -2.5 h 8 m 0 0 l -2.5 -2.5 m 2.5 2.5 l -2.5 2.5"/>
+        <path d="M 7 2.5 h -8 m 0 0 l 2.5 -2.5 m -2.5 2.5 l 2.5 2.5"/>
+        <line x1="-8.5" y1="0" x2="8.5" y2="0" stroke-dasharray="1.5 1.5"/>
+      </g>
+      <text x="1678" y="701" text-anchor="start">概念对齐推荐</text>
     </g>
     <text x="1300" y="744" font-size="10.5" fill="#64748b">典型用户：知识运营者 · 语义服务</text>
     <text x="1300" y="772" font-size="10.5" fill="#64748b">本体 Schema 约束概念词典（OWL / RDF / SKOS），受控词表支撑打标</text>

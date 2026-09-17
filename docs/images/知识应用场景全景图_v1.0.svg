@@ -25,7 +25,7 @@
   </defs>
   <rect x="0" y="0" width="1900" height="1020" fill="#f8fafc"/>
   <text x="950" y="32" text-anchor="middle" font-size="25" font-weight="bold" fill="#0f172a">IKC 知识应用场景全景图</text>
-  <text x="950" y="56" text-anchor="middle" font-size="13" fill="#64748b">按应用类型划分的六类知识应用场景 —— 均依托统一知识服务平台（API / SDK / MCP / CLI，Bearer 认证 · traceId 全链路）</text>
+  <text x="950" y="56" text-anchor="middle" font-size="13" fill="#64748b">按应用类型划分的六类知识应用场景 —— 每卡第二行为电信运营商内部典型场景（依托统一知识服务平台：API / SDK / MCP / CLI，Bearer 认证 · traceId 全链路）</text>
   <g>
     <rect x="60" y="120" width="560" height="190" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
     <rect x="60" y="120" width="560" height="40" rx="10" fill="url(#gBlue)"/>
@@ -60,8 +60,19 @@
       </g>
       <text x="458" y="201" text-anchor="start">FAQ 知识助手</text>
     </g>
-    <text x="80" y="244" font-size="10.5" fill="#64748b">典型用户：知识使用者 · 客户 / 员工</text>
-    <text x="80" y="272" font-size="10.5" fill="#64748b">解析产物切片 → 向量 / 倒排检索，答案带引用溯源</text>
+    <g font-size="10.5">
+      <rect x="80" y="216" width="164" height="30" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+      <rect x="84" y="223" width="3" height="16" rx="1.5" fill="#1d4ed8"/>
+      <text x="94" y="235" text-anchor="start" fill="#1d4ed8">10086 客服话术助手</text>
+      <rect x="256" y="216" width="164" height="30" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+      <rect x="260" y="223" width="3" height="16" rx="1.5" fill="#1d4ed8"/>
+      <text x="270" y="235" text-anchor="start" fill="#1d4ed8">资费套餐政策问答</text>
+      <rect x="432" y="216" width="164" height="30" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+      <rect x="436" y="223" width="3" height="16" rx="1.5" fill="#1d4ed8"/>
+      <text x="446" y="235" text-anchor="start" fill="#1d4ed8">业务受理规则问答</text>
+    </g>
+    <text x="80" y="272" font-size="10.5" fill="#64748b">典型用户：知识使用者 · 客服中心 / 营业厅 / 员工</text>
+    <text x="80" y="298" font-size="10.5" fill="#64748b">解析产物切片 → 向量 / 倒排检索，答案带引用溯源</text>
     <rect x="60" y="360" width="560" height="190" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
     <rect x="60" y="360" width="560" height="40" rx="10" fill="url(#gTeal)"/>
     <g stroke="#ffffff" stroke-width="1.6" fill="none">
@@ -94,8 +105,19 @@
       </g>
       <text x="458" y="441" text-anchor="start">词条浏览 / 互链</text>
     </g>
-    <text x="80" y="484" font-size="10.5" fill="#64748b">典型用户：全员 · 知识使用者</text>
-    <text x="80" y="512" font-size="10.5" fill="#64748b">页面树导航 + 全文检索（searchMode=page），版本可回溯</text>
+    <g font-size="10.5">
+      <rect x="80" y="456" width="164" height="30" rx="8" fill="#f0fdfa" stroke="#5eead4"/>
+      <rect x="84" y="463" width="3" height="16" rx="1.5" fill="#0f766e"/>
+      <text x="94" y="475" text-anchor="start" fill="#0f766e">网络运维知识库</text>
+      <rect x="256" y="456" width="164" height="30" rx="8" fill="#f0fdfa" stroke="#5eead4"/>
+      <rect x="260" y="463" width="3" height="16" rx="1.5" fill="#0f766e"/>
+      <text x="270" y="475" text-anchor="start" fill="#0f766e">设备厂商手册库</text>
+      <rect x="432" y="456" width="164" height="30" rx="8" fill="#f0fdfa" stroke="#5eead4"/>
+      <rect x="436" y="463" width="3" height="16" rx="1.5" fill="#0f766e"/>
+      <text x="446" y="475" text-anchor="start" fill="#0f766e">营业厅业务手册</text>
+    </g>
+    <text x="80" y="512" font-size="10.5" fill="#64748b">典型用户：全员 · 网络部 / 市场部 / 营业厅</text>
+    <text x="80" y="538" font-size="10.5" fill="#64748b">页面树导航 + 全文检索（searchMode=page），版本可回溯</text>
     <rect x="60" y="620" width="560" height="190" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
     <rect x="60" y="620" width="560" height="40" rx="10" fill="url(#gCyan)"/>
     <g stroke="#ffffff" stroke-width="1.6" fill="none">
@@ -128,8 +150,19 @@
       </g>
       <text x="458" y="701" text-anchor="start">考核问答陪练</text>
     </g>
-    <text x="80" y="744" font-size="10.5" fill="#64748b">典型用户：新员工 · 培训运营</text>
-    <text x="80" y="772" font-size="10.5" fill="#64748b">按岗位 / 标签组织知识包，问答陪练基于库内知识作答</text>
+    <g font-size="10.5">
+      <rect x="80" y="716" width="164" height="30" rx="8" fill="#ecfeff" stroke="#67e8f9"/>
+      <rect x="84" y="723" width="3" height="16" rx="1.5" fill="#0e7490"/>
+      <text x="94" y="735" text-anchor="start" fill="#0e7490">网优认证考核陪练</text>
+      <rect x="256" y="716" width="164" height="30" rx="8" fill="#ecfeff" stroke="#67e8f9"/>
+      <rect x="260" y="723" width="3" height="16" rx="1.5" fill="#0e7490"/>
+      <text x="270" y="735" text-anchor="start" fill="#0e7490">营业员上岗培训</text>
+      <rect x="432" y="716" width="164" height="30" rx="8" fill="#ecfeff" stroke="#67e8f9"/>
+      <rect x="436" y="723" width="3" height="16" rx="1.5" fill="#0e7490"/>
+      <text x="446" y="735" text-anchor="start" fill="#0e7490">装维技能知识包</text>
+    </g>
+    <text x="80" y="772" font-size="10.5" fill="#64748b">典型用户：新员工 · 网优 / 装维 / 营业培训运营</text>
+    <text x="80" y="798" font-size="10.5" fill="#64748b">按岗位 / 标签组织知识包，问答陪练基于库内知识作答</text>
     <rect x="1280" y="120" width="560" height="190" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
     <rect x="1280" y="120" width="560" height="40" rx="10" fill="url(#gRose)"/>
     <g stroke="#ffffff" stroke-width="1.6" fill="none">
@@ -166,8 +199,19 @@
       </g>
       <text x="1678" y="201" text-anchor="start">报告 / 周报生成</text>
     </g>
-    <text x="1300" y="244" font-size="10.5" fill="#64748b">典型用户：数字员工平台（workhub）· 3rd App</text>
-    <text x="1300" y="272" font-size="10.5" fill="#64748b">多轮检索 + 工具调用（MCP / API），结果带 traceId 可追溯</text>
+    <g font-size="10.5">
+      <rect x="1300" y="216" width="164" height="30" rx="8" fill="#fff1f2" stroke="#fecdd3"/>
+      <rect x="1304" y="223" width="3" height="16" rx="1.5" fill="#9f1239"/>
+      <text x="1314" y="235" text-anchor="start" fill="#9f1239">故障工单定位派单</text>
+      <rect x="1476" y="216" width="164" height="30" rx="8" fill="#fff1f2" stroke="#fecdd3"/>
+      <rect x="1480" y="223" width="3" height="16" rx="1.5" fill="#9f1239"/>
+      <text x="1490" y="235" text-anchor="start" fill="#9f1239">割接方案自动生成</text>
+      <rect x="1652" y="216" width="164" height="30" rx="8" fill="#fff1f2" stroke="#fecdd3"/>
+      <rect x="1656" y="223" width="3" height="16" rx="1.5" fill="#9f1239"/>
+      <text x="1666" y="235" text-anchor="start" fill="#9f1239">网优报告自动生成</text>
+    </g>
+    <text x="1300" y="272" font-size="10.5" fill="#64748b">典型用户：数字员工平台（workhub）· 网络部 / 综调中心</text>
+    <text x="1300" y="298" font-size="10.5" fill="#64748b">多轮检索 + 工具调用（MCP / API），结果带 traceId 可追溯</text>
     <rect x="1280" y="360" width="560" height="190" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
     <rect x="1280" y="360" width="560" height="40" rx="10" fill="url(#gIndigo)"/>
     <g stroke="#ffffff" stroke-width="1.6" fill="none">
@@ -209,8 +253,19 @@
       </g>
       <text x="1678" y="441" text-anchor="start">组织关系挖掘</text>
     </g>
-    <text x="1300" y="484" font-size="10.5" fill="#64748b">典型用户：分析师 · 风控 / 运维</text>
-    <text x="1300" y="512" font-size="10.5" fill="#64748b">三元组多跳查询 + 邻居扩展，支持 SPARQL / 路径检索</text>
+    <g font-size="10.5">
+      <rect x="1300" y="456" width="164" height="30" rx="8" fill="#eef2ff" stroke="#c7d2fe"/>
+      <rect x="1304" y="463" width="3" height="16" rx="1.5" fill="#3730a3"/>
+      <text x="1314" y="475" text-anchor="start" fill="#3730a3">告警根因定位</text>
+      <rect x="1476" y="456" width="164" height="30" rx="8" fill="#eef2ff" stroke="#c7d2fe"/>
+      <rect x="1480" y="463" width="3" height="16" rx="1.5" fill="#3730a3"/>
+      <text x="1490" y="475" text-anchor="start" fill="#3730a3">网元影响分析</text>
+      <rect x="1652" y="456" width="164" height="30" rx="8" fill="#eef2ff" stroke="#c7d2fe"/>
+      <rect x="1656" y="463" width="3" height="16" rx="1.5" fill="#3730a3"/>
+      <text x="1666" y="475" text-anchor="start" fill="#3730a3">合同 SLA 关联审查</text>
+    </g>
+    <text x="1300" y="512" font-size="10.5" fill="#64748b">典型用户：网管 / 风控 · 政企客户经理</text>
+    <text x="1300" y="538" font-size="10.5" fill="#64748b">三元组多跳查询 + 邻居扩展（客户-业务-网元拓扑），支持 SPARQL</text>
     <rect x="1280" y="620" width="560" height="190" rx="10" fill="#ffffff" stroke="#eab308" stroke-dasharray="5 3"/>
     <rect x="1280" y="620" width="560" height="40" rx="10" fill="#fef9c3"/>
     <g stroke="#a16207" stroke-width="1.6" fill="none">
@@ -243,8 +298,19 @@
       </g>
       <text x="1678" y="701" text-anchor="start">概念对齐推荐</text>
     </g>
-    <text x="1300" y="744" font-size="10.5" fill="#64748b">典型用户：知识运营者 · 语义服务</text>
-    <text x="1300" y="772" font-size="10.5" fill="#64748b">本体 Schema 约束概念词典（OWL / RDF / SKOS），受控词表支撑打标</text>
+    <g font-size="10.5">
+      <rect x="1300" y="716" width="164" height="30" rx="8" fill="#fefce8" stroke="#fde68a"/>
+      <rect x="1304" y="723" width="3" height="16" rx="1.5" fill="#a16207"/>
+      <text x="1314" y="735" text-anchor="start" fill="#a16207">网络资源目录打标</text>
+      <rect x="1476" y="716" width="164" height="30" rx="8" fill="#fefce8" stroke="#fde68a"/>
+      <rect x="1480" y="723" width="3" height="16" rx="1.5" fill="#a16207"/>
+      <text x="1490" y="735" text-anchor="start" fill="#a16207">业务术语对齐</text>
+      <rect x="1652" y="716" width="164" height="30" rx="8" fill="#fefce8" stroke="#fde68a"/>
+      <rect x="1656" y="723" width="3" height="16" rx="1.5" fill="#a16207"/>
+      <text x="1666" y="735" text-anchor="start" fill="#a16207">跨省术语统一</text>
+    </g>
+    <text x="1300" y="772" font-size="10.5" fill="#64748b">典型用户：知识运营者 · 网络资源 / 语义服务团队</text>
+    <text x="1300" y="798" font-size="10.5" fill="#64748b">本体 Schema 约束概念词典（OWL / RDF / SKOS），受控词表支撑打标</text>
   </g>
   <rect x="740" y="440" width="420" height="200" rx="12" fill="url(#gRose)" stroke="#9f1239" stroke-width="2.5"/>
   <g text-anchor="middle">

@@ -45,7 +45,7 @@
 
 ## 4. 快速状态
 
-- 已落地：架构总图 v1.2（`docs/images/开放平台架构总图_v1.2.svg`）——新增本体构建引擎（服务引擎层）与本体存储（数据层，Ontology Store），本体相关组件统一琥珀色标识（含 `ikc-ontology-sdk` 待建 + 本体模型落库链路）；Universal Retriever 标注 RAG / GraphRAG / OAG / Agentic RAG 四检索范式（2026-09-17，v1.1 保留）。
+- 已落地：架构总图 v1.2（`docs/images/开放平台架构总图_v1.2.svg`）——新增本体构建引擎（服务引擎层）与本体存储（数据层，Ontology Store），本体相关组件淡琥珀·无边框标识（含 `ikc-ontology-sdk` 待建 + 本体模型落库链路）；Universal Retriever 标注 RAG / GraphRAG / OAG / Agentic RAG 四检索范式；顶部新增知识开发生产 / 知识使用者 / 知识运营者三角色图标条（2026-09-17，v1.1 保留）。
 - 已落地：P1 kbMode 形态协议（text/wiki/graph）；Docker 构建脚本（`scripts/build_docker.sh`）+ HAProxy 代理层（`docker/haproxy.cfg`、`docker-compose.yml`，对外 18080）；P2 Wiki 库（页面树/检索/parse 联动）；P3 图谱库（stat/nodes/edges/neighbors/export + parse 联动）；Python SDK/MCP/CLI 24 工具/命令全覆盖；文档上传 7 天暂存；在线测试模块。
 - 已落地：reDocs 与 Swagger 定义对齐（ReDoc 侧边栏开启 `schemaDefinitionsTagName=Schemas` 分组，与 Swagger Models 目录一致；2026-08-24）。
 - 新增：企业级知识运营数据模型总体设计方案（`docs/知识运营数据模型总体设计方案.md` v2.3：目录=知识单元、元数据与解析内容结构化承载、解析产物按文档形态模板（content_template）、wiki↔openwiki 与 graph/ontology↔semantica 引擎对齐、任务对象不入概念层、受控词表治理（tag/term/synonym_set 全局唯一+审核发布）、基于知识运营全景图 v1.0 全文分域对齐（接入/解析加工域 + ①-⑥ 概念层 + 治理支撑域，ingest_task 接入链路）；图：概念模型 v1.0 快照 + 全景图 v1.0；M0→M3 路线，2026-09-05，待评审）。

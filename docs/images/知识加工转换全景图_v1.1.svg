@@ -78,44 +78,64 @@
   <g>
     <g text-anchor="middle">
       <rect x="50" y="124" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 62 134 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="66" y1="146" x2="78" y2="146" stroke="#475569" stroke-width="1.2"/>
-      <line x1="66" y1="152" x2="78" y2="152" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(72, 148)">
+        <path d="M -7 -12 h 9 l 5 5 v 19 h -14 z" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+        <path d="M 2 -12 v 5 h 5" fill="none" stroke="#dc2626" stroke-width="1.2"/>
+        <text y="7" text-anchor="middle" font-size="5.5" font-weight="bold" fill="#dc2626">PDF</text>
+      </g>
       <text x="118" y="154" font-size="12.5" font-weight="bold" fill="#334155">PDF</text>
       <rect x="180" y="124" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 192 134 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="196" y1="146" x2="208" y2="146" stroke="#475569" stroke-width="1.2"/>
-      <line x1="196" y1="152" x2="208" y2="152" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(202, 148)">
+        <path d="M -7 -12 h 9 l 5 5 v 19 h -14 z" fill="none" stroke="#1d4ed8" stroke-width="1.5"/>
+        <path d="M 2 -12 v 5 h 5" fill="none" stroke="#1d4ed8" stroke-width="1.2"/>
+        <text y="7" text-anchor="middle" font-size="10" font-weight="bold" fill="#1d4ed8">W</text>
+      </g>
       <text x="248" y="154" font-size="12.5" font-weight="bold" fill="#334155">Word</text>
       <rect x="50" y="184" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 62 194 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="66" y1="206" x2="78" y2="206" stroke="#475569" stroke-width="1.2"/>
-      <line x1="66" y1="212" x2="78" y2="212" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(72, 208)">
+        <rect x="-8" y="-10" width="16" height="20" rx="1.5" fill="none" stroke="#15803d" stroke-width="1.5"/>
+        <line x1="-8" y1="-3" x2="8" y2="-3" stroke="#15803d" stroke-width="1.2"/>
+        <line x1="-8" y1="4" x2="8" y2="4" stroke="#15803d" stroke-width="1.2"/>
+        <line x1="0" y1="-10" x2="0" y2="10" stroke="#15803d" stroke-width="1.2"/>
+      </g>
       <text x="118" y="214" font-size="12.5" font-weight="bold" fill="#334155">Excel</text>
       <rect x="180" y="184" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 192 194 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="196" y1="206" x2="208" y2="206" stroke="#475569" stroke-width="1.2"/>
-      <line x1="196" y1="212" x2="208" y2="212" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(202, 208)">
+        <rect x="-9" y="-10" width="18" height="13" rx="1.5" fill="none" stroke="#ea580c" stroke-width="1.5"/>
+        <rect x="-5" y="-3" width="3" height="4" fill="#ea580c"/>
+        <rect x="-0.5" y="-6" width="3" height="7" fill="#ea580c"/>
+        <rect x="4" y="-1" width="3" height="2" fill="#ea580c"/>
+        <line x1="0" y1="3" x2="0" y2="8" stroke="#ea580c" stroke-width="1.5"/>
+        <line x1="-5" y1="10" x2="5" y2="10" stroke="#ea580c" stroke-width="1.5"/>
+      </g>
       <text x="248" y="214" font-size="12.5" font-weight="bold" fill="#334155">PPT</text>
       <rect x="50" y="244" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 62 254 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="66" y1="266" x2="78" y2="266" stroke="#475569" stroke-width="1.2"/>
-      <line x1="66" y1="272" x2="78" y2="272" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(72, 268)">
+        <rect x="-11" y="-8" width="22" height="16" rx="3" fill="none" stroke="#334155" stroke-width="1.5"/>
+        <path d="M -7 4 v -8 l 3.5 4 l 3.5 -4 v 8" fill="none" stroke="#334155" stroke-width="1.4"/>
+        <path d="M 6 -4 v 7 m 0 0 l -2.5 -2.5 m 2.5 2.5 l 2.5 -2.5" fill="none" stroke="#334155" stroke-width="1.4"/>
+      </g>
       <text x="118" y="274" font-size="12.5" font-weight="bold" fill="#334155">MD</text>
       <rect x="180" y="244" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 192 254 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="196" y1="266" x2="208" y2="266" stroke="#475569" stroke-width="1.2"/>
-      <line x1="196" y1="272" x2="208" y2="272" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(202, 268)">
+        <path d="M -4 -5 l -5 5 l 5 5" fill="none" stroke="#ea580c" stroke-width="1.6"/>
+        <path d="M 4 -5 l 5 5 l -5 5" fill="none" stroke="#ea580c" stroke-width="1.6"/>
+        <line x1="1.5" y1="-7" x2="-1.5" y2="7" stroke="#ea580c" stroke-width="1.4"/>
+      </g>
       <text x="248" y="274" font-size="12.5" font-weight="bold" fill="#334155">HTML</text>
       <rect x="50" y="304" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 62 314 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="66" y1="326" x2="78" y2="326" stroke="#475569" stroke-width="1.2"/>
-      <line x1="66" y1="332" x2="78" y2="332" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(72, 328)">
+        <circle r="9" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+        <path d="M -2.5 -4.5 l 7 4.5 l -7 4.5 z" fill="#7c3aed"/>
+        <path d="M 7 -6 a 4 4 0 0 1 0 5" fill="none" stroke="#7c3aed" stroke-width="1.2"/>
+      </g>
       <text x="118" y="334" font-size="12.5" font-weight="bold" fill="#334155">音视频</text>
       <rect x="180" y="304" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
-      <path d="M 192 314 h 14 l 6 6 v 22 h -20 z" fill="none" stroke="#475569" stroke-width="1.5"/>
-      <line x1="196" y1="326" x2="208" y2="326" stroke="#475569" stroke-width="1.2"/>
-      <line x1="196" y1="332" x2="208" y2="332" stroke="#475569" stroke-width="1.2"/>
+      <g transform="translate(202, 328)">
+        <rect x="-10" y="-8" width="20" height="16" rx="2" fill="none" stroke="#0e7490" stroke-width="1.5"/>
+        <circle cx="-4.5" cy="-2.5" r="2" fill="#0e7490"/>
+        <path d="M -9 5 l 5.5 -5.5 l 4 4 l 3 -3 l 6.5 4.5" fill="none" stroke="#0e7490" stroke-width="1.4"/>
+      </g>
       <text x="248" y="334" font-size="12.5" font-weight="bold" fill="#334155">图片</text>
       <rect x="50" y="364" width="250" height="56" rx="8" fill="#d1fae5" stroke="#059669" stroke-dasharray="4 3"/>
       <circle cx="78" cy="392" r="12" fill="none" stroke="#047857" stroke-width="1.8"/>
@@ -316,7 +336,6 @@
     <text x="914" y="548" fill="#a16207" stroke="#f8fafc" stroke-width="3" paint-order="stroke">概念抽象</text>
   </g>
   <text x="1755" y="398" text-anchor="middle" font-size="10.5" fill="#e11d48">融合检索（答案 · 引用）</text>
-  <text x="950" y="618" text-anchor="middle" font-size="11.5" fill="#475569">※ 元数据（状态 · 版本 · 权限 · 血缘）贯穿 ①→⑥ 全流程：每一步转换均登记与回写，支撑追溯与生命周期管控</text>
   <rect x="40" y="632" width="1820" height="110" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2" stroke-dasharray="6 4"/>
   <text x="950" y="656" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46">治理与运营（横切 · 贯穿全过程）</text>
   <g text-anchor="middle">

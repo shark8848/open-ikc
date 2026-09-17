@@ -158,13 +158,14 @@
       <line x1="673" y1="143" x2="670" y2="140"/><line x1="691" y1="143" x2="694" y2="140"/>
       <line x1="673" y1="161" x2="670" y2="164"/><line x1="691" y1="161" x2="694" y2="164"/>
     </g>
-    <text x="790" y="150" font-size="15" font-weight="bold" fill="#ffffff">文档解析引擎族</text>
-    <text x="790" y="172" font-size="10.5" fill="#ede9fe">版面（marker / docling / mineru）</text>
-    <text x="790" y="189" font-size="10.5" fill="#ede9fe">表格 · ASR 转写 · 多轮 LLM 结构化抽取</text>
-    <use xlink:href="#icoModel" transform="translate(672, 203)"/>
-    <text x="681" y="207" font-size="9.5" fill="#ede9fe" text-anchor="start">版面 / ASR / LLM 抽取</text>
-    <use xlink:href="#icoRule" transform="translate(795, 203)"/>
-    <text x="804" y="207" font-size="9.5" fill="#ede9fe" text-anchor="start">表格 / 模板清洗</text>
+    <text x="790" y="148" font-size="15" font-weight="bold" fill="#ffffff">文档解析引擎族</text>
+    <text x="790" y="166" font-size="10.5" fill="#ede9fe">版面：paddle ocr / mineru</text>
+    <text x="790" y="182" font-size="10.5" fill="#ede9fe">表格 · ASR 转写 · 多轮 LLM 抽取</text>
+    <text x="790" y="197" font-size="9.5" fill="#ede9fe">过程：抽取 → 清洗 → 去重</text>
+    <use xlink:href="#icoModel" transform="translate(672, 208)"/>
+    <text x="681" y="212" font-size="9.5" fill="#ede9fe" text-anchor="start">版面 / ASR / LLM 抽取</text>
+    <use xlink:href="#icoRule" transform="translate(795, 208)"/>
+    <text x="804" y="212" font-size="9.5" fill="#ede9fe" text-anchor="start">清洗 / 去重 / 模板</text>
     <rect x="650" y="240" width="240" height="64" rx="10" fill="url(#gCyan)"/>
     <text x="770" y="266" font-size="14" font-weight="bold" fill="#ffffff">Parser Cache 解析缓存</text>
     <text x="770" y="288" font-size="10.5" fill="#cffafe">命中复用 / 失效淘汰（content_hash）</text>
@@ -313,12 +314,6 @@
     <text x="912" y="330" fill="#0f766e" stroke="#f8fafc" stroke-width="3" paint-order="stroke">词条加工</text>
     <text x="916" y="446" fill="#3730a3" stroke="#f8fafc" stroke-width="3" paint-order="stroke">抽取三元组</text>
     <text x="914" y="548" fill="#a16207" stroke="#f8fafc" stroke-width="3" paint-order="stroke">概念抽象</text>
-  </g>
-  <g font-size="9.5" font-weight="bold" fill="#e11d48" text-anchor="middle" stroke="#f8fafc" stroke-width="3" paint-order="stroke">
-    <text x="1620" y="212">RAG</text>
-    <text x="1620" y="262">GraphRAG</text>
-    <text x="1620" y="352">OAG</text>
-    <text x="1620" y="424">Agentic</text>
   </g>
   <text x="1755" y="398" text-anchor="middle" font-size="10.5" fill="#e11d48">融合检索（答案 · 引用）</text>
   <text x="950" y="618" text-anchor="middle" font-size="11.5" fill="#475569">※ 元数据（状态 · 版本 · 权限 · 血缘）贯穿 ①→⑥ 全流程：每一步转换均登记与回写，支撑追溯与生命周期管控</text>

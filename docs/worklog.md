@@ -1361,3 +1361,9 @@
 - 先盘点本机各 ikc-* 仓库实际依赖（open-ikc pyproject/portal package.json、ikc-log-center 含 Java/Rust SDK、knowledge_transformer、ikc_extraction、ontolith Rust 工作区、ontology-mvp、lightrag、litellm-headroom-gateway），在对话内输出分层技术栈清单后按用户要求成图。
 - 新增 `docs/images/分层技术栈总览图_v1.0.svg` + `.png`（1680×1160 / 3360×2320）：自底向上九层堆叠（L1 语言运行时 → L2 存储设施 → L3 数据访问 → L4 协议认证 → L5 任务编排 → L6 模型 AI → L7 解析引擎 → L8 服务框架 → L9 应用前端），层间向下箭头表依赖方向；右侧两竖条沿用架构总图语义：SDK 与集成层（粉虚线，已实现/待建区分实虚描边）与横切基础设施（绿虚线，log-center/traceId/观测/安全/构建/测试）。
 - 风格沿用架构总图 defs（同套 gBlue/gTeal/gIndigo/gViolet/gRose/gCyan/gSlate/gAmber 渐变与 arrow marker）；琥珀色仅用于 OWL/RDF/SKOS 本体存储 chip（本体专属语义）；白虚线描边=规划/待建（多模态解析引擎族、记忆库）；PNG 经临时副本注入 Noto Sans CJK SC 渲染；修正三处文字溢出（L7 规划 chip 副标题改「规划中 · ikc-parse-sdk 统一封装」、ontology·retriever-sdk 字号降至 9.5、structlog·prometheus 换为中文标题+英文副行）后二次渲染确认干净；仅新增配图，跳过 Claude 只读审查。
+
+### 任务：分层技术栈总览图去除 ontolith/Rust 与状态字眼（2026-10-16 续）
+
+- 用户反馈 ontolith 与 Rust 和 ikc 无关：删除 L1 Rust Edition 2024 chip（L1 四列改三列 w=348）、L4 HTTP 客户端副行去 ureq(Rust)、L2 本体存储副行去（ontolith）、绿条「三语言日志 SDK Python·Java·Rust」改「日志 SDK Python·Java」、脚注仓库清单去 ontolith；grep 确认图内 Rust/ontolith 零残留。
+- 去除「已发布」「待建」字眼：pyuploadx 副行改「分片上传 · 秒传」，ikc-parse-sdk/connector·cache-sdk/ontology·retriever-sdk 副行改职能描述（虚线描边仍表达规划中）；图例「白虚线描边 = 规划 / 待建」改「规划中」；「已实现」保留（用户未要求去）。
+- 二次渲染确认无溢出无残留；仅配图改动，跳过 Claude 只读审查。

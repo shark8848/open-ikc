@@ -1355,3 +1355,9 @@
 - 存储设施 Storage 面板由 4 框扩为 5 框（w=104，x=840/954/1068/1182/1296），新增第5框「记忆库」（Memory Store / 短期·长期记忆 / Agent 会话上下文），标准 #e2e8f0 灰底。
 - 连线联动更新：任务分发箭头 x=297.5/502.5/707.5/1117.5、调用能力箭头 x=297.5/502.5/707.5/1105/1322.5、rose 同步调用路径终点改 1322.5、amber 本体落库路径重排（起点 1117.5，终点改本体存储新中心 1234）；「读写数据」箭头 1125→1090、「调用能力」箭头 1117.5→1105 避开与 amber 竖线（x=1120）挤压；Universal Retriever 内四枚范式 chip 缩窄适配 195 宽。
 - cairosvg 整图 + 引擎行/存储区局部放大渲染多轮目检确认无压线无溢出；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：新增 IKC-* 体系分层技术栈总览图 v1.0
+
+- 先盘点本机各 ikc-* 仓库实际依赖（open-ikc pyproject/portal package.json、ikc-log-center 含 Java/Rust SDK、knowledge_transformer、ikc_extraction、ontolith Rust 工作区、ontology-mvp、lightrag、litellm-headroom-gateway），在对话内输出分层技术栈清单后按用户要求成图。
+- 新增 `docs/images/分层技术栈总览图_v1.0.svg` + `.png`（1680×1160 / 3360×2320）：自底向上九层堆叠（L1 语言运行时 → L2 存储设施 → L3 数据访问 → L4 协议认证 → L5 任务编排 → L6 模型 AI → L7 解析引擎 → L8 服务框架 → L9 应用前端），层间向下箭头表依赖方向；右侧两竖条沿用架构总图语义：SDK 与集成层（粉虚线，已实现/待建区分实虚描边）与横切基础设施（绿虚线，log-center/traceId/观测/安全/构建/测试）。
+- 风格沿用架构总图 defs（同套 gBlue/gTeal/gIndigo/gViolet/gRose/gCyan/gSlate/gAmber 渐变与 arrow marker）；琥珀色仅用于 OWL/RDF/SKOS 本体存储 chip（本体专属语义）；白虚线描边=规划/待建（多模态解析引擎族、记忆库）；PNG 经临时副本注入 Noto Sans CJK SC 渲染；修正三处文字溢出（L7 规划 chip 副标题改「规划中 · ikc-parse-sdk 统一封装」、ontology·retriever-sdk 字号降至 9.5、structlog·prometheus 换为中文标题+英文副行）后二次渲染确认干净；仅新增配图，跳过 Claude 只读审查。

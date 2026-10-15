@@ -1386,3 +1386,7 @@
 ### 任务：分层技术栈图 L6 换入 openwiki/semantica 并删脚注（2026-10-16 续）
 
 - 删除底部「注：依据…盘点」脚注行；L6 移除 LightRAG chip，新增 openwiki（Wiki 加工 · 词条生成）与 semantica（图谱构建 · 图谱查询），由 7 列回到 8 列布局（w=125.5，与初版 8 列坐标一致）；grep 确认 LightRAG/注：零残留，局部放大渲染无溢出；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：分层技术栈图 L7 移除 Docling（2026-10-16 续）
+
+- L7 下行第三方工具由 6 列改 5 列（w=207.2，x=228/443.2/658.4/873.6/1088.8）：LibreOffice / FFmpeg·ffprobe / Pandoc / OCR 引擎族 / Whisper；grep 确认 docling 零残留，局部放大渲染干净；仅配图改动，跳过 Claude 只读审查。

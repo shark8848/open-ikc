@@ -134,27 +134,30 @@
   <text x="140" y="503" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L6</text>
   <text x="140" y="521" text-anchor="middle" font-size="11.5" fill="#ffe4e6">模型与 AI 能力层</text>
   <g text-anchor="middle">
-    <rect x="228" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="300.3" y="503" font-size="13" font-weight="bold" fill="#ffffff">LiteLLM</text>
-    <text x="300.3" y="522" font-size="9.5" fill="#ffffff" opacity=".85">LLM Gateway · 配额路由</text>
-    <rect x="380.6" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="452.9" y="503" font-size="13" font-weight="bold" fill="#ffffff">LangChain</text>
-    <text x="452.9" y="522" font-size="9.5" fill="#ffffff" opacity=".85">组件链 · 模型适配</text>
-    <rect x="533.2" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="605.5" y="503" font-size="13" font-weight="bold" fill="#ffffff">LangGraph</text>
-    <text x="605.5" y="522" font-size="9.5" fill="#ffffff" opacity=".85">多步 Agent 流程</text>
-    <rect x="685.8" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="758.1" y="503" font-size="13" font-weight="bold" fill="#ffffff">LightRAG</text>
-    <text x="758.1" y="522" font-size="9.5" fill="#ffffff" opacity=".85">GraphRAG 检索</text>
-    <rect x="838.4" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="910.7" y="503" font-size="12" font-weight="bold" fill="#ffffff">deepsearcher</text>
-    <text x="910.7" y="522" font-size="9.5" fill="#ffffff" opacity=".85">Agentic 深度检索</text>
-    <rect x="991" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="1063.3" y="503" font-size="13" font-weight="bold" fill="#ffffff">tiktoken</text>
-    <text x="1063.3" y="522" font-size="9.5" fill="#ffffff" opacity=".85">token 计量</text>
-    <rect x="1143.6" y="480" width="144.6" height="54" rx="8" fill="url(#gRose)"/>
-    <text x="1215.9" y="503" font-size="13" font-weight="bold" fill="#ffffff">Model Provider</text>
-    <text x="1215.9" y="522" font-size="9.5" fill="#ffffff" opacity=".85">dashscope·Ollama·vLLM</text>
+    <rect x="228" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="290.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">LiteLLM</text>
+    <text x="290.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">LLM Gateway · 配额路由</text>
+    <rect x="361.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="424.25" y="503" font-size="13" font-weight="bold" fill="#ffffff">LangChain</text>
+    <text x="424.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">组件链 · 模型适配</text>
+    <rect x="495" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="557.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">LangGraph</text>
+    <text x="557.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">多步 Agent 流程</text>
+    <rect x="628.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="691.25" y="503" font-size="13" font-weight="bold" fill="#ffffff">openwiki</text>
+    <text x="691.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">Wiki 加工 · 词条生成</text>
+    <rect x="762" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="824.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">semantica</text>
+    <text x="824.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">图谱构建 · 图谱查询</text>
+    <rect x="895.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="958.25" y="503" font-size="12" font-weight="bold" fill="#ffffff">deepsearcher</text>
+    <text x="958.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">Agentic 深度检索</text>
+    <rect x="1029" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="1091.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">tiktoken</text>
+    <text x="1091.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">token 计量</text>
+    <rect x="1162.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="1225.25" y="503" font-size="13" font-weight="bold" fill="#ffffff">Model Provider</text>
+    <text x="1225.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">dashscope·Ollama·vLLM</text>
   </g>
   <line x1="680" y1="551" x2="680" y2="562" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
 
@@ -363,6 +366,5 @@
     <text x="412" y="1204" fill="#475569">琥珀色 = 本体专属</text>
     <line x1="540" y1="1199" x2="574" y2="1199" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
     <text x="582" y="1204" fill="#475569">层间依赖方向（上层 → 下层）</text>
-    <text x="1620" y="1204" text-anchor="end" font-size="11" fill="#94a3b8">注：依据 open-ikc / ikc-log-center / knowledge_transformer / ikc_extraction / ontology-mvp / lightrag / litellm 等仓库依赖清单与架构总图 v1.2.1 盘点</text>
   </g>
 </svg>

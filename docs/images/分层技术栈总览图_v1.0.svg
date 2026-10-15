@@ -33,7 +33,6 @@
 
   <!-- ========== 标题 ========== -->
   <text x="680" y="36" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">IKC-* 体系分层技术栈总览</text>
-  <text x="680" y="62" text-anchor="middle" font-size="13" fill="#64748b">L1 语言运行时 → L9 应用前端 · 自底向上九层堆叠 · SDK 集成与横切设施纵向贯穿（基于各 ikc-* 仓库实际依赖盘点）</text>
   <text x="42" y="639" transform="rotate(-90 42 639)" text-anchor="middle" font-size="12.5" fill="#94a3b8">下层为底座 · 上层依赖并调用下层 ▼</text>
 
   <!-- ========== L9 应用与前端层 ========== -->

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 720" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gEmerald" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect width="1380" height="720" fill="#ffffff"/>
+
+  <!-- ========== 标题 ========== -->
+  <text x="690" y="44" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">智能知识与上下文服务 · 三层全景图</text>
+  <text x="690" y="72" text-anchor="middle" font-size="14" fill="#64748b">员工 / 客户 / 合作伙伴 / 业务应用 / AI Agent → 智能知识与上下文服务 → 文档系统 / 数据平台 / 业务系统 / 互联网及专家知识</text>
+
+  <!-- ========== 分层底衬 ========== -->
+  <rect x="42" y="88" width="1296" height="88" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="1" stroke-opacity=".4"/>
+  <text x="44" y="82" font-size="12.5" fill="#1d4ed8">消费者层（谁在用）</text>
+  <rect x="320" y="288" width="740" height="144" rx="12" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1" stroke-opacity=".45"/>
+  <text x="312" y="306" text-anchor="end" font-size="12.5" fill="#7e22ce">服务层（怎么服务）</text>
+  <rect x="42" y="548" width="1296" height="88" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1" stroke-opacity=".4"/>
+  <text x="44" y="542" font-size="12.5" fill="#059669">知识源层（从哪里来）</text>
+
+  <!-- ========== 消费者节点 ========== -->
+  <g>
+    <rect x="60" y="100" width="236" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="178" y="130" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">员工</text>
+    <text x="178" y="150" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Employee · 内部办公与决策</text>
+
+    <rect x="316" y="100" width="236" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="434" y="130" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">客户</text>
+    <text x="434" y="150" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Customer · 对外咨询与自助</text>
+
+    <rect x="572" y="100" width="236" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="690" y="130" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">合作伙伴</text>
+    <text x="690" y="150" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Partner · 跨组织协同共享</text>
+
+    <rect x="828" y="100" width="236" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="946" y="130" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">业务应用</text>
+    <text x="946" y="150" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Business App · 系统集成嵌入</text>
+
+    <rect x="1084" y="100" width="236" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="1202" y="130" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">AI Agent</text>
+    <text x="1202" y="150" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">智能体 · MCP / CLI 工具调用</text>
+  </g>
+
+  <!-- ========== 消费者 → 服务（调用汇聚） ========== -->
+  <line x1="178" y1="164" x2="400" y2="296" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="434" y1="164" x2="550" y2="296" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="690" y1="164" x2="690" y2="296" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="946" y1="164" x2="830" y2="296" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="1202" y1="164" x2="980" y2="296" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="545" y="222" width="290" height="22" fill="#ffffff"/>
+  <text x="690" y="238" text-anchor="middle" font-size="12.5" fill="#475569">HTTPS API / MCP / CLI（Bearer Token 认证）</text>
+
+  <!-- ========== 服务层核心 ========== -->
+  <rect x="340" y="300" width="700" height="120" rx="14" fill="url(#gViolet)"/>
+  <text x="690" y="340" text-anchor="middle" font-size="24" font-weight="bold" fill="#ffffff">智能知识与上下文服务</text>
+  <text x="690" y="364" text-anchor="middle" font-size="12.5" fill="#ffffff" opacity=".85">统一知识 · 上下文 · 记忆服务出口（按调用方权限过滤 · traceId 全链路贯穿）</text>
+  <g font-size="12" fill="#ffffff">
+    <rect x="370" y="382" width="120" height="26" rx="13" fill="#ffffff" fill-opacity=".16" stroke="#ffffff" stroke-opacity=".45"/>
+    <text x="430" y="399" text-anchor="middle">普通检索</text>
+    <rect x="500" y="382" width="120" height="26" rx="13" fill="#ffffff" fill-opacity=".16" stroke="#ffffff" stroke-opacity=".45"/>
+    <text x="560" y="399" text-anchor="middle">深度检索</text>
+    <rect x="630" y="382" width="120" height="26" rx="13" fill="#ffffff" fill-opacity=".16" stroke="#ffffff" stroke-opacity=".45"/>
+    <text x="690" y="399" text-anchor="middle">Wiki 词条</text>
+    <rect x="760" y="382" width="120" height="26" rx="13" fill="#ffffff" fill-opacity=".16" stroke="#ffffff" stroke-opacity=".45"/>
+    <text x="820" y="399" text-anchor="middle">图谱问答</text>
+    <rect x="890" y="382" width="120" height="26" rx="13" fill="#ffffff" fill-opacity=".16" stroke="#ffffff" stroke-opacity=".45"/>
+    <text x="950" y="399" text-anchor="middle">文档解析</text>
+  </g>
+
+  <!-- ========== 服务 → 知识源（接入聚合） ========== -->
+  <line x1="420" y1="420" x2="210" y2="551" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="610" y1="420" x2="530" y2="551" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="790" y1="420" x2="850" y2="551" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="970" y1="420" x2="1170" y2="551" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="695" y="494" text-anchor="middle" font-size="12.5" fill="#475569">知识源接入 · 解析与抽取聚合</text>
+
+  <!-- ========== 知识源节点（外部通道：翡翠绿、无描边） ========== -->
+  <g>
+    <rect x="60" y="560" width="300" height="64" rx="12" fill="url(#gEmerald)"/>
+    <text x="210" y="590" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">文档系统</text>
+    <text x="210" y="610" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Doc Systems · 手册 / 制度 / 合同</text>
+
+    <rect x="380" y="560" width="300" height="64" rx="12" fill="url(#gEmerald)"/>
+    <text x="530" y="590" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">数据平台</text>
+    <text x="530" y="610" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Data Platform · 数仓 / 报表 / 指标</text>
+
+    <rect x="700" y="560" width="300" height="64" rx="12" fill="url(#gEmerald)"/>
+    <text x="850" y="590" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">业务系统</text>
+    <text x="850" y="610" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Business Systems · CRM / ERP / 工单</text>
+
+    <rect x="1020" y="560" width="300" height="64" rx="12" fill="url(#gEmerald)"/>
+    <text x="1170" y="590" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">互联网及专家知识</text>
+    <text x="1170" y="610" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Internet &amp; Expert · 公开资讯 / 领域专家</text>
+  </g>
+
+  <!-- ========== 脚注 ========== -->
+  <text x="1340" y="688" text-anchor="end" font-size="12" fill="#94a3b8">注：AI Agent 经 MCP / CLI 接入，业务应用经 HTTPS API / SDK 集成；所有请求经 Bearer Token 认证并按调用方权限过滤知识范围</text>
+</svg>

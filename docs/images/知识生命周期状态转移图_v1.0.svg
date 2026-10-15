@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 720" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrDash" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrRose" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#be185d"/>
+    </marker>
+  </defs>
+
+  <rect width="1380" height="720" fill="#ffffff"/>
+
+  <!-- ========== 标题 ========== -->
+  <text x="690" y="44" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">知识资产全生命周期 · 状态转移图</text>
+  <text x="690" y="72" text-anchor="middle" font-size="14" fill="#64748b">发现 → 接入 → 解析 → 抽取 → 编译 → 审核 → 发布 → 使用 → 反馈 → 更新 → 归档 / 失效</text>
+
+  <!-- ========== 相位分组底衬 ========== -->
+  <rect x="42" y="86" width="470" height="88" rx="12" fill="#f0fdfa" stroke="#14b8a6" stroke-width="1" stroke-opacity=".4"/>
+  <text x="44" y="80" font-size="12.5" fill="#0f766e">接入相位</text>
+  <rect x="532" y="86" width="740" height="88" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1" stroke-opacity=".4"/>
+  <text x="1266" y="80" text-anchor="end" font-size="12.5" fill="#4338ca">加工相位（解析 → 抽取 → 编译）</text>
+  <rect x="126" y="402" width="1146" height="88" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="1" stroke-opacity=".4"/>
+  <text x="128" y="396" font-size="12.5" fill="#1d4ed8">服务与运营环路（使用 · 反馈 · 更新，驱动重新编译）</text>
+  <text x="1040" y="360" text-anchor="end" font-size="12.5" fill="#7e22ce">审核门（转移事件，非驻留状态）</text>
+
+  <!-- ========== 状态节点：第一行 ========== -->
+  <g>
+    <rect x="60" y="98" width="190" height="64" rx="12" fill="url(#gTeal)"/>
+    <text x="155" y="128" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">发现</text>
+    <text x="155" y="148" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Discovered · 识别候选知识源</text>
+
+    <rect x="310" y="98" width="190" height="64" rx="12" fill="url(#gTeal)"/>
+    <text x="405" y="128" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">接入</text>
+    <text x="405" y="148" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Ingested · 登记并获取原文</text>
+
+    <rect x="560" y="98" width="190" height="64" rx="12" fill="url(#gIndigo)"/>
+    <text x="655" y="128" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">已解析</text>
+    <text x="655" y="148" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Parsed · 版面与结构解析</text>
+
+    <rect x="810" y="98" width="190" height="64" rx="12" fill="url(#gIndigo)"/>
+    <text x="905" y="128" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">已抽取</text>
+    <text x="905" y="148" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Extracted · 实体关系与要点</text>
+
+    <rect x="1060" y="98" width="190" height="64" rx="12" fill="url(#gViolet)"/>
+    <text x="1155" y="128" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">已编译</text>
+    <text x="1155" y="148" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Compiled · 产出 wiki / 图谱</text>
+  </g>
+
+  <!-- ========== 审核门（菱形） ========== -->
+  <polygon points="1150,253 1240,295 1150,337 1060,295" fill="url(#gViolet)" stroke="#4c1d95" stroke-width="1.5"/>
+  <text x="1150" y="292" text-anchor="middle" font-size="19" font-weight="bold" fill="#ffffff">审核</text>
+  <text x="1150" y="312" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">Review Gate</text>
+
+  <!-- ========== 状态节点：第二行 ========== -->
+  <g>
+    <rect x="1060" y="413" width="190" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="1155" y="443" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">已发布</text>
+    <text x="1155" y="463" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Published · 进入检索与问答</text>
+
+    <rect x="810" y="413" width="190" height="64" rx="12" fill="url(#gBlue)"/>
+    <text x="905" y="443" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">使用中</text>
+    <text x="905" y="463" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">In Use · 被检索引用消费</text>
+
+    <rect x="560" y="413" width="190" height="64" rx="12" fill="url(#gRose)"/>
+    <text x="655" y="443" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">有反馈</text>
+    <text x="655" y="463" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Feedback · 质量与纠错信号</text>
+
+    <rect x="310" y="413" width="190" height="64" rx="12" fill="url(#gRose)"/>
+    <text x="405" y="443" text-anchor="middle" font-size="21" font-weight="bold" fill="#ffffff">待更新</text>
+    <text x="405" y="463" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">Updating · 制定变更并更新</text>
+  </g>
+
+  <!-- ========== 终态：归档 / 失效（双框） ========== -->
+  <rect x="560" y="583" width="190" height="64" rx="12" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+  <rect x="567" y="590" width="176" height="50" rx="9" fill="none" stroke="#475569" stroke-width="1.2"/>
+  <text x="655" y="614" text-anchor="middle" font-size="19" font-weight="bold" fill="#334155">已归档 / 已失效</text>
+  <text x="655" y="634" text-anchor="middle" font-size="11" fill="#64748b">Archived / Expired · 终态</text>
+
+  <!-- ========== 转移边：第一行 forward ========== -->
+  <line x1="250" y1="130" x2="303" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="277" y="120" text-anchor="middle" font-size="12" fill="#64748b">登记接入</text>
+  <line x1="500" y1="130" x2="553" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="527" y="120" text-anchor="middle" font-size="12" fill="#64748b">接入原文</text>
+  <line x1="750" y1="130" x2="803" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="777" y="120" text-anchor="middle" font-size="12" fill="#64748b">解析完成</text>
+  <line x1="1000" y1="130" x2="1053" y2="130" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="1027" y="120" text-anchor="middle" font-size="12" fill="#64748b">抽取完成</text>
+
+  <!-- 提交审核 / 审核通过 / 审核拒绝 -->
+  <line x1="1150" y1="162" x2="1150" y2="248" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="1140" y="210" text-anchor="end" font-size="12" fill="#64748b">提交审核</text>
+  <line x1="1150" y1="337" x2="1150" y2="408" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="1140" y="380" text-anchor="end" font-size="12" fill="#64748b">审核通过 · 发布</text>
+  <polyline points="1240,295 1310,295 1310,130 1258,130" fill="none" stroke="#e11d48" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrRose)"/>
+  <text x="1330" y="218" text-anchor="end" font-size="12" fill="#be185d">拒绝 · 退回重编译</text>
+
+  <!-- ========== 转移边：第二行（右→左） ========== -->
+  <line x1="1055" y1="445" x2="1002" y2="445" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="1028" y="468" text-anchor="middle" font-size="12" fill="#64748b">检索命中 · 引用</text>
+  <line x1="805" y1="445" x2="752" y2="445" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="778" y="468" text-anchor="middle" font-size="12" fill="#64748b">反馈信号</text>
+  <line x1="555" y1="445" x2="502" y2="445" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="528" y="468" text-anchor="middle" font-size="12" fill="#64748b">触发更新</text>
+
+  <!-- 更新后重新编译（反馈环路，虚线） -->
+  <polyline points="400,413 400,225 1185,225 1185,168" fill="none" stroke="#be185d" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrRose)"/>
+  <text x="790" y="217" text-anchor="middle" font-size="12.5" fill="#be185d">更新后重新编译 · 再次送审</text>
+
+  <!-- ========== 归档 / 失效边 ========== -->
+  <polyline points="1150,477 1150,615 756,615" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrDash)"/>
+  <text x="955" y="606" text-anchor="middle" font-size="12" fill="#64748b">失效 · 下线 · 被取代</text>
+  <polyline points="400,477 400,615 553,615" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrDash)"/>
+  <text x="358" y="556" text-anchor="middle" font-size="12" fill="#64748b">放弃 · 废弃</text>
+
+  <!-- ========== 图例与脚注 ========== -->
+  <g font-size="12.5">
+    <line x1="60" y1="684" x2="100" y2="684" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+    <text x="108" y="688" fill="#475569">正向状态转移</text>
+    <line x1="210" y1="684" x2="250" y2="684" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrDash)"/>
+    <text x="258" y="688" fill="#475569">归档 / 失效路径</text>
+    <line x1="370" y1="684" x2="410" y2="684" stroke="#be185d" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrRose)"/>
+    <text x="418" y="688" fill="#475569">回退与反馈环路</text>
+    <text x="540" y="688" fill="#475569">◇ 审核门（转移事件）　▣ 双框 = 终态</text>
+  </g>
+  <text x="1340" y="688" text-anchor="end" font-size="12" fill="#94a3b8">注：加工各环节失败保持原状态可重试；可信度丧失或长期无访问可直接转入归档 / 失效</text>
+</svg>

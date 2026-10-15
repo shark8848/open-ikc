@@ -234,7 +234,7 @@
     <text x="977.2" y="886" font-size="9.5" fill="#ffffff" opacity=".85">模板渲染</text>
     <rect x="1088.8" y="844" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
     <text x="1192.4" y="867" font-size="13" font-weight="bold" fill="#ffffff">sqlite3 薄封装</text>
-    <text x="1192.4" y="886" font-size="9.5" fill="#ffffff" opacity=".85">open-ikc 管理面直存</text>
+    <text x="1192.4" y="886" font-size="9.5" fill="#ffffff" opacity=".85">ikc-open-platform 管理面直存</text>
   </g>
   <line x1="680" y1="915" x2="680" y2="926" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
 
@@ -285,7 +285,7 @@
     <text x="402" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">全部后端服务 · FastAPI 栈</text>
     <rect x="584" y="1108" width="348" height="54" rx="8" fill="url(#gSlate)"/>
     <text x="758" y="1131" font-size="13" font-weight="bold" fill="#ffffff">Java（Maven）</text>
-    <text x="758" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">open-ikc SDK · log-center SDK</text>
+    <text x="758" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">ikc-open-platform SDK · log-center SDK</text>
     <rect x="940" y="1108" width="348" height="54" rx="8" fill="url(#gSlate)"/>
     <text x="1114" y="1131" font-size="13" font-weight="bold" fill="#ffffff">TypeScript 5.6 + Node</text>
     <text x="1114" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">Portal 前端 · Vite 构建</text>
@@ -297,11 +297,11 @@
   <text x="1395" y="141" text-anchor="middle" font-size="9.5" fill="#9d174d">纵向贯穿 L9→L8</text>
   <g text-anchor="middle">
     <rect x="1332" y="156" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
-    <text x="1395" y="176" font-size="10.5" font-weight="bold" fill="#be185d">open-ikc Python SDK</text>
-    <text x="1395" y="192" font-size="9" fill="#9d174d">httpx · mcp · typer</text>
+    <text x="1395" y="176" font-size="10.5" font-weight="bold" fill="#be185d">ikc-open-platform</text>
+    <text x="1395" y="192" font-size="9" fill="#9d174d">Python SDK · httpx·mcp</text>
     <rect x="1332" y="216" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
-    <text x="1395" y="236" font-size="10.5" font-weight="bold" fill="#be185d">open-ikc Java SDK</text>
-    <text x="1395" y="252" font-size="9" fill="#9d174d">Maven · JUnit5</text>
+    <text x="1395" y="236" font-size="10.5" font-weight="bold" fill="#be185d">ikc-open-platform</text>
+    <text x="1395" y="252" font-size="9" fill="#9d174d">Java SDK · Maven</text>
     <rect x="1332" y="276" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
     <text x="1395" y="296" font-size="10.5" font-weight="bold" fill="#be185d">ikc-core-sdk</text>
     <text x="1395" y="312" font-size="9" fill="#9d174d">知识库 · 文档核心</text>

@@ -1394,3 +1394,7 @@
 ### 任务：分层技术栈图删除副标题行（2026-10-16 续）
 
 - 删除标题下方「L1 语言运行时 → L9 应用前端 · 自底向上九层堆叠…」副标题行，只保留主标题；标题区局部渲染验证干净；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：分层技术栈图项目名改为 ikc-open-platform（2026-10-16 续）
+
+- 四处替换：L2 sqlite3 副行、L1 Java 副行、SDK 条两枚 mini chip 标题（open-ikc Python/Java SDK → ikc-open-platform，语言移入副行）；因 mini chip 宽 126，副行精简为「Python SDK · httpx·mcp」「Java SDK · Maven」；「open ikc gateway」为网关组件名保留不变；grep 确认 open-ikc 零残留，局部放大渲染无溢出；仅配图改动，跳过 Claude 只读审查。

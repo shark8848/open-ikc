@@ -106,21 +106,24 @@
     <text x="1203" y="358" font-size="9.5" fill="#ffffff" opacity=".85">ikc-parse-sdk 统一封装</text>
   </g>
   <g text-anchor="middle">
-    <rect x="228" y="380" width="207.2" height="54" rx="8" fill="url(#gViolet)"/>
-    <text x="331.6" y="403" font-size="13" font-weight="bold" fill="#ffffff">LibreOffice</text>
-    <text x="331.6" y="422" font-size="9.5" fill="#ffffff" opacity=".85">soffice · Office 无头格式转换</text>
-    <rect x="443.2" y="380" width="207.2" height="54" rx="8" fill="url(#gViolet)"/>
-    <text x="546.8" y="403" font-size="13" font-weight="bold" fill="#ffffff">FFmpeg / ffprobe</text>
-    <text x="546.8" y="422" font-size="9.5" fill="#ffffff" opacity=".85">音视频解码 · 抽帧 · 输出</text>
-    <rect x="658.4" y="380" width="207.2" height="54" rx="8" fill="url(#gViolet)"/>
-    <text x="762" y="403" font-size="13" font-weight="bold" fill="#ffffff">Pandoc</text>
-    <text x="762" y="422" font-size="9.5" fill="#ffffff" opacity=".85">文档格式通用转换</text>
-    <rect x="873.6" y="380" width="207.2" height="54" rx="8" fill="url(#gViolet)"/>
-    <text x="977.2" y="403" font-size="13" font-weight="bold" fill="#ffffff">OCR 引擎族</text>
-    <text x="977.2" y="422" font-size="9.5" fill="#ffffff" opacity=".85">PaddleOCR · RapidOCR · Tesseract</text>
-    <rect x="1088.8" y="380" width="207.2" height="54" rx="8" fill="url(#gViolet)"/>
-    <text x="1192.4" y="403" font-size="13" font-weight="bold" fill="#ffffff">Whisper</text>
-    <text x="1192.4" y="422" font-size="9.5" fill="#ffffff" opacity=".85">语音转写 ASR</text>
+    <rect x="228" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="313" y="403" font-size="13" font-weight="bold" fill="#ffffff">LibreOffice</text>
+    <text x="313" y="422" font-size="9.5" fill="#ffffff" opacity=".85">soffice · Office 无头格式转换</text>
+    <rect x="406" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="491" y="403" font-size="13" font-weight="bold" fill="#ffffff">FFmpeg / ffprobe</text>
+    <text x="491" y="422" font-size="9.5" fill="#ffffff" opacity=".85">音视频解码 · 抽帧 · 输出</text>
+    <rect x="584" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="669" y="403" font-size="13" font-weight="bold" fill="#ffffff">Pandoc</text>
+    <text x="669" y="422" font-size="9.5" fill="#ffffff" opacity=".85">文档格式通用转换</text>
+    <rect x="762" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="847" y="403" font-size="13" font-weight="bold" fill="#ffffff">PaddleOCR</text>
+    <text x="847" y="422" font-size="9.5" fill="#ffffff" opacity=".85">深度学习 OCR · 中英文识别</text>
+    <rect x="940" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="1025" y="403" font-size="13" font-weight="bold" fill="#ffffff">MinerU</text>
+    <text x="1025" y="422" font-size="9.5" fill="#ffffff" opacity=".85">PDF 版面解析 · MD 转换</text>
+    <rect x="1118" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="1203" y="403" font-size="13" font-weight="bold" fill="#ffffff">Whisper</text>
+    <text x="1203" y="422" font-size="9.5" fill="#ffffff" opacity=".85">语音转写 ASR</text>
   </g>
   <line x1="680" y1="451" x2="680" y2="462" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
 

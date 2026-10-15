@@ -1398,3 +1398,7 @@
 ### 任务：分层技术栈图项目名改为 ikc-open-platform（2026-10-16 续）
 
 - 四处替换：L2 sqlite3 副行、L1 Java 副行、SDK 条两枚 mini chip 标题（open-ikc Python/Java SDK → ikc-open-platform，语言移入副行）；因 mini chip 宽 126，副行精简为「Python SDK · httpx·mcp」「Java SDK · Maven」；「open ikc gateway」为网关组件名保留不变；grep 确认 open-ikc 零残留，局部放大渲染无溢出；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：分层技术栈图 L7 OCR 簇拆为 PaddleOCR + MinerU（2026-10-16 续）
+
+- L7 下行移除「OCR 引擎族（PaddleOCR·RapidOCR·Tesseract）」聚合 chip，新增独立 PaddleOCR（深度学习 OCR · 中英文识别）与 MinerU（PDF 版面解析 · MD 转换），由 5 列回到 6 列布局（w=170，x=228/406/584/762/940/1118）；grep 确认 OCR 引擎族/RapidOCR/Tesseract 零残留，局部放大渲染无溢出；仅配图改动，跳过 Claude 只读审查。

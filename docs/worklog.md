@@ -1367,3 +1367,9 @@
 - 用户反馈 ontolith 与 Rust 和 ikc 无关：删除 L1 Rust Edition 2024 chip（L1 四列改三列 w=348）、L4 HTTP 客户端副行去 ureq(Rust)、L2 本体存储副行去（ontolith）、绿条「三语言日志 SDK Python·Java·Rust」改「日志 SDK Python·Java」、脚注仓库清单去 ontolith；grep 确认图内 Rust/ontolith 零残留。
 - 去除「已发布」「待建」字眼：pyuploadx 副行改「分片上传 · 秒传」，ikc-parse-sdk/connector·cache-sdk/ontology·retriever-sdk 副行改职能描述（虚线描边仍表达规划中）；图例「白虚线描边 = 规划 / 待建」改「规划中」；「已实现」保留（用户未要求去）。
 - 二次渲染确认无溢出无残留；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：分层技术栈图补充第三方系统级工具（2026-10-16 续）
+
+- 用户指出缺文件解析 LibreOffice、视频 FFmpeg 等第三方工具；先 grep 各仓库实证盘点出现频次：docling 329、paddleocr 114、libreoffice 77（+soffice 50）、pandoc 71、ffmpeg 48（+ffprobe 32）、rapidocr 27、tesseract 23、whisper 21（knowledge_transformer / doc-converter / ikc_extraction 等）。
+- L7 解析引擎层扩为双行带（h 86→150）：上行保持 Python 解析库，下行新增六枚第三方系统工具 chip（LibreOffice/FFmpeg·ffprobe/Pandoc/Docling/OCR 引擎族 PaddleOCR·RapidOCR·Tesseract/Whisper）；L6 及以下各层、层间箭头、图例整体 +64 平移（脚本按 y∈[400,1114] 且 x<1320 批量平移），画布 1160→1224，右侧两竖条 height 1014→1078。
+- 首轮平移遗漏图例行（y=1128–1140 超出平移上限 1114 未命中）导致与 L1 重叠，补 +64 后二次渲染确认干净；仅配图改动，跳过 Claude 只读审查。

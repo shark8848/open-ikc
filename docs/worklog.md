@@ -1373,3 +1373,7 @@
 - 用户指出缺文件解析 LibreOffice、视频 FFmpeg 等第三方工具；先 grep 各仓库实证盘点出现频次：docling 329、paddleocr 114、libreoffice 77（+soffice 50）、pandoc 71、ffmpeg 48（+ffprobe 32）、rapidocr 27、tesseract 23、whisper 21（knowledge_transformer / doc-converter / ikc_extraction 等）。
 - L7 解析引擎层扩为双行带（h 86→150）：上行保持 Python 解析库，下行新增六枚第三方系统工具 chip（LibreOffice/FFmpeg·ffprobe/Pandoc/Docling/OCR 引擎族 PaddleOCR·RapidOCR·Tesseract/Whisper）；L6 及以下各层、层间箭头、图例整体 +64 平移（脚本按 y∈[400,1114] 且 x<1320 批量平移），画布 1160→1224，右侧两竖条 height 1014→1078。
 - 首轮平移遗漏图例行（y=1128–1140 超出平移上限 1114 未命中）导致与 L1 重叠，补 +64 后二次渲染确认干净；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：分层技术栈图移除 headroom（2026-10-16 续）
+
+- 用户明确 headroom 不集成：删除 L6「headroom 上下文压缩代理」chip，L6 由 8 列重排为 7 列（w=144.6，x=228/380.6/533.2/685.8/838.4/991/1143.6）；grep 确认图内 headroom 零残留，局部放大渲染确认无溢出；仅配图改动，跳过 Claude 只读审查。

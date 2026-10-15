@@ -1402,3 +1402,7 @@
 ### 任务：分层技术栈图 L7 OCR 簇拆为 PaddleOCR + MinerU（2026-10-16 续）
 
 - L7 下行移除「OCR 引擎族（PaddleOCR·RapidOCR·Tesseract）」聚合 chip，新增独立 PaddleOCR（深度学习 OCR · 中英文识别）与 MinerU（PDF 版面解析 · MD 转换），由 5 列回到 6 列布局（w=170，x=228/406/584/762/940/1118）；grep 确认 OCR 引擎族/RapidOCR/Tesseract 零残留，局部放大渲染无溢出；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：新增 Portal 功能框架图 v1.0（2026-10-16 续）
+
+- 新建 docs/images/Portal功能框架图_v1.0.svg/png（1680×580，同架构总图冷色渐变风格）：基于 portal/src 实际代码盘点（六页面 Login/Dashboard/Endpoints/Tokens/TestLab/Manual + api client + 10 个 /admin 接口）绘制四横带：P1 前端框架层（gBlue 四 chip）、P2 功能页面层（gTeal，三分组框：观测与运营/凭证治理/测试实验室与文档）、P3 管理面 API 层（gIndigo，统计/Token/测试/独立鉴权）、P4 数据与底座层（gSlate，统计采集/SQLite/环境变量/静态挂载）；右侧绿虚线竖条「安全与治理边界」四框（独立鉴权域/凭证安全/最小权限/边界与开关）体现管理与运营；遵循图内规范：主标题用 ikc-open-platform、无副标题/脚注/状态字眼；PNG 2x 渲染目检干净；仅新增配图，跳过 Claude 只读审查。

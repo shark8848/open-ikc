@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 580" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="gEmerald" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1680" height="580" fill="#f8fafc"/>
+
+  <!-- ========== 标题 ========== -->
+  <text x="680" y="36" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">ikc-open-platform Portal · 管理与运营功能框架</text>
+
+  <!-- ========== P1 前端框架层 ========== -->
+  <rect x="60" y="72" width="1240" height="86" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1" stroke-opacity=".55"/>
+  <rect x="72" y="88" width="136" height="54" rx="8" fill="url(#gBlue)"/>
+  <text x="140" y="111" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">P1</text>
+  <text x="140" y="129" text-anchor="middle" font-size="11.5" fill="#dbeafe">前端框架层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="88" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="357.5" y="111" font-size="13" font-weight="bold" fill="#ffffff">Login 认证门禁</text>
+    <text x="357.5" y="130" font-size="9.5" fill="#ffffff" opacity=".85">admin token 校验 · 本地会话保持</text>
+    <rect x="495" y="88" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="624.5" y="111" font-size="13" font-weight="bold" fill="#ffffff">Layout 侧栏导航</text>
+    <text x="624.5" y="130" font-size="9.5" fill="#ffffff" opacity=".85">页面切换 · 退出登录 · 面包屑</text>
+    <rect x="762" y="88" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="891.5" y="111" font-size="13" font-weight="bold" fill="#ffffff">api client</text>
+    <text x="891.5" y="130" font-size="9.5" fill="#ffffff" opacity=".85">/admin 统一封装 · 响应壳解包</text>
+    <rect x="1029" y="88" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="1158.5" y="111" font-size="13" font-weight="bold" fill="#ffffff">UI 组件库</text>
+    <text x="1158.5" y="130" font-size="9.5" fill="#ffffff" opacity=".85">StatCard · Table · toast · confirm</text>
+  </g>
+  <line x1="680" y1="159" x2="680" y2="170" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== P2 功能页面层 ========== -->
+  <rect x="60" y="172" width="1240" height="150" rx="10" fill="#f0fdfa" stroke="#5eead4" stroke-width="1" stroke-opacity=".55"/>
+  <rect x="72" y="206" width="136" height="54" rx="8" fill="url(#gTeal)"/>
+  <text x="140" y="229" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">P2</text>
+  <text x="140" y="247" text-anchor="middle" font-size="11.5" fill="#ccfbf1">功能页面层</text>
+  <!-- 分组：观测与运营 -->
+  <rect x="228" y="186" width="342" height="122" rx="8" fill="#ffffff" stroke="#0f766e" stroke-width="1.4"/>
+  <rect x="228" y="186" width="342" height="26" rx="8" fill="url(#gTeal)"/>
+  <text x="242" y="204" font-size="12.5" font-weight="bold" fill="#ffffff">观测与运营 · Dashboard / Endpoints</text>
+  <g font-size="10.5" fill="#134e4a">
+    <text x="242" y="230">· 当前并发 / 窗口总请求 / 错误数与错误率</text>
+    <text x="242" y="252">· 活跃端点、活跃 Token 总览卡片</text>
+    <text x="242" y="274">· 端点聚合统计 · 30 分钟 / 1 / 2 小时窗口</text>
+    <text x="242" y="296">· 最近请求明细 · 状态码与耗时定位</text>
+  </g>
+  <!-- 分组：凭证治理 -->
+  <rect x="587" y="186" width="342" height="122" rx="8" fill="#ffffff" stroke="#e11d48" stroke-width="1.4"/>
+  <rect x="587" y="186" width="342" height="26" rx="8" fill="url(#gRose)"/>
+  <text x="601" y="204" font-size="12.5" font-weight="bold" fill="#ffffff">凭证治理 · Tokens</text>
+  <g font-size="10.5" fill="#881337">
+    <text x="601" y="230">· 创建：名称 / 所有者 / 作用域 / 有效期</text>
+    <text x="601" y="252">· 作用域按业务域多选（库·文档·解析·检索）</text>
+    <text x="601" y="274">· 明文一次性弹窗展示 · 一键复制</text>
+    <text x="601" y="296">· 撤销与已撤销过滤 · token 维度用量统计</text>
+  </g>
+  <!-- 分组：测试实验室与文档 -->
+  <rect x="946" y="186" width="342" height="122" rx="8" fill="#ffffff" stroke="#6d28d9" stroke-width="1.4"/>
+  <rect x="946" y="186" width="342" height="26" rx="8" fill="url(#gViolet)"/>
+  <text x="960" y="204" font-size="12.5" font-weight="bold" fill="#ffffff">测试实验室与文档 · TestLab / Manual</text>
+  <g font-size="10.5" fill="#4c1d95">
+    <text x="960" y="230">· MCP 工具白名单在线执行 · 参数 JSON</text>
+    <text x="960" y="252">· CLI 白名单命令 · 业务 token 注入</text>
+    <text x="960" y="274">· 平台地址切换（本地 / 部署环境）</text>
+    <text x="960" y="296">· Manual：API 开发手册在线浏览</text>
+  </g>
+  <line x1="680" y1="323" x2="680" y2="334" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== P3 管理面 API 层 ========== -->
+  <rect x="60" y="336" width="1240" height="86" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1" stroke-opacity=".55"/>
+  <rect x="72" y="352" width="136" height="54" rx="8" fill="url(#gIndigo)"/>
+  <text x="140" y="375" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">P3</text>
+  <text x="140" y="393" text-anchor="middle" font-size="11.5" fill="#e0e7ff">管理面 API 层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="352" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="357.5" y="375" font-size="13" font-weight="bold" fill="#ffffff">统计查询接口</text>
+    <text x="357.5" y="394" font-size="9.5" fill="#ffffff" opacity=".85">overview · endpoints · requests · stats/token</text>
+    <rect x="495" y="352" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="624.5" y="375" font-size="13" font-weight="bold" fill="#ffffff">Token 管理接口</text>
+    <text x="624.5" y="394" font-size="9.5" fill="#ffffff" opacity=".85">tokens 查询 · 创建 · revoke</text>
+    <rect x="762" y="352" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="891.5" y="375" font-size="13" font-weight="bold" fill="#ffffff">测试实验室接口</text>
+    <text x="891.5" y="394" font-size="9.5" fill="#ffffff" opacity=".85">test/mcp · test/cli · test/whitelist</text>
+    <rect x="1029" y="352" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="1158.5" y="375" font-size="13" font-weight="bold" fill="#ffffff">独立鉴权</text>
+    <text x="1158.5" y="394" font-size="9.5" fill="#ffffff" opacity=".85">admin_required · 未配置时 503001 关闭</text>
+  </g>
+  <line x1="680" y1="423" x2="680" y2="434" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== P4 数据与底座层 ========== -->
+  <rect x="60" y="436" width="1240" height="86" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" stroke-opacity=".55"/>
+  <rect x="72" y="452" width="136" height="54" rx="8" fill="url(#gSlate)"/>
+  <text x="140" y="475" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">P4</text>
+  <text x="140" y="493" text-anchor="middle" font-size="11.5" fill="#e2e8f0">数据与底座层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="452" width="259" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="357.5" y="475" font-size="13" font-weight="bold" fill="#ffffff">请求统计采集</text>
+    <text x="357.5" y="494" font-size="9.5" fill="#ffffff" opacity=".85">中间件埋点 · 在线并发 · 请求明细</text>
+    <rect x="495" y="452" width="259" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="624.5" y="475" font-size="13" font-weight="bold" fill="#ffffff">SQLite 管理面库</text>
+    <text x="624.5" y="494" font-size="9.5" fill="#ffffff" opacity=".85">token sha256 · 请求统计持久化</text>
+    <rect x="762" y="452" width="259" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="891.5" y="475" font-size="13" font-weight="bold" fill="#ffffff">环境配置</text>
+    <text x="891.5" y="494" font-size="9.5" fill="#ffffff" opacity=".85">OPEN_PLATFORM_ADMIN_TOKEN · DB_PATH</text>
+    <rect x="1029" y="452" width="259" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="1158.5" y="475" font-size="13" font-weight="bold" fill="#ffffff">静态挂载</text>
+    <text x="1158.5" y="494" font-size="9.5" fill="#ffffff" opacity=".85">/portal 构建产物 · dist 目录挂载</text>
+  </g>
+
+  <!-- ========== 右侧：安全与治理边界竖条 ========== -->
+  <rect x="1320" y="72" width="320" height="450" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="1480" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#047857">安全与治理边界</text>
+  <text x="1480" y="113" text-anchor="middle" font-size="9.5" fill="#065f46">贯穿 P1→P4 全部四层</text>
+  <g text-anchor="middle">
+    <rect x="1336" y="124" width="288" height="72" rx="8" fill="url(#gEmerald)"/>
+    <text x="1480" y="147" font-size="12.5" font-weight="bold" fill="#ffffff">独立鉴权域</text>
+    <text x="1480" y="165" font-size="9.5" fill="#ffffff" opacity=".88">管理面与业务 AUTHN / AUTHZ 完全隔离</text>
+    <text x="1480" y="182" font-size="9.5" fill="#ffffff" opacity=".88">/admin 与 /portal 豁免业务鉴权</text>
+    <rect x="1336" y="208" width="288" height="72" rx="8" fill="url(#gEmerald)"/>
+    <text x="1480" y="231" font-size="12.5" font-weight="bold" fill="#ffffff">凭证安全</text>
+    <text x="1480" y="249" font-size="9.5" fill="#ffffff" opacity=".88">token 明文仅创建时返回一次</text>
+    <text x="1480" y="266" font-size="9.5" fill="#ffffff" opacity=".88">库中只存 sha256 哈希 · 支持撤销</text>
+    <rect x="1336" y="292" width="288" height="72" rx="8" fill="url(#gEmerald)"/>
+    <text x="1480" y="315" font-size="12.5" font-weight="bold" fill="#ffffff">最小权限</text>
+    <text x="1480" y="333" font-size="9.5" fill="#ffffff" opacity=".88">token 按业务域作用域收敛</text>
+    <text x="1480" y="350" font-size="9.5" fill="#ffffff" opacity=".88">测试实验室仅白名单命令 / 工具</text>
+    <rect x="1336" y="376" width="288" height="72" rx="8" fill="url(#gEmerald)"/>
+    <text x="1480" y="399" font-size="12.5" font-weight="bold" fill="#ffffff">边界与开关</text>
+    <text x="1480" y="417" font-size="9.5" fill="#ffffff" opacity=".88">未配置 admin token 时管理面默认关闭</text>
+    <text x="1480" y="434" font-size="9.5" fill="#ffffff" opacity=".88">不进业务 catalog · admin 请求不入统计</text>
+  </g>
+
+  <!-- ========== 图例 ========== -->
+  <g font-size="11.5">
+    <rect x="60" y="540" width="16" height="14" rx="3" fill="url(#gTeal)"/>
+    <text x="82" y="552" fill="#475569">实底渐变 = 核心组件</text>
+    <rect x="210" y="540" width="16" height="14" rx="3" fill="#f0fdf4" stroke="#10b981" stroke-width="1.2" stroke-dasharray="3 2"/>
+    <text x="232" y="552" fill="#475569">绿虚线条 = 安全与治理边界</text>
+    <line x1="420" y1="547" x2="454" y2="547" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="462" y="552" fill="#475569">页面 → 管理面 API → 数据底座调用方向</text>
+  </g>
+</svg>

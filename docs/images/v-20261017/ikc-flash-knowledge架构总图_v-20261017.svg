@@ -1,0 +1,264 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1644" width="1900" height="1644" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <linearGradient id="gslate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient>
+    <linearGradient id="gviolet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
+    <linearGradient id="gindigo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#3730a3"/></linearGradient>
+    <linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#0284c7"/></linearGradient>
+    <linearGradient id="grose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/></linearGradient>
+    <linearGradient id="gcyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient>
+    <linearGradient id="ggreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/></linearGradient>
+    <linearGradient id="gblue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <marker id="arrDown" markerWidth="9" markerHeight="8" refX="4.5" refY="6" orient="auto"><path d="M0,0 L9,0 L4.5,7 Z" fill="#94a3b8"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1900" height="1644" fill="#f8fafc"/>
+  <text x="950" y="42" text-anchor="middle" font-size="24" font-weight="bold" fill="#0f172a">ikc-flash-knowledge · 会话记忆引擎架构总图</text>
+  <text x="950" y="64" text-anchor="middle" font-size="12.5" fill="#64748b">ikc-flash-knowledge:0.4.2 · 六层自上而下委派，右侧 SDK 与治理观测折为末两条带 · v-20261017（wiki 风格重绘）</text>
+  <g stroke="#cbd5e1" stroke-width="2">
+    <line x1="950" y1="241" x2="950" y2="257" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="433" x2="950" y2="449" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="625" x2="950" y2="641" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="817" x2="950" y2="833" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="1009" x2="950" y2="1025" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="1181" x2="950" y2="1197" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="1373" x2="950" y2="1389" marker-end="url(#arrDown)"/>
+  </g>
+  <g transform="translate(30,141)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gcyan)"/><linearGradient id="bgrad0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient><g fill="#ffffff"><circle cx="22" cy="15" r="6"/><path d="M10,34 a12,12 0 0 1 24,0 z"/></g></g>
+  <text x="52" y="203" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#0e7490">调用方层</text>
+  <rect x="180" y="88" width="1560" height="150" rx="14" fill="#ecfeff" stroke="#0891b2" stroke-width="1.5"/>
+  <rect x="196" y="104" width="291" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(208,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="342" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">agent / 助手</text>
+  <text x="342" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">会话轮次与工具事件</text>
+  <text x="342" y="188" text-anchor="middle" font-size="10.2" fill="#ecfeff">记忆的第一属主</text>
+  <rect x="505" y="104" width="291" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(517,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="651" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">ikc-demo 样板</text>
+  <text x="651" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">BFF /bff/flash/* 转发</text>
+  <rect x="814" y="104" width="291" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(826,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="960" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">open ikc platform</text>
+  <text x="960" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">薄转发 · async 与作业视图</text>
+  <text x="960" y="188" text-anchor="middle" font-size="10.2" fill="#ecfeff">原样透传不缓存</text>
+  <rect x="1124" y="104" width="291" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(1136,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1269" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">ikc-core-service</text>
+  <text x="1269" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">scope 门禁 · 身份匹配</text>
+  <text x="1269" y="188" text-anchor="middle" font-size="10.2" fill="#ecfeff">FK-M2 上层接入·规划中</text>
+  <rect x="1433" y="104" width="291" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(1445,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1578" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">管理 Portal</text>
+  <text x="1578" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">/portal 浏览器客户端</text>
+  <text x="1578" y="188" text-anchor="middle" font-size="10.2" fill="#ecfeff">只经 /api/v1/* 不直连存储</text>
+  <g transform="translate(30,323)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gblue)"/><linearGradient id="bgrad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient><g fill="#ffffff"><path d="M14,10 h10 l6,6 v18 h-16 z" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M24,10 v6 h6"/></g></g>
+  <text x="52" y="385" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1d4ed8">接入层</text>
+  <rect x="180" y="260" width="1560" height="170" rx="14" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="950" y="290" text-anchor="middle" font-size="11" fill="#1d4ed8">单镜像 ikc-flash-knowledge:0.4.2 · IKC_FLASH_SERVER_ROLE = api / all（缺省）/ worker / beat</text>
+  <rect x="196" y="296" width="368" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(208,306)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="380" y="340" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">HAProxy 唯一入口</text>
+  <text x="380" y="362" text-anchor="middle" font-size="10.2" fill="#dbeafe">:19400 HTTP · stats :8425</text>
+  <text x="380" y="380" text-anchor="middle" font-size="10.2" fill="#dbeafe">uvicorn :18400 仅容器回环</text>
+  <rect x="582" y="296" width="368" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(594,306)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="767" y="340" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">AuthN + Trace 中间件</text>
+  <text x="767" y="362" text-anchor="middle" font-size="10.2" fill="#dbeafe">Bearer 校验 · traceId 复用注入</text>
+  <text x="767" y="380" text-anchor="middle" font-size="10.2" fill="#dbeafe">先 AuthN 后 Trace（最外层）</text>
+  <rect x="969" y="296" width="368" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(981,306)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1153" y="340" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">统一响应壳</text>
+  <text x="1153" y="362" text-anchor="middle" font-size="10.2" fill="#dbeafe">errCode/errMsg/data/traceId</text>
+  <text x="1153" y="380" text-anchor="middle" font-size="10.2" fill="#dbeafe">成功 000000 · data 永不为 null</text>
+  <rect x="1356" y="296" width="368" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(1368,306)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1540" y="340" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">系统面（免业务鉴权）</text>
+  <text x="1540" y="362" text-anchor="middle" font-size="10.2" fill="#dbeafe">/health /ready · /api/catalog</text>
+  <text x="1540" y="380" text-anchor="middle" font-size="10.2" fill="#dbeafe">/docs /redoc 自带 · /portal 静态</text>
+  <g transform="translate(30,515)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gsky)"/><linearGradient id="bgrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#0284c7"/></linearGradient><g fill="#ffffff"><circle cx="22" cy="22" r="11" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M22,13 v9 l6,4" fill="none" stroke="#fff" stroke-width="2.4"/></g></g>
+  <text x="52" y="577" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#0284c7">API 服务层</text>
+  <rect x="180" y="452" width="1560" height="170" rx="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+  <rect x="196" y="468" width="368" height="118" rx="12" fill="url(#gsky)"/>
+  <g transform="translate(208,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="380" y="512" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">摄入</text>
+  <text x="380" y="534" text-anchor="middle" font-size="10.2" fill="#e0f2fe">observe 异步受理登记作业</text>
+  <text x="380" y="552" text-anchor="middle" font-size="10.2" fill="#e0f2fe">write 直写（manual / doc）</text>
+  <text x="380" y="570" text-anchor="middle" font-size="10.2" fill="#e0f2fe">摄入侧不做 LLM · 薄而快</text>
+  <rect x="582" y="468" width="368" height="118" rx="12" fill="url(#gsky)"/>
+  <g transform="translate(594,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="767" y="512" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">召回查询</text>
+  <text x="767" y="534" text-anchor="middle" font-size="10.2" fill="#e0f2fe">recall 上下文打包（非搜索）</text>
+  <text x="767" y="552" text-anchor="middle" font-size="10.2" fill="#e0f2fe">query 游标列表 · {id} 版本链</text>
+  <text x="767" y="570" text-anchor="middle" font-size="10.2" fill="#e0f2fe">hits / packedContext / dropped</text>
+  <rect x="969" y="468" width="368" height="118" rx="12" fill="url(#gsky)"/>
+  <g transform="translate(981,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1153" y="512" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">修正删除</text>
+  <text x="1153" y="534" text-anchor="middle" font-size="10.2" fill="#e0f2fe">update = 追加新版本</text>
+  <text x="1153" y="552" text-anchor="middle" font-size="10.2" fill="#e0f2fe">expectedRevision 冲突 261005</text>
+  <text x="1153" y="570" text-anchor="middle" font-size="10.2" fill="#e0f2fe">delete 缺省软删 · hard 物理删</text>
+  <rect x="1356" y="468" width="368" height="118" rx="12" fill="url(#gsky)"/>
+  <g transform="translate(1368,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1540" y="512" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">加工作业</text>
+  <text x="1540" y="534" text-anchor="middle" font-size="10.2" fill="#e0f2fe">consolidate 可按次覆盖模型</text>
+  <text x="1540" y="552" text-anchor="middle" font-size="10.2" fill="#e0f2fe">jobs 台账 · policy 生效值只读</text>
+  <text x="1540" y="570" text-anchor="middle" font-size="10.2" fill="#e0f2fe">作业视图同口径 EngineJobView</text>
+  <text x="950" y="606" text-anchor="middle" font-size="10.5" fill="#0284c7">契约单一来源 contracts/flash-knowledge.v1.json · memory_id ^mem_hex16$ · job_id ^job_hex12$ · 安全字段不进线缆（extra=forbid → 100001）</text>
+  <g transform="translate(30,707)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gviolet)"/><linearGradient id="bgrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient><g fill="#ffffff"><circle cx="22" cy="22" r="11" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M22,13 v9 l6,4" fill="none" stroke="#fff" stroke-width="2.4"/></g></g>
+  <text x="52" y="769" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#6d28d9">任务调度层</text>
+  <rect x="180" y="644" width="1560" height="170" rx="14" fill="#f5f3ff" stroke="#6d28d9" stroke-width="1.5"/>
+  <rect x="196" y="660" width="291" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(208,670)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="342" y="704" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">worker · flash</text>
+  <text x="342" y="726" text-anchor="middle" font-size="10.2" fill="#ede9fe">flash.observe 轻加工</text>
+  <text x="342" y="744" text-anchor="middle" font-size="10.2" fill="#ede9fe">事件抽取入库 产生记忆</text>
+  <text x="342" y="762" text-anchor="middle" font-size="10.2" fill="#ede9fe">结果 {created, memoryIds}</text>
+  <rect x="505" y="660" width="291" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(517,670)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="651" y="704" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">worker · consolidate</text>
+  <text x="651" y="726" text-anchor="middle" font-size="10.2" fill="#ede9fe">flash.consolidate 重加工</text>
+  <text x="651" y="744" text-anchor="middle" font-size="10.2" fill="#ede9fe">flash.decay 过期归档</text>
+  <text x="651" y="762" text-anchor="middle" font-size="10.2" fill="#ede9fe">升迁 short→long 白名单</text>
+  <rect x="814" y="660" width="291" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(826,670)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="960" y="704" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">beat 调度器</text>
+  <text x="960" y="726" text-anchor="middle" font-size="10.2" fill="#ede9fe">decay_interval 周期投递</text>
+  <text x="960" y="744" text-anchor="middle" font-size="10.2" fill="#ede9fe">0 = 关闭只留加工归档</text>
+  <text x="960" y="762" text-anchor="middle" font-size="10.2" fill="#ede9fe">all / beat 角色启 beat</text>
+  <rect x="1124" y="660" width="291" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(1136,670)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1269" y="704" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">作业状态机台账</text>
+  <text x="1269" y="726" text-anchor="middle" font-size="10.2" fill="#ede9fe">pending/running/success/failed</text>
+  <text x="1269" y="744" text-anchor="middle" font-size="10.2" fill="#ede9fe">reqId 幂等 · 不自动重试</text>
+  <text x="1269" y="762" text-anchor="middle" font-size="10.2" fill="#ede9fe">pg 台账 api/worker 共享</text>
+  <rect x="1433" y="660" width="291" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(1445,670)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1578" y="704" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">ikc-ai-gateway</text>
+  <text x="1578" y="726" text-anchor="middle" font-size="10.2" fill="#ede9fe">外部下游 · llm / vector 队列</text>
+  <text x="1578" y="744" text-anchor="middle" font-size="10.2" fill="#ede9fe">模型凭据只在网关侧</text>
+  <text x="1578" y="762" text-anchor="middle" font-size="10.2" fill="#ede9fe">本引擎不直连模型后端</text>
+  <text x="950" y="798" text-anchor="middle" font-size="10.5" fill="#6d28d9">两队列必须独立 broker db 或独立队列名（共用队列互相抢任务）· worker 重启后未终态作业由运维按需重投</text>
+  <g transform="translate(30,899)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gindigo)"/><linearGradient id="bgrad4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#3730a3"/></linearGradient><g fill="#ffffff"><path d="M22,8 l12,6 l-12,6 l-12,-6 z"/><path d="M10,22 l12,6 l12,-6" fill="none" stroke="#fff" stroke-width="2.4" opacity="0.85"/><path d="M10,28 l12,6 l12,-6" fill="none" stroke="#fff" stroke-width="2.4" opacity="0.6"/></g></g>
+  <text x="52" y="961" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#3730a3">领域能力层</text>
+  <rect x="180" y="836" width="1560" height="170" rx="14" fill="#eef2ff" stroke="#3730a3" stroke-width="1.5"/>
+  <rect x="196" y="852" width="291" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(208,862)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="342" y="896" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">recall 域纯函数</text>
+  <text x="342" y="918" text-anchor="middle" font-size="10.2" fill="#e0e7ff">relevance×recency×salience</text>
+  <text x="342" y="936" text-anchor="middle" font-size="10.2" fill="#e0e7ff">token 预算贪心打包</text>
+  <text x="342" y="954" text-anchor="middle" font-size="10.2" fill="#e0e7ff">近似去重 · 结果可解释</text>
+  <rect x="505" y="852" width="291" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(517,862)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="651" y="896" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">consolidate 域</text>
+  <text x="651" y="918" text-anchor="middle" font-size="10.2" fill="#e0e7ff">归一 → 聚类去重</text>
+  <text x="651" y="936" text-anchor="middle" font-size="10.2" fill="#e0e7ff">归并摘要 → 升迁 → 归档</text>
+  <text x="651" y="954" text-anchor="middle" font-size="10.2" fill="#e0e7ff">不读环境 只收受注入</text>
+  <rect x="814" y="852" width="291" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(826,862)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="960" y="896" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">store 双后端接口</text>
+  <text x="960" y="918" text-anchor="middle" font-size="10.2" fill="#e0e7ff">memory / pg 同接口</text>
+  <text x="960" y="936" text-anchor="middle" font-size="10.2" fill="#e0e7ff">只追加版本链 supersedes</text>
+  <text x="960" y="954" text-anchor="middle" font-size="10.2" fill="#e0e7ff">不透明游标 · 软删可回溯</text>
+  <rect x="1124" y="852" width="291" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(1136,862)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1269" y="896" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">配置快照</text>
+  <text x="1269" y="918" text-anchor="middle" font-size="10.2" fill="#e0e7ff">engine.yaml + IKC_FLASH_*</text>
+  <text x="1269" y="936" text-anchor="middle" font-size="10.2" fill="#e0e7ff">env &gt; 文件 &gt; 代码缺省</text>
+  <text x="1269" y="954" text-anchor="middle" font-size="10.2" fill="#e0e7ff">启动期校验 fail-fast</text>
+  <rect x="1433" y="852" width="291" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(1445,862)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1578" y="896" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">integrations</text>
+  <text x="1578" y="918" text-anchor="middle" font-size="10.2" fill="#e0e7ff">aigw / embedding 客户端</text>
+  <text x="1578" y="936" text-anchor="middle" font-size="10.2" fill="#e0e7ff">超时/解壳/错误映射</text>
+  <text x="1578" y="954" text-anchor="middle" font-size="10.2" fill="#e0e7ff">不持模型凭据</text>
+  <text x="950" y="990" text-anchor="middle" font-size="10.5" fill="#3730a3">domain 纯函数：确定性 · 可单测 · 无 IO · embed 失败降级词面召回（warnings: embedding_unavailable）· 不引 pgvector（余弦应用侧算）</text>
+  <g transform="translate(30,1081)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gslate)"/><linearGradient id="bgrad5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient><g fill="#ffffff"><ellipse cx="22" cy="12" rx="12" ry="4"/><path d="M10,12 v18 a12,4 0 0 0 24,0 v-18" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M10,21 a12,4 0 0 0 24,0" fill="none" stroke="#fff" stroke-width="2.4" opacity="0.7"/></g></g>
+  <text x="52" y="1143" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#475569">数据层</text>
+  <rect x="180" y="1028" width="1560" height="150" rx="14" fill="#f1f5f9" stroke="#475569" stroke-width="1.5"/>
+  <rect x="196" y="1044" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(208,1054)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="380" y="1088" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Redis db19 / db20</text>
+  <text x="380" y="1110" text-anchor="middle" font-size="10.2" fill="#e2e8f0">Celery 队列 + 热数据</text>
+  <text x="380" y="1128" text-anchor="middle" font-size="10.2" fill="#e2e8f0">两队列独立 broker db</text>
+  <text x="380" y="1146" text-anchor="middle" font-size="10.2" fill="#e2e8f0">db19 flash · db20 加工</text>
+  <rect x="582" y="1044" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(594,1054)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="767" y="1088" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">PostgreSQL（生产缺省）</text>
+  <text x="767" y="1110" text-anchor="middle" font-size="10.2" fill="#e2e8f0">flash_memories + flash_jobs</text>
+  <text x="767" y="1128" text-anchor="middle" font-size="10.2" fill="#e2e8f0">主数据 + 版本链 · 幂等建表</text>
+  <text x="767" y="1146" text-anchor="middle" font-size="10.2" fill="#e2e8f0">缺 DSN 启动期 fail-fast</text>
+  <rect x="969" y="1044" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(981,1054)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1153" y="1088" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">进程内 memory</text>
+  <text x="1153" y="1110" text-anchor="middle" font-size="10.2" fill="#e2e8f0">仅单进程联调演示</text>
+  <text x="1153" y="1128" text-anchor="middle" font-size="10.2" fill="#e2e8f0">重启即丢 · 拆分形态禁用</text>
+  <text x="1153" y="1146" text-anchor="middle" font-size="10.2" fill="#e2e8f0">all 角色启动打印告警</text>
+  <rect x="1356" y="1044" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(1368,1054)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1540" y="1088" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Elasticsearch（规划）</text>
+  <text x="1540" y="1110" text-anchor="middle" font-size="10.2" fill="#e2e8f0">FK-M3 统一召回投影</text>
+  <text x="1540" y="1128" text-anchor="middle" font-size="10.2" fill="#e2e8f0">memory_statement 词表进 UR</text>
+  <text x="1540" y="1146" text-anchor="middle" font-size="10.2" fill="#e2e8f0">长期记忆第五种表示</text>
+  <g transform="translate(30,1263)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#grose)"/><linearGradient id="bgrad6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/></linearGradient><g fill="#ffffff"><rect x="8" y="8" width="28" height="9" rx="2"/><rect x="8" y="21" width="28" height="9" rx="2" opacity="0.8"/><circle cx="13" cy="12.5" r="1.6" fill="url(#bgrad6)"/><circle cx="13" cy="25.5" r="1.6" fill="url(#bgrad6)"/></g></g>
+  <text x="52" y="1325" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#e11d48">ikc-flash-sdk</text>
+  <rect x="180" y="1200" width="1560" height="170" rx="14" fill="#fff1f2" stroke="#e11d48" stroke-width="1.5"/>
+  <rect x="196" y="1216" width="368" height="118" rx="12" fill="url(#grose)"/>
+  <g transform="translate(208,1226)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="380" y="1260" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">双客户端</text>
+  <text x="380" y="1282" text-anchor="middle" font-size="10.2" fill="#ffe4e6">同步 + 异步</text>
+  <text x="380" y="1300" text-anchor="middle" font-size="10.2" fill="#ffe4e6">typed 资源方法</text>
+  <text x="380" y="1318" text-anchor="middle" font-size="10.2" fill="#ffe4e6">十一条路由 覆盖 100%</text>
+  <rect x="582" y="1216" width="368" height="118" rx="12" fill="url(#grose)"/>
+  <g transform="translate(594,1226)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="767" y="1260" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">协议封装</text>
+  <text x="767" y="1282" text-anchor="middle" font-size="10.2" fill="#ffe4e6">统一壳解包</text>
+  <text x="767" y="1300" text-anchor="middle" font-size="10.2" fill="#ffe4e6">错误码→类型化异常</text>
+  <text x="767" y="1318" text-anchor="middle" font-size="10.2" fill="#ffe4e6">traceId 透传</text>
+  <rect x="969" y="1216" width="368" height="118" rx="12" fill="url(#grose)"/>
+  <g transform="translate(981,1226)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1153" y="1260" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">契约同源</text>
+  <text x="1153" y="1282" text-anchor="middle" font-size="10.2" fill="#ffe4e6">ikc_sdk.flash · ikc-sdk-lib</text>
+  <text x="1153" y="1300" text-anchor="middle" font-size="10.2" fill="#ffe4e6">0.15.0 薄壳再导出</text>
+  <rect x="1356" y="1216" width="368" height="118" rx="12" fill="url(#grose)"/>
+  <g transform="translate(1368,1226)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1540" y="1260" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">模型覆盖</text>
+  <text x="1540" y="1282" text-anchor="middle" font-size="10.2" fill="#ffe4e6">客户端级 model=</text>
+  <text x="1540" y="1300" text-anchor="middle" font-size="10.2" fill="#ffe4e6">按次覆盖服务端加工模型</text>
+  <text x="1540" y="1318" text-anchor="middle" font-size="10.2" fill="#ffe4e6">凭据不落盘</text>
+  <text x="950" y="1354" text-anchor="middle" font-size="10.5" fill="#e11d48">scripts/e2e 真链路验收 · 与协议接口层同源契约</text>
+  <g transform="translate(30,1455)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#ggreen)"/><linearGradient id="bgrad7" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/></linearGradient><g fill="#ffffff"><path d="M12,30 l6,-10 l5,6 l5,-12 l5,16 z"/></g></g>
+  <text x="52" y="1517" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#065f46">治理与观测</text>
+  <rect x="180" y="1392" width="1560" height="170" rx="14" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <rect x="196" y="1408" width="291" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(208,1418)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="342" y="1452" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">日志投递</text>
+  <text x="342" y="1474" text-anchor="middle" font-size="10.2" fill="#d1fae5">ikc-log-center · API + worker 全量</text>
+  <text x="342" y="1492" text-anchor="middle" font-size="10.2" fill="#d1fae5">traceId 贯穿 · worker fork 重建钩子</text>
+  <text x="342" y="1510" text-anchor="middle" font-size="10.2" fill="#d1fae5">不可用仅降级不阻断 · 禁记密钥与 token</text>
+  <rect x="505" y="1408" width="291" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(517,1418)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="651" y="1452" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">错误码分段</text>
+  <text x="651" y="1474" text-anchor="middle" font-size="10.2" fill="#d1fae5">100xxx 通用 · 261xxx 记忆域</text>
+  <text x="651" y="1492" text-anchor="middle" font-size="10.2" fill="#d1fae5">509xxx 下游依赖</text>
+  <text x="651" y="1510" text-anchor="middle" font-size="10.2" fill="#d1fae5">registry 两侧一致 · /api/error-codes 可查</text>
+  <rect x="814" y="1408" width="291" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(826,1418)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="960" y="1452" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">安全纪律</text>
+  <text x="960" y="1474" text-anchor="middle" font-size="10.2" fill="#d1fae5">scope 隔离 · 跨 agent 不可见</text>
+  <text x="960" y="1492" text-anchor="middle" font-size="10.2" fill="#d1fae5">source.type 防投毒 · 升迁白名单</text>
+  <text x="960" y="1510" text-anchor="middle" font-size="10.2" fill="#d1fae5">软删可回溯 · FK-M6 审核与配额</text>
+  <rect x="1124" y="1408" width="291" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(1136,1418)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1269" y="1452" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">生命周期</text>
+  <text x="1269" y="1474" text-anchor="middle" font-size="10.2" fill="#d1fae5">tier：working 1h · short 7d · long 永久</text>
+  <text x="1269" y="1492" text-anchor="middle" font-size="10.2" fill="#d1fae5">status 单向状态机 active/superseded/</text>
+  <text x="1269" y="1510" text-anchor="middle" font-size="10.2" fill="#d1fae5">archived/deleted · 归档由作业决定</text>
+  <rect x="1433" y="1408" width="291" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(1445,1418)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1578" y="1452" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">部署与扩容</text>
+  <text x="1578" y="1474" text-anchor="middle" font-size="10.2" fill="#d1fae5">单镜像多角色 all 一台跑齐</text>
+  <text x="1578" y="1492" text-anchor="middle" font-size="10.2" fill="#d1fae5">split 三容器扩容 · 必用 pg 后端</text>
+  <text x="1578" y="1510" text-anchor="middle" font-size="10.2" fill="#d1fae5">HAProxy stats :8425 · 离线发布包</text>
+  <text x="950" y="1546" text-anchor="middle" font-size="10.5" fill="#065f46">贯穿全部六层 · 观测：health / ready / 台账</text>
+  <g font-size="12.5" fill="#475569">
+    <text x="180" y="1592">六层功能带自上而下委派：调用方经接入层（HAProxy / AuthN+Trace / 统一壳）进入 API 服务层，异步投递 Celery 双队列加工，领域纯函数无 IO 可单测，记忆主数据落 Redis / PostgreSQL。</text>
+    <text x="180" y="1612">右侧 ikc-flash-sdk 客户端与「治理与观测」两条横切竖条，按 wiki 风格折为末两条带呈现；观测（health/ready/台账）与安全纪律贯穿全部六层。</text>
+  </g>
+</svg>

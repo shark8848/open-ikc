@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1200" width="1900" height="1200" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <linearGradient id="gslate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient>
+    <linearGradient id="gviolet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
+    <linearGradient id="gindigo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#3730a3"/></linearGradient>
+    <linearGradient id="gcyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient>
+    <linearGradient id="ggreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/></linearGradient>
+    <linearGradient id="gblue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <marker id="arrDown" markerWidth="9" markerHeight="8" refX="4.5" refY="6" orient="auto"><path d="M0,0 L9,0 L4.5,7 Z" fill="#94a3b8"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1900" height="1200" fill="#f8fafc"/>
+  <text x="950" y="42" text-anchor="middle" font-size="24" font-weight="bold" fill="#0f172a">安全中心架构图</text>
+  <text x="950" y="64" text-anchor="middle" font-size="12.5" fill="#64748b">工作负载身份与委托票据信任根 · 控制面 / 数据面 / 管理面三面隔离 · v-20261017（wiki 风格重绘）</text>
+  <g stroke="#cbd5e1" stroke-width="2">
+    <line x1="950" y1="241" x2="950" y2="257" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="433" x2="950" y2="449" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="605" x2="950" y2="621" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="777" x2="950" y2="793" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="949" x2="950" y2="965" marker-end="url(#arrDown)"/>
+  </g>
+  <g transform="translate(30,141)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gcyan)"/><linearGradient id="bgrad0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient><g fill="#ffffff"><circle cx="22" cy="15" r="6"/><path d="M10,34 a12,12 0 0 1 24,0 z"/></g></g>
+  <text x="52" y="203" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#0e7490">受信调用方</text>
+  <rect x="180" y="88" width="1560" height="150" rx="14" fill="#ecfeff" stroke="#0891b2" stroke-width="1.5"/>
+  <rect x="196" y="104" width="240" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(208,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="316" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">open ikc gateway</text>
+  <text x="316" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">边界角色 · 可铸用户票据</text>
+  <rect x="454" y="104" width="240" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(466,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="574" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">ikc-open-platform</text>
+  <text x="574" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">边界角色 · 入口授权</text>
+  <rect x="711" y="104" width="240" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(723,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="831" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">ikc-core-service</text>
+  <text x="831" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">业务 ACL 权威</text>
+  <rect x="969" y="104" width="240" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(981,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1089" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">知识引擎</text>
+  <text x="1089" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">wiki · 图谱</text>
+  <rect x="1227" y="104" width="240" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(1239,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1346" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">基础设施服务</text>
+  <text x="1346" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">日志 · 文件 · AI 网关</text>
+  <rect x="1484" y="104" width="240" height="118" rx="12" fill="url(#gcyan)"/>
+  <g transform="translate(1496,114)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+  <text x="1604" y="148" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">管理员 · 浏览器</text>
+  <text x="1604" y="170" text-anchor="middle" font-size="10.2" fill="#ecfeff">人的身份 · 访问管理面</text>
+  <g transform="translate(30,323)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gblue)"/><linearGradient id="bgrad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient><g fill="#ffffff"><path d="M14,10 h10 l6,6 v18 h-16 z" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M24,10 v6 h6"/></g></g>
+  <text x="52" y="385" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1d4ed8">服务层</text>
+  <rect x="180" y="260" width="1560" height="170" rx="14" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+  <rect x="196" y="276" width="497" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(208,286)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="445" y="320" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">控制面</text>
+  <text x="445" y="342" text-anchor="middle" font-size="10.2" fill="#dbeafe">mTLS · 仅受信工作负载可达</text>
+  <text x="445" y="360" text-anchor="middle" font-size="10.2" fill="#dbeafe">identity · token exchange/introspect/revoke</text>
+  <text x="445" y="378" text-anchor="middle" font-size="10.2" fill="#dbeafe">policy · audit/events（谁是我·铸造收窄·验签）</text>
+  <rect x="711" y="276" width="497" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(723,286)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="960" y="320" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">数据面</text>
+  <text x="960" y="342" text-anchor="middle" font-size="10.2" fill="#dbeafe">只读 · 免鉴权</text>
+  <text x="960" y="360" text-anchor="middle" font-size="10.2" fill="#dbeafe">GET /jwks.json · /healthz</text>
+  <text x="960" y="378" text-anchor="middle" font-size="10.2" fill="#dbeafe">Ed25519 公钥本地验签 · 缓存 ≤300s</text>
+  <rect x="1227" y="276" width="497" height="118" rx="12" fill="url(#gblue)"/>
+  <g transform="translate(1239,286)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1475" y="320" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">管理面</text>
+  <text x="1475" y="342" text-anchor="middle" font-size="10.2" fill="#dbeafe">GUI · 人的身份 · 默认关闭</text>
+  <text x="1475" y="360" text-anchor="middle" font-size="10.2" fill="#dbeafe">overview/workloads/audit/keyring/ledger</text>
+  <text x="1475" y="378" text-anchor="middle" font-size="10.2" fill="#dbeafe">revoke · approvals/decide（高风险双人复核）</text>
+  <text x="950" y="414" text-anchor="middle" font-size="10.5" fill="#1d4ed8">策略修正 · 生效在签发侧（热生效）· 服务 ↔ 服务业务调用直连携带委托票据，中心不在调用链上</text>
+  <g transform="translate(30,505)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gindigo)"/><linearGradient id="bgrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#3730a3"/></linearGradient><g fill="#ffffff"><path d="M22,8 l12,6 l-12,6 l-12,-6 z"/><path d="M10,22 l12,6 l12,-6" fill="none" stroke="#fff" stroke-width="2.4" opacity="0.85"/><path d="M10,28 l12,6 l12,-6" fill="none" stroke="#fff" stroke-width="2.4" opacity="0.6"/></g></g>
+  <text x="52" y="567" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#3730a3">信任内核层</text>
+  <rect x="180" y="452" width="1560" height="150" rx="14" fill="#eef2ff" stroke="#3730a3" stroke-width="1.5"/>
+  <rect x="196" y="468" width="240" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(208,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="316" y="512" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">内部 CA · PKI</text>
+  <text x="316" y="534" text-anchor="middle" font-size="10.2" fill="#e0e7ff">SPIFFE SAN · 短时证书</text>
+  <rect x="454" y="468" width="240" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(466,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="574" y="512" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">签名密钥环</text>
+  <text x="574" y="534" text-anchor="middle" font-size="10.2" fill="#e0e7ff">Ed25519 · 周期轮转</text>
+  <rect x="711" y="468" width="240" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(723,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="831" y="512" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">策略矩阵</text>
+  <text x="831" y="534" text-anchor="middle" font-size="10.2" fill="#e0e7ff">service-policy · 缺省拒绝</text>
+  <rect x="969" y="468" width="240" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(981,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1089" y="512" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">策略修正</text>
+  <text x="1089" y="534" text-anchor="middle" font-size="10.2" fill="#e0e7ff">overrides · 签发侧热生效</text>
+  <rect x="1227" y="468" width="240" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(1239,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1346" y="512" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">吊销台账</text>
+  <text x="1346" y="534" text-anchor="middle" font-size="10.2" fill="#e0e7ff">一次性消费 · 应急吊销</text>
+  <rect x="1484" y="468" width="240" height="118" rx="12" fill="url(#gindigo)"/>
+  <g transform="translate(1496,478)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+  <text x="1604" y="512" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">审计</text>
+  <text x="1604" y="534" text-anchor="middle" font-size="10.2" fill="#e0e7ff">全链事件 · 谁改了什么</text>
+  <g transform="translate(30,677)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gviolet)"/><linearGradient id="bgrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient><g fill="#ffffff"><rect x="12" y="12" width="20" height="20" rx="3" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M18,22 h8 M22,18 v8"/></g></g>
+  <text x="52" y="739" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#6d28d9">凭证与契约</text>
+  <rect x="180" y="624" width="1560" height="150" rx="14" fill="#f5f3ff" stroke="#6d28d9" stroke-width="1.5"/>
+  <rect x="196" y="640" width="368" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(208,650)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="380" y="684" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">工作负载身份</text>
+  <text x="380" y="706" text-anchor="middle" font-size="10.2" fill="#ede9fe">X.509 证书 · SPIFFE SAN</text>
+  <text x="380" y="724" text-anchor="middle" font-size="10.2" fill="#ede9fe">缺省 1 天</text>
+  <rect x="582" y="640" width="368" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(594,650)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="767" y="684" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">委托票据</text>
+  <text x="767" y="706" text-anchor="middle" font-size="10.2" fill="#ede9fe">JWT EdDSA · 300s</text>
+  <text x="767" y="724" text-anchor="middle" font-size="10.2" fill="#ede9fe">上限 900s</text>
+  <rect x="969" y="640" width="368" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(981,650)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1153" y="684" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">非升级不变量</text>
+  <text x="1153" y="706" text-anchor="middle" font-size="10.2" fill="#ede9fe">scope ⊆ 父票据</text>
+  <text x="1153" y="724" text-anchor="middle" font-size="10.2" fill="#ede9fe">逐跳只能收窄</text>
+  <rect x="1356" y="640" width="368" height="118" rx="12" fill="url(#gviolet)"/>
+  <g transform="translate(1368,650)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1540" y="684" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">契约套件</text>
+  <text x="1540" y="706" text-anchor="middle" font-size="10.2" fill="#ede9fe">headers · ticket</text>
+  <text x="1540" y="724" text-anchor="middle" font-size="10.2" fill="#ede9fe">scopes · envelope</text>
+  <g transform="translate(30,849)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gslate)"/><linearGradient id="bgrad4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient><g fill="#ffffff"><rect x="8" y="8" width="28" height="9" rx="2"/><rect x="8" y="21" width="28" height="9" rx="2" opacity="0.8"/><circle cx="13" cy="12.5" r="1.6" fill="url(#bgrad4)"/><circle cx="13" cy="25.5" r="1.6" fill="url(#bgrad4)"/></g></g>
+  <text x="52" y="911" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#475569">运行时底座</text>
+  <rect x="180" y="796" width="1560" height="150" rx="14" fill="#f1f5f9" stroke="#475569" stroke-width="1.5"/>
+  <rect x="196" y="812" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(208,822)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="380" y="856" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Node.js ≥ 24.20</text>
+  <text x="380" y="878" text-anchor="middle" font-size="10.2" fill="#e2e8f0">零三方依赖</text>
+  <text x="380" y="896" text-anchor="middle" font-size="10.2" fill="#e2e8f0">原生 http / crypto</text>
+  <rect x="582" y="812" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(594,822)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="767" y="856" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">数据卷 /app/data</text>
+  <text x="767" y="878" text-anchor="middle" font-size="10.2" fill="#e2e8f0">密钥环 · 台账 · 审计 · PKI</text>
+  <rect x="969" y="812" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(981,822)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="1153" y="856" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Docker 离线镜像</text>
+  <text x="1153" y="878" text-anchor="middle" font-size="10.2" fill="#e2e8f0">compose · 宿主端口仅绑回环</text>
+  <rect x="1356" y="812" width="368" height="118" rx="12" fill="url(#gslate)"/>
+  <g transform="translate(1368,822)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1540" y="856" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">openssl</text>
+  <text x="1540" y="878" text-anchor="middle" font-size="10.2" fill="#e2e8f0">PKI 脚本 · 仅证书签发</text>
+  <g transform="translate(30,1021)"><rect x="0" y="0" width="44" height="44" rx="11" fill="url(#ggreen)"/><linearGradient id="bgrad5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/></linearGradient><g fill="#ffffff"><rect x="12" y="12" width="20" height="20" rx="3" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M18,22 h8 M22,18 v8"/></g></g>
+  <text x="52" y="1083" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#065f46">安全纪律与边界</text>
+  <rect x="180" y="968" width="1560" height="150" rx="14" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <rect x="196" y="984" width="240" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(208,994)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  <text x="316" y="1028" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">中心不介入调用链</text>
+  <text x="316" y="1050" text-anchor="middle" font-size="10.2" fill="#d1fae5">不代理 · 不转发 · 不主动连接</text>
+  <text x="316" y="1068" text-anchor="middle" font-size="10.2" fill="#d1fae5">无入站业务流量</text>
+  <rect x="454" y="984" width="240" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(466,994)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+  <text x="574" y="1028" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">本地验签</text>
+  <text x="574" y="1050" text-anchor="middle" font-size="10.2" fill="#d1fae5">JWKS 缓存 ≤300s · 不回调中心</text>
+  <text x="574" y="1068" text-anchor="middle" font-size="10.2" fill="#d1fae5">避免全栈延迟瓶颈与单点故障</text>
+  <rect x="711" y="984" width="240" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(723,994)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="10" cy="10" r="6"/><path d="M14,14 l4,4"/></g></g>
+  <text x="831" y="1028" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">逐跳收窄 · 非升级</text>
+  <text x="831" y="1050" text-anchor="middle" font-size="10.2" fill="#d1fae5">主体与资源约束不可篡改</text>
+  <text x="831" y="1068" text-anchor="middle" font-size="10.2" fill="#d1fae5">入口是唯一能放大授权的地点</text>
+  <rect x="969" y="984" width="240" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(981,994)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+  <text x="1089" y="1028" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">缺省拒绝</text>
+  <text x="1089" y="1050" text-anchor="middle" font-size="10.2" fill="#d1fae5">服务级授权矩阵 mayCall / canCall</text>
+  <text x="1089" y="1068" text-anchor="middle" font-size="10.2" fill="#d1fae5">加载期 scope 词表校验</text>
+  <rect x="1227" y="984" width="240" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(1239,994)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+  <text x="1346" y="1028" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">三面隔离</text>
+  <text x="1346" y="1050" text-anchor="middle" font-size="10.2" fill="#d1fae5">控制面 mTLS · 数据面只读</text>
+  <text x="1346" y="1068" text-anchor="middle" font-size="10.2" fill="#d1fae5">管理面默认关闭 · 双人复核</text>
+  <rect x="1484" y="984" width="240" height="118" rx="12" fill="url(#ggreen)"/>
+  <g transform="translate(1496,994)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+  <text x="1604" y="1028" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">信任边界</text>
+  <text x="1604" y="1050" text-anchor="middle" font-size="10.2" fill="#d1fae5">管理面随信任根 · 独立 L0 信任域</text>
+  <text x="1604" y="1068" text-anchor="middle" font-size="10.2" fill="#d1fae5">Portal 仅 SSO 导航 + 深链跳转</text>
+  <g font-size="12.5" fill="#475569">
+    <text x="180" y="1148">安全中心作为信任根：控制面 mTLS 签发/交换/吊销、数据面只读 JWKS、管理面默认关闭；各服务本地验签委托票据，中心不在业务调用链上。</text>
+    <text x="180" y="1168">右侧「安全纪律与边界」为横切关注点，按 wiki 风格折为末带；缺省拒绝 + 逐跳收窄（非升级）+ 三面隔离共同构成信任边界。</text>
+  </g>
+</svg>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 860" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="gAmber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#fcd34d"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1680" height="860" fill="#f8fafc"/>
+
+  <!-- ========== 标题 ========== -->
+  <text x="680" y="44" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">安全中心架构图</text>
+  <text x="1630" y="44" text-anchor="end" font-size="13" fill="#64748b">ikc-security-center · v1.0</text>
+
+  <!-- ========== L1 调用方层 ========== -->
+  <rect x="60" y="70" width="1240" height="92" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-opacity=".45"/>
+  <rect x="72" y="89" width="136" height="54" rx="8" fill="url(#gBlue)"/>
+  <text x="140" y="112" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L1</text>
+  <text x="140" y="130" text-anchor="middle" font-size="11.5" fill="#dbeafe">调用方 · 受信参与</text>
+  <g text-anchor="middle">
+    <rect x="228" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="312" y="112" font-size="13" font-weight="bold" fill="#ffffff">open ikc gateway</text>
+    <text x="312" y="131" font-size="9.5" fill="#dbeafe">边界角色 · 可铸用户票据</text>
+    <rect x="406" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="490" y="112" font-size="13" font-weight="bold" fill="#ffffff">ikc-open-platform</text>
+    <text x="490" y="131" font-size="9.5" fill="#dbeafe">边界角色 · 入口授权</text>
+    <rect x="584" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="668" y="112" font-size="13" font-weight="bold" fill="#ffffff">ikc-core-service</text>
+    <text x="668" y="131" font-size="9.5" fill="#dbeafe">业务 ACL 权威</text>
+    <rect x="762" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="846" y="112" font-size="13" font-weight="bold" fill="#ffffff">知识引擎</text>
+    <text x="846" y="131" font-size="9.5" fill="#dbeafe">wiki · 图谱 · 检索</text>
+    <rect x="940" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="1024" y="112" font-size="13" font-weight="bold" fill="#ffffff">基础设施服务</text>
+    <text x="1024" y="131" font-size="9.5" fill="#dbeafe">日志 · 文件 · AI 网关</text>
+    <rect x="1118" y="89" width="168" height="54" rx="8" fill="url(#gAmber)"/>
+    <text x="1202" y="112" font-size="13" font-weight="bold" fill="#78350f">管理员 · 浏览器</text>
+    <text x="1202" y="131" font-size="9.5" fill="#92400e">人的身份 · 访问管理面</text>
+  </g>
+
+  <!-- 直连总线：中心不在调用链上 -->
+  <line x1="228" y1="180" x2="1272" y2="180" stroke="#059669" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="760" y="174" text-anchor="middle" font-size="11" fill="#047857">服务 ↔ 服务业务调用直连 · 携带委托票据 · 中心不在调用链上</text>
+
+  <!-- L1 → L2 三条链路 -->
+  <line x1="420" y1="192" x2="420" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="430" y="212" font-size="10" fill="#475569">mTLS · 按需签发 / 交换 / 吊销 / 自省</text>
+  <line x1="760" y1="192" x2="760" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="770" y="212" font-size="10" fill="#475569">取公钥 · 本地验签 · 缓存 ≤300s</text>
+  <line x1="1098" y1="192" x2="1098" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="1108" y="212" font-size="10" fill="#475569">仅管理员网络可达</text>
+
+  <!-- ========== L2 三面服务层 ========== -->
+  <rect x="60" y="226" width="1240" height="248" rx="10" fill="#f0fdfa" stroke="#14b8a6" stroke-opacity=".45"/>
+  <rect x="72" y="245" width="136" height="54" rx="8" fill="url(#gTeal)"/>
+  <text x="140" y="268" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L2</text>
+  <text x="140" y="286" text-anchor="middle" font-size="11.5" fill="#ccfbf1">三面服务层</text>
+
+  <!-- 控制面 -->
+  <rect x="228" y="245" width="384" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
+  <path d="M228,255 A10,10 0 0 1 238,245 L602,245 A10,10 0 0 1 612,255 L612,289 L228,289 Z" fill="url(#gTeal)"/>
+  <text x="244" y="273" font-size="14" font-weight="bold" fill="#ffffff">控制面 :18200</text>
+  <text x="600" y="273" text-anchor="end" font-size="9.5" fill="#ccfbf1">mTLS · 仅受信工作负载可达</text>
+  <g font-family="'SF Mono','DejaVu Sans Mono',Consolas,monospace" font-size="10.5" fill="#0f172a">
+    <text x="244" y="314">POST /v1/workload/identity</text>
+    <text x="244" y="340">POST /v1/token/exchange</text>
+    <text x="244" y="366">POST /v1/token/introspect</text>
+    <text x="244" y="392">POST /v1/token/revoke</text>
+    <text x="244" y="418">GET /v1/policy · /v1/audit/events</text>
+  </g>
+  <g text-anchor="end" font-size="9.5" fill="#5c6b7a">
+    <text x="600" y="314">谁是我（来源与授权）</text>
+    <text x="600" y="340">铸造 · 逐跳交换（只能收窄）</text>
+    <text x="600" y="366">验签 · 吊销 / 重放判定</text>
+    <text x="600" y="392">需 security:admin</text>
+    <text x="600" y="418">授权自检 · 读审计</text>
+  </g>
+
+  <!-- 数据面 -->
+  <rect x="624" y="245" width="272" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
+  <path d="M624,255 A10,10 0 0 1 634,245 L886,245 A10,10 0 0 1 896,255 L896,289 L624,289 Z" fill="url(#gTeal)"/>
+  <text x="640" y="273" font-size="14" font-weight="bold" fill="#ffffff">数据面 :18201</text>
+  <text x="884" y="273" text-anchor="end" font-size="9.5" fill="#ccfbf1">只读 · 免鉴权</text>
+  <g font-family="'SF Mono','DejaVu Sans Mono',Consolas,monospace" font-size="10.5" fill="#0f172a">
+    <text x="640" y="314">GET /jwks.json</text>
+    <text x="640" y="340">GET /healthz</text>
+  </g>
+  <g text-anchor="end" font-size="9.5" fill="#5c6b7a">
+    <text x="884" y="314">公钥集 · max-age=300</text>
+    <text x="884" y="340">探活与元信息</text>
+  </g>
+  <g font-size="9.5" fill="#0f766e">
+    <text x="640" y="374">Ed25519 公钥供各服务本地验签</text>
+    <text x="640" y="394">本地验签不回调中心</text>
+    <text x="640" y="414">可缓存 · 可多副本</text>
+    <text x="640" y="434">吊销 / 重放靠短 TTL 压小窗口</text>
+  </g>
+
+  <!-- 管理面 -->
+  <rect x="908" y="245" width="380" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
+  <path d="M908,255 A10,10 0 0 1 918,245 L1278,245 A10,10 0 0 1 1288,255 L1288,289 L908,289 Z" fill="url(#gTeal)"/>
+  <text x="924" y="273" font-size="14" font-weight="bold" fill="#ffffff">管理面 :18202</text>
+  <text x="1276" y="273" text-anchor="end" font-size="9.5" fill="#ccfbf1">GUI · 人的身份 · 默认关闭</text>
+  <g font-family="'SF Mono','DejaVu Sans Mono',Consolas,monospace" font-size="10.5" fill="#0f172a">
+    <text x="924" y="314">GET overview · workloads · audit</text>
+    <text x="924" y="340">GET keyring · ledger · tickets</text>
+    <text x="924" y="366">POST revoke · workloads · certificates</text>
+    <text x="924" y="392">POST approvals/decide</text>
+    <text x="924" y="418">GET/POST /admin/api/session</text>
+  </g>
+  <g text-anchor="end" font-size="9.5" fill="#5c6b7a">
+    <text x="1276" y="437">高风险项 · 双人复核（R2-b）</text>
+  </g>
+
+  <!-- 管理面修正 → 签发侧 -->
+  <line x1="1098" y1="470" x2="428" y2="470" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <text x="763" y="462" text-anchor="middle" font-size="10" fill="#0f766e">策略修正 · 生效在签发侧（热生效）</text>
+
+  <!-- L2 → L3 依赖 -->
+  <line x1="420" y1="478" x2="420" y2="500" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="860" y1="478" x2="860" y2="500" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L3 信任内核层 ========== -->
+  <rect x="60" y="500" width="1240" height="92" rx="10" fill="#eef2ff" stroke="#6366f1" stroke-opacity=".45"/>
+  <rect x="72" y="519" width="136" height="54" rx="8" fill="url(#gIndigo)"/>
+  <text x="140" y="542" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L3</text>
+  <text x="140" y="560" text-anchor="middle" font-size="11.5" fill="#e0e7ff">信任内核层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="312" y="542" font-size="13" font-weight="bold" fill="#ffffff">内部 CA · PKI</text>
+    <text x="312" y="561" font-size="9.5" fill="#e0e7ff">SPIFFE SAN · 短时证书</text>
+    <rect x="406" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="490" y="542" font-size="13" font-weight="bold" fill="#ffffff">签名密钥环</text>
+    <text x="490" y="561" font-size="9.5" fill="#e0e7ff">Ed25519 · 周期轮转</text>
+    <rect x="584" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="668" y="542" font-size="13" font-weight="bold" fill="#ffffff">策略矩阵</text>
+    <text x="668" y="561" font-size="9.5" fill="#e0e7ff">service-policy · 缺省拒绝</text>
+    <rect x="762" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="846" y="542" font-size="13" font-weight="bold" fill="#ffffff">策略修正</text>
+    <text x="846" y="561" font-size="9.5" fill="#e0e7ff">overrides · 签发侧热生效</text>
+    <rect x="940" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="1024" y="542" font-size="13" font-weight="bold" fill="#ffffff">吊销台账</text>
+    <text x="1024" y="561" font-size="9.5" fill="#e0e7ff">一次性消费 · 应急吊销</text>
+    <rect x="1118" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="1202" y="542" font-size="13" font-weight="bold" fill="#ffffff">审计</text>
+    <text x="1202" y="561" font-size="9.5" fill="#e0e7ff">全链事件 · 谁改了什么</text>
+  </g>
+
+  <!-- L3 → L4 -->
+  <line x1="760" y1="592" x2="760" y2="612" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L4 凭证与契约模型 ========== -->
+  <rect x="60" y="614" width="1240" height="92" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-opacity=".45"/>
+  <rect x="72" y="633" width="136" height="54" rx="8" fill="url(#gViolet)"/>
+  <text x="140" y="656" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L4</text>
+  <text x="140" y="674" text-anchor="middle" font-size="11.5" fill="#ede9fe">凭证与契约</text>
+  <g text-anchor="middle">
+    <rect x="228" y="633" width="253" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="354.5" y="656" font-size="13" font-weight="bold" fill="#ffffff">工作负载身份</text>
+    <text x="354.5" y="675" font-size="9.5" fill="#ede9fe">X.509 证书 · SPIFFE SAN · 缺省 1 天</text>
+    <rect x="493" y="633" width="253" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="619.5" y="656" font-size="13" font-weight="bold" fill="#ffffff">委托票据</text>
+    <text x="619.5" y="675" font-size="9.5" fill="#ede9fe">JWT EdDSA · 300s · 上限 900s</text>
+    <rect x="758" y="633" width="253" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="884.5" y="656" font-size="13" font-weight="bold" fill="#ffffff">非升级不变量</text>
+    <text x="884.5" y="675" font-size="9.5" fill="#ede9fe">scope ⊆ 父票据 · 逐跳只能收窄</text>
+    <rect x="1023" y="633" width="253" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="1149.5" y="656" font-size="13" font-weight="bold" fill="#ffffff">契约套件</text>
+    <text x="1149.5" y="675" font-size="9.5" fill="#ede9fe">headers · ticket · scopes · envelope</text>
+  </g>
+
+  <!-- L4 → L5 -->
+  <line x1="760" y1="706" x2="760" y2="726" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L5 运行时底座 ========== -->
+  <rect x="60" y="728" width="1240" height="92" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-opacity=".45"/>
+  <rect x="72" y="747" width="136" height="54" rx="8" fill="url(#gSlate)"/>
+  <text x="140" y="770" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L5</text>
+  <text x="140" y="788" text-anchor="middle" font-size="11.5" fill="#e2e8f0">运行时底座</text>
+  <g text-anchor="middle">
+    <rect x="228" y="747" width="253" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="354.5" y="770" font-size="13" font-weight="bold" fill="#ffffff">Node.js ≥ 24.20</text>
+    <text x="354.5" y="789" font-size="9.5" fill="#e2e8f0">零三方依赖 · 原生 http / crypto</text>
+    <rect x="493" y="747" width="253" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="619.5" y="770" font-size="13" font-weight="bold" fill="#ffffff">数据卷 /app/data</text>
+    <text x="619.5" y="789" font-size="9.5" fill="#e2e8f0">密钥环 · 台账 · 审计 · PKI</text>
+    <rect x="758" y="747" width="253" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="884.5" y="770" font-size="13" font-weight="bold" fill="#ffffff">Docker 离线镜像</text>
+    <text x="884.5" y="789" font-size="9.5" fill="#e2e8f0">compose · 宿主端口仅绑回环</text>
+    <rect x="1023" y="747" width="253" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="1149.5" y="770" font-size="13" font-weight="bold" fill="#ffffff">openssl</text>
+    <text x="1149.5" y="789" font-size="9.5" fill="#e2e8f0">PKI 脚本 · 仅证书签发</text>
+  </g>
+
+  <!-- ========== 右侧：安全纪律与边界 ========== -->
+  <rect x="1320" y="70" width="320" height="750" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="1480" y="100" text-anchor="middle" font-size="15" font-weight="bold" fill="#065f46">安全纪律与边界</text>
+  <g text-anchor="middle">
+    <rect x="1336" y="124" width="288" height="100" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1480" y="152" font-size="12" font-weight="bold" fill="#065f46">中心不介入调用链</text>
+    <text x="1480" y="176" font-size="10" fill="#047857">不代理 · 不转发 · 不主动连接</text>
+    <text x="1480" y="194" font-size="10" fill="#047857">无入站业务流量</text>
+    <rect x="1336" y="240" width="288" height="100" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1480" y="268" font-size="12" font-weight="bold" fill="#065f46">本地验签</text>
+    <text x="1480" y="292" font-size="10" fill="#047857">JWKS 缓存 ≤300s · 不回调中心</text>
+    <text x="1480" y="310" font-size="10" fill="#047857">避免全栈延迟瓶颈与单点故障</text>
+    <rect x="1336" y="356" width="288" height="100" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1480" y="384" font-size="12" font-weight="bold" fill="#065f46">逐跳收窄 · 非升级</text>
+    <text x="1480" y="408" font-size="10" fill="#047857">主体与资源约束不可篡改</text>
+    <text x="1480" y="426" font-size="10" fill="#047857">入口是唯一能放大授权的地点</text>
+    <rect x="1336" y="472" width="288" height="100" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1480" y="500" font-size="12" font-weight="bold" fill="#065f46">缺省拒绝</text>
+    <text x="1480" y="524" font-size="10" fill="#047857">服务级授权矩阵 mayCall / canCall</text>
+    <text x="1480" y="542" font-size="10" fill="#047857">加载期 scope 词表校验</text>
+    <rect x="1336" y="588" width="288" height="100" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1480" y="616" font-size="12" font-weight="bold" fill="#065f46">三面隔离</text>
+    <text x="1480" y="640" font-size="10" fill="#047857">控制面 mTLS · 数据面只读</text>
+    <text x="1480" y="658" font-size="10" fill="#047857">管理面默认关闭 · 双人复核</text>
+    <rect x="1336" y="704" width="288" height="100" rx="8" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1480" y="732" font-size="12" font-weight="bold" fill="#065f46">信任边界</text>
+    <text x="1480" y="756" font-size="10" fill="#047857">管理面随信任根 · 独立 L0 信任域</text>
+    <text x="1480" y="774" font-size="10" fill="#047857">Portal 仅 SSO 导航 + 深链跳转</text>
+  </g>
+  <g stroke="#10b981" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7">
+    <line x1="1320" y1="116" x2="1302" y2="116" marker-end="url(#arrowGreen)"/>
+    <line x1="1320" y1="350" x2="1302" y2="350" marker-end="url(#arrowGreen)"/>
+    <line x1="1320" y1="546" x2="1302" y2="546" marker-end="url(#arrowGreen)"/>
+    <line x1="1320" y1="660" x2="1302" y2="660" marker-end="url(#arrowGreen)"/>
+    <line x1="1320" y1="774" x2="1302" y2="774" marker-end="url(#arrowGreen)"/>
+  </g>
+</svg>

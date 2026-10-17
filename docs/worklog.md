@@ -1414,3 +1414,7 @@
 ### 任务：Portal 功能框架图 v2.0 收敛为五功能域（2026-10-16 续）
 
 - 用户明确平台级 Portal 不含知识运营管理，核心为租户接入、实例创建、应用配置与授权、测试与集成支持、平台级运营分析与治理；v2.0 网格由 3×2 改 3+2：删除知识运营管理域，监控可观测并入平台运营分析与治理（612 宽双框布局），认证/鉴权体系配置从实例域移入应用配置与授权域；PNG 重渲染目检无溢出；仅配图改动，跳过 Claude 只读审查。
+
+### 任务：生成 deep-agent 架构总图 v1.0（2026-10-17）
+
+- 依据相邻仓 `/home/sharkyai/deep-agent`（AGENTS.md/README/src 与 tools 源码结构实证）新建 docs/images/deep-agent架构总图_v1.0.svg（1900×1360，沿用架构总图冷色渐变与栅格规范）：六层=调用方（ikc-demo 页面/样板 BFF/CLI，gBlue）→ HTTP 接入层（routes.py /api/agent/* 四面 + 统一响应壳，gTeal）→ Agent 编排层（create_deep_agent 内核/工作模式与审批/韧性中间件/SSE 事件流，gViolet）→ 工具层（deep-agent-tools 独立 wheel 粉底粉虚线框：registry 装配条 + 检索/图谱/Wiki/文档接入/外部 HTTP 五域，gIndigo）→ 外部北向依赖（样板 BFF/gateway Search V2/图谱北向/平台 /api/v1，gEmerald 无描边 + LLM 端点 gRose）→ 本地落盘 data/ 五文件（gSlate）；右侧绿竖条「配置与运行纪律」五模块（配置来源链/校验脱敏/运行期重建/凭证纪律/部署形态）；LLM 直连调用以玫红虚线右侧绕行标注；修正编排层→工具层箭头穿过粉框标题文字的冲突（缩短至框外沿）；XML 校验通过；仅新增配图，无代码改动，跳过 pytest 与 Claude 只读审查。

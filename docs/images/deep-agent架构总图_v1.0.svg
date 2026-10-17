@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1360" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="gEmerald" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowRose" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e11d48"/>
+    </marker>
+  </defs>
+
+  <!-- 背景与标题 -->
+  <rect x="0" y="0" width="1900" height="1360" fill="#f8fafc"/>
+  <text x="950" y="30" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">deep-agent 助手服务架构总图</text>
+  <text x="950" y="52" text-anchor="middle" font-size="13" fill="#64748b">v1.0 · 独立助手服务（FastAPI + LangChain Deep Agents）· HTTP :5192 · 只对外提供 HTTP API，不做 UI / 登录</text>
+
+  <!-- ================= 层带背景 ================= -->
+  <rect x="130" y="66"   width="1490" height="120" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <rect x="130" y="216"  width="1490" height="150" rx="10" fill="#f0fdfa" stroke="#99f6e4"/>
+  <rect x="130" y="396"  width="1490" height="180" rx="10" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <rect x="130" y="606"  width="1490" height="260" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+  <rect x="130" y="886"  width="1490" height="150" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <rect x="130" y="1056" width="1490" height="140" rx="10" fill="#f1f5f9" stroke="#cbd5e1"/>
+
+  <!-- 层名标签 -->
+  <g font-size="17" font-weight="bold" fill="#334155" text-anchor="middle">
+    <text x="93" y="126"  transform="rotate(-90 93 126)">调用方</text>
+    <text x="93" y="291"  transform="rotate(-90 93 291)">HTTP 接入层</text>
+    <text x="93" y="486"  transform="rotate(-90 93 486)">Agent 编排层</text>
+    <text x="93" y="736"  transform="rotate(-90 93 736)">工具层</text>
+    <text x="93" y="961"  transform="rotate(-90 93 961)">外部北向依赖</text>
+    <text x="93" y="1126" transform="rotate(-90 93 1126)">本地落盘</text>
+  </g>
+
+  <!-- ================= 第 1 层：调用方 ================= -->
+  <g>
+    <rect x="200" y="88" width="390" height="76" rx="10" fill="url(#gBlue)"/>
+    <text x="395" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">ikc-demo 助手页面</text>
+    <text x="395" y="140" text-anchor="middle" font-size="11" fill="#dbeafe">配置页 + 对话页（/#/assistant）· UI 承载方</text>
+
+    <rect x="620" y="88" width="390" height="76" rx="10" fill="url(#gBlue)"/>
+    <text x="815" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">样板 BFF（ikc-demo）</text>
+    <text x="815" y="140" text-anchor="middle" font-size="11" fill="#dbeafe">/bff/agent/* 代理 → 本服务 · 不改写 SSE 帧语义</text>
+
+    <rect x="1040" y="88" width="380" height="76" rx="10" fill="url(#gSlate)"/>
+    <text x="1230" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">deep-agent CLI</text>
+    <text x="1230" y="140" text-anchor="middle" font-size="11" fill="#e2e8f0">serve / config / tools（本机运维入口）</text>
+  </g>
+  <line x1="590" y1="126" x2="616" y2="126" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="815" y1="166" x2="815" y2="234" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1230" y1="166" x2="1230" y2="234" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ================= 第 2 层：HTTP 接入层（routes.py /api/agent/*） ================= -->
+  <g>
+    <rect x="200" y="238" width="290" height="110" rx="10" fill="url(#gTeal)"/>
+    <text x="345" y="264" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">对话 SSE 面</text>
+    <text x="345" y="288" text-anchor="middle" font-size="10.8" fill="#ccfbf1">POST /chat · /chat/approve</text>
+    <text x="345" y="308" text-anchor="middle" font-size="10.8" fill="#ccfbf1">/chat/plan · /chat/plan/execute</text>
+    <text x="345" y="328" text-anchor="middle" font-size="10.8" fill="#ccfbf1">流式 SSE（不走统一壳）</text>
+
+    <rect x="510" y="238" width="290" height="110" rx="10" fill="url(#gTeal)"/>
+    <text x="655" y="264" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">配置与源管理</text>
+    <text x="655" y="288" text-anchor="middle" font-size="10.8" fill="#ccfbf1">GET/PUT /config · /health · /tools</text>
+    <text x="655" y="308" text-anchor="middle" font-size="10.8" fill="#ccfbf1">/sources CRUD + 探活 test</text>
+    <text x="655" y="328" text-anchor="middle" font-size="10.8" fill="#ccfbf1">/graph-source（单例 · 缺省关闭）</text>
+
+    <rect x="820" y="238" width="290" height="110" rx="10" fill="url(#gTeal)"/>
+    <text x="965" y="264" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">会话 · 记忆 · 附件</text>
+    <text x="965" y="288" text-anchor="middle" font-size="10.8" fill="#ccfbf1">/sessions · /memories</text>
+    <text x="965" y="308" text-anchor="middle" font-size="10.8" fill="#ccfbf1">POST /uploads（本地暂存）</text>
+    <text x="965" y="328" text-anchor="middle" font-size="10.8" fill="#ccfbf1">/artifacts/{threadId}</text>
+
+    <rect x="1130" y="238" width="290" height="110" rx="10" fill="url(#gTeal)"/>
+    <text x="1275" y="264" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">统一响应壳（app.py）</text>
+    <text x="1275" y="288" text-anchor="middle" font-size="10.8" fill="#ccfbf1">{status, data} / {status, errCode}</text>
+    <text x="1275" y="308" text-anchor="middle" font-size="10.8" fill="#ccfbf1">错误码复用平台已定义码：</text>
+    <text x="1275" y="328" text-anchor="middle" font-size="10.8" fill="#ccfbf1">100001 / 503001 / 509001 / 999999</text>
+  </g>
+
+  <!-- ================= 第 3 层：Agent 编排层（service.py AgentService） ================= -->
+  <g>
+    <rect x="200" y="418" width="290" height="140" rx="10" fill="url(#gViolet)"/>
+    <text x="345" y="444" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Deep Agents 内核</text>
+    <text x="345" y="470" text-anchor="middle" font-size="10.8" fill="#ede9fe">create_deep_agent（LangGraph 图）</text>
+    <text x="345" y="492" text-anchor="middle" font-size="10.8" fill="#ede9fe">规划 TodoList / 文件系统 / 摘要中间件</text>
+    <text x="345" y="514" text-anchor="middle" font-size="10.8" fill="#ede9fe">（框架注入）· checkpointer</text>
+    <text x="345" y="536" text-anchor="middle" font-size="10.8" fill="#ede9fe">系统提示 · 按配置装配</text>
+
+    <rect x="510" y="418" width="290" height="140" rx="10" fill="url(#gViolet)"/>
+    <text x="655" y="444" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">工作模式与审批</text>
+    <text x="655" y="470" text-anchor="middle" font-size="10.8" fill="#ede9fe">auto / approval / plan 三模式</text>
+    <text x="655" y="492" text-anchor="middle" font-size="10.8" fill="#ede9fe">interrupt_on：写工具人工闸门</text>
+    <text x="655" y="514" text-anchor="middle" font-size="10.8" fill="#ede9fe">plan 模式：先出计划再确认执行</text>
+    <text x="655" y="536" text-anchor="middle" font-size="10.8" fill="#ede9fe">子代理 RETRIEVAL_ANALYST（可选）</text>
+
+    <rect x="820" y="418" width="290" height="140" rx="10" fill="url(#gViolet)"/>
+    <text x="965" y="444" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">韧性与上下文中间件</text>
+    <text x="965" y="470" text-anchor="middle" font-size="10.8" fill="#ede9fe">上下文裁剪 window / token_limit</text>
+    <text x="965" y="492" text-anchor="middle" font-size="10.8" fill="#ede9fe">ToolError 归一（不中断对话）</text>
+    <text x="965" y="514" text-anchor="middle" font-size="10.8" fill="#ede9fe">Model / Tool 重试</text>
+    <text x="965" y="536" text-anchor="middle" font-size="10.8" fill="#ede9fe">ModelFallback 备用模型</text>
+
+    <rect x="1130" y="418" width="290" height="140" rx="10" fill="url(#gViolet)"/>
+    <text x="1275" y="444" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">SSE 事件流</text>
+    <text x="1275" y="470" text-anchor="middle" font-size="10.8" fill="#ede9fe">token · tool_start / tool_end</text>
+    <text x="1275" y="492" text-anchor="middle" font-size="10.8" fill="#ede9fe">artifact · tool_approval · plan</text>
+    <text x="1275" y="514" text-anchor="middle" font-size="10.8" fill="#ede9fe">done · error</text>
+    <text x="1275" y="536" text-anchor="middle" font-size="10.8" fill="#ede9fe">空闲 15s keepalive 注释行</text>
+  </g>
+
+  <!-- ================= 第 4 层：工具层（deep-agent-tools 独立 wheel） ================= -->
+  <rect x="200" y="628" width="1220" height="228" rx="12" fill="#fdf2f8" stroke="#ec4899" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="810" y="650" text-anchor="middle" font-size="14" font-weight="bold" fill="#be185d">deep-agent-tools 独立 wheel（deep_agent_tools · v0.1.0）— 本服务是它的第一个宿主，其它 agent 装它即可复用全部工具</text>
+  <text x="810" y="670" text-anchor="middle" font-size="10.5" fill="#9d174d">北向调用纪律：出站白名单 · 解壳 · 命中压缩 · 探活 · 端点 errCode 原样回模型（不改码 · 不吞错 · 不当空结果）；新增内置域 = 只加一个 domains/&lt;域&gt;.py 文件</text>
+
+  <rect x="200" y="682" width="1220" height="32" rx="8" fill="url(#gIndigo)"/>
+  <text x="810" y="703" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">registry 装配：组闸 → 依赖闸 → 工具名闸（无第二份清单）· domains/ 自动发现：一个文件 = 一个域，声明派生组目录 / 审批面 / 预览帧</text>
+
+  <g>
+    <rect x="200" y="726" width="228" height="98" rx="10" fill="url(#gIndigo)"/>
+    <text x="314" y="750" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">检索域</text>
+    <text x="314" y="772" text-anchor="middle" font-size="10.2" fill="#e0e7ff">retrieval_sources ·</text>
+    <text x="314" y="790" text-anchor="middle" font-size="10.2" fill="#e0e7ff">universal_search（Search V2）</text>
+    <text x="314" y="808" text-anchor="middle" font-size="10.2" fill="#e0e7ff">wiki_page · document_get</text>
+
+    <rect x="448" y="726" width="228" height="98" rx="10" fill="url(#gIndigo)"/>
+    <text x="562" y="750" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">图谱域</text>
+    <text x="562" y="772" text-anchor="middle" font-size="10.2" fill="#e0e7ff">graph_* G-01~G-17 · A-05/06</text>
+    <text x="562" y="790" text-anchor="middle" font-size="10.2" fill="#e0e7ff">读写双闸（write/build）</text>
+    <text x="562" y="808" text-anchor="middle" font-size="10.2" fill="#e0e7ff">artifact 视图指令下发右栏</text>
+
+    <rect x="696" y="726" width="228" height="98" rx="10" fill="url(#gIndigo)"/>
+    <text x="810" y="750" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">Wiki 域</text>
+    <text x="810" y="772" text-anchor="middle" font-size="10.2" fill="#e0e7ff">wiki_* W-01 ~ W-19</text>
+    <text x="810" y="790" text-anchor="middle" font-size="10.2" fill="#e0e7ff">读 / 写两套闸门</text>
+    <text x="810" y="808" text-anchor="middle" font-size="10.2" fill="#e0e7ff">（与图谱域同形）</text>
+
+    <rect x="944" y="726" width="228" height="98" rx="10" fill="url(#gIndigo)"/>
+    <text x="1058" y="750" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">文档接入域</text>
+    <text x="1058" y="772" text-anchor="middle" font-size="10.2" fill="#e0e7ff">document_upload / register ·</text>
+    <text x="1058" y="790" text-anchor="middle" font-size="10.2" fill="#e0e7ff">wiki_build · document_uploads</text>
+    <text x="1058" y="808" text-anchor="middle" font-size="10.2" fill="#e0e7ff">平台 SDK 面 B-01/B-02.2/W-06</text>
+
+    <rect x="1192" y="726" width="228" height="98" rx="10" fill="url(#gIndigo)"/>
+    <text x="1306" y="750" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">外部 HTTP 工具</text>
+    <text x="1306" y="772" text-anchor="middle" font-size="10.2" fill="#e0e7ff">声明式 url / params / auth_ref</text>
+    <text x="1306" y="790" text-anchor="middle" font-size="10.2" fill="#e0e7ff">host 允许清单（禁内联凭证）</text>
+    <text x="1306" y="808" text-anchor="middle" font-size="10.2" fill="#e0e7ff">writable=true 进审批面</text>
+  </g>
+
+  <!-- 编排层 → 工具层（装配调用，经 registry 单一入口） -->
+  <line x1="345"  y1="562" x2="345"  y2="622" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="655"  y1="562" x2="655"  y2="622" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="965"  y1="562" x2="965"  y2="622" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1275" y1="562" x2="1275" y2="622" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ================= 第 5 层：外部北向依赖 ================= -->
+  <g>
+    <rect x="200" y="908" width="228" height="106" rx="10" fill="url(#gEmerald)"/>
+    <text x="314" y="936" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">样板 BFF 检索</text>
+    <text x="314" y="960" text-anchor="middle" font-size="10.5" fill="#d1fae5">/bff/search/universal-v2</text>
+    <text x="314" y="980" text-anchor="middle" font-size="10.5" fill="#d1fae5">demo 链路 :5190</text>
+    <text x="314" y="1000" text-anchor="middle" font-size="10.5" fill="#d1fae5">（容器内 BFF :5191）</text>
+
+    <rect x="448" y="908" width="228" height="106" rx="10" fill="url(#gEmerald)"/>
+    <text x="562" y="936" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">open ikc gateway</text>
+    <text x="562" y="960" text-anchor="middle" font-size="10.5" fill="#d1fae5">Search V2 统一检索北向</text>
+    <text x="562" y="980" text-anchor="middle" font-size="10.5" fill="#d1fae5">→ universal-retriever</text>
+    <text x="562" y="1000" text-anchor="middle" font-size="10.5" fill="#d1fae5">词法+向量+RRF · 授权后展开</text>
+
+    <rect x="696" y="908" width="228" height="106" rx="10" fill="url(#gEmerald)"/>
+    <text x="810" y="936" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">图谱北向端点</text>
+    <text x="810" y="960" text-anchor="middle" font-size="10.5" fill="#d1fae5">ikc-graph-service</text>
+    <text x="810" y="980" text-anchor="middle" font-size="10.5" fill="#d1fae5">G-01 ~ G-17</text>
+    <text x="810" y="1000" text-anchor="middle" font-size="10.5" fill="#d1fae5">读 / 写 / 构建（If-Match · 幂等）</text>
+
+    <rect x="944" y="908" width="228" height="106" rx="10" fill="url(#gEmerald)"/>
+    <text x="1058" y="936" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">open ikc platform</text>
+    <text x="1058" y="960" text-anchor="middle" font-size="10.5" fill="#d1fae5">/api/v1 文档 · 解析 · Wiki</text>
+    <text x="1058" y="980" text-anchor="middle" font-size="10.5" fill="#d1fae5">平台 SDK 面（platform_source）</text>
+    <text x="1058" y="1000" text-anchor="middle" font-size="10.5" fill="#d1fae5">身份头双发 X-User-Id / Tenant</text>
+
+    <rect x="1192" y="908" width="228" height="106" rx="10" fill="url(#gRose)"/>
+    <text x="1306" y="936" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">LLM 模型端点</text>
+    <text x="1306" y="960" text-anchor="middle" font-size="10.5" fill="#ffe4e6">OpenAI 兼容 Chat Completions</text>
+    <text x="1306" y="980" text-anchor="middle" font-size="10.5" fill="#ffe4e6">base_url / api_key</text>
+    <text x="1306" y="1000" text-anchor="middle" font-size="10.5" fill="#ffe4e6">fallback_model 回退</text>
+  </g>
+
+  <!-- 工具层 → 外部北向依赖 -->
+  <line x1="438"  y1="828" x2="438"  y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="686"  y1="828" x2="686"  y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="934"  y1="828" x2="934"  y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1182" y1="828" x2="1182" y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="152" y="890" transform="rotate(-90 152 890)" text-anchor="middle" font-size="10.5" fill="#047857">北向 HTTP 调用 · Bearer api_key</text>
+
+  <!-- 编排层 → LLM 直连（右侧绕行） -->
+  <path d="M 1420 488 L 1450 488 L 1450 961 L 1424 961" fill="none" stroke="#e11d48" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowRose)"/>
+  <text x="1464" y="720" transform="rotate(90 1464 720)" text-anchor="middle" font-size="10.5" fill="#e11d48">LLM 直连调用（模型层 · 重试 / 回退由韧性中间件承接）</text>
+
+  <!-- ================= 第 6 层：本地落盘（data/） ================= -->
+  <g>
+    <rect x="200" y="1078" width="228" height="98" rx="10" fill="url(#gSlate)"/>
+    <text x="314" y="1104" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">agent_config.json</text>
+    <text x="314" y="1128" text-anchor="middle" font-size="10" fill="#e2e8f0">生效配置落盘（含凭证）</text>
+    <text x="314" y="1146" text-anchor="middle" font-size="10" fill="#e2e8f0">data/ 必须 gitignore</text>
+
+    <rect x="448" y="1078" width="228" height="98" rx="10" fill="url(#gSlate)"/>
+    <text x="562" y="1104" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">sessions/*.json</text>
+    <text x="562" y="1128" text-anchor="middle" font-size="10" fill="#e2e8f0">会话历史 · checkpointer</text>
+    <text x="562" y="1146" text-anchor="middle" font-size="10" fill="#e2e8f0">threadId 白名单闸门</text>
+
+    <rect x="696" y="1078" width="228" height="98" rx="10" fill="url(#gSlate)"/>
+    <text x="810" y="1104" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">memories.json</text>
+    <text x="810" y="1128" text-anchor="middle" font-size="10" fill="#e2e8f0">长期记忆（自动提取可选）</text>
+    <text x="810" y="1146" text-anchor="middle" font-size="10" fill="#e2e8f0">条数 / 注入上限</text>
+
+    <rect x="944" y="1078" width="228" height="98" rx="10" fill="url(#gSlate)"/>
+    <text x="1058" y="1104" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">artifacts/&lt;threadId&gt;.json</text>
+    <text x="1058" y="1128" text-anchor="middle" font-size="10" fill="#e2e8f0">右栏视图指令工件历史</text>
+    <text x="1058" y="1146" text-anchor="middle" font-size="10" fill="#e2e8f0">与 session_history_enabled 无关</text>
+
+    <rect x="1192" y="1078" width="228" height="98" rx="10" fill="url(#gSlate)"/>
+    <text x="1306" y="1104" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">uploads/&lt;uploadId&gt;/</text>
+    <text x="1306" y="1128" text-anchor="middle" font-size="10" fill="#e2e8f0">附件本地暂存（白名单 2MiB）</text>
+    <text x="1306" y="1146" text-anchor="middle" font-size="10" fill="#e2e8f0">份数上限淘汰 · 不长期保存</text>
+  </g>
+
+  <!-- 落盘读写（左侧虚线绕行：routes / service 直接读写） -->
+  <path d="M 200 1127 L 165 1127 L 165 293 L 196 293" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text x="150" y="710" transform="rotate(-90 150 710)" text-anchor="middle" font-size="10.5" fill="#64748b">routes / service 落盘读写（配置 · 会话 · 记忆 · 工件 · 附件）</text>
+
+  <!-- ================= 右侧竖条：配置与运行纪律 ================= -->
+  <rect x="1650" y="66" width="190" height="1130" rx="12" fill="url(#gGreen)"/>
+  <text x="1745" y="96" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">配置与运行纪律</text>
+
+  <g>
+    <rect x="1662" y="112" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <text x="1745" y="136" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">配置来源链</text>
+    <text x="1745" y="162" text-anchor="middle" font-size="10" fill="#d1fae5">环境变量基线</text>
+    <text x="1745" y="182" text-anchor="middle" font-size="10" fill="#d1fae5">→ PUT /config 运行期覆盖</text>
+    <text x="1745" y="202" text-anchor="middle" font-size="10" fill="#d1fae5">→ agent_config.json 落盘</text>
+    <text x="1745" y="222" text-anchor="middle" font-size="10" fill="#d1fae5">生效值 = 基线 + 覆盖</text>
+    <text x="1745" y="242" text-anchor="middle" font-size="10" fill="#d1fae5">重启后覆盖仍在</text>
+
+    <rect x="1662" y="316" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <text x="1745" y="340" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">校验与脱敏</text>
+    <text x="1745" y="366" text-anchor="middle" font-size="10" fill="#d1fae5">未知键 / 越界 / 非法 URL</text>
+    <text x="1745" y="386" text-anchor="middle" font-size="10" fill="#d1fae5">→ 100001 + 字段级 errors</text>
+    <text x="1745" y="406" text-anchor="middle" font-size="10" fill="#d1fae5">校验失败不落盘不重建</text>
+    <text x="1745" y="426" text-anchor="middle" font-size="10" fill="#d1fae5">to_safe_dict 仅掩码回显</text>
+
+    <rect x="1662" y="520" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <text x="1745" y="544" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">运行期重建</text>
+    <text x="1745" y="570" text-anchor="middle" font-size="10" fill="#d1fae5">改配置必触发 rebuild()</text>
+    <text x="1745" y="590" text-anchor="middle" font-size="10" fill="#d1fae5">重建 agent 与工具装配</text>
+    <text x="1745" y="610" text-anchor="middle" font-size="10" fill="#d1fae5">CLI tools 与装配同源</text>
+    <text x="1745" y="630" text-anchor="middle" font-size="10" fill="#d1fae5">（registry 单一入口）</text>
+
+    <rect x="1662" y="724" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <text x="1745" y="748" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">凭证纪律</text>
+    <text x="1745" y="774" text-anchor="middle" font-size="10" fill="#d1fae5">api_key 只出现在出站</text>
+    <text x="1745" y="794" text-anchor="middle" font-size="10" fill="#d1fae5">请求头与落盘配置</text>
+    <text x="1745" y="814" text-anchor="middle" font-size="10" fill="#d1fae5">响应 / 日志 / SSE 全脱敏</text>
+    <text x="1745" y="834" text-anchor="middle" font-size="10" fill="#d1fae5">禁止新增私有错误码</text>
+
+    <rect x="1662" y="928" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <text x="1745" y="952" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">部署形态</text>
+    <text x="1745" y="978" text-anchor="middle" font-size="10" fill="#d1fae5">单镜像：HAProxy :5192</text>
+    <text x="1745" y="998" text-anchor="middle" font-size="10" fill="#d1fae5">→ uvicorn 回环 :5193</text>
+    <text x="1745" y="1018" text-anchor="middle" font-size="10" fill="#d1fae5">wheel + sdist 离线镜像</text>
+    <text x="1745" y="1038" text-anchor="middle" font-size="10" fill="#d1fae5">stats 面板 :8404</text>
+  </g>
+
+  <!-- 竖条 → 各层带（虚线连接） -->
+  <g stroke="#059669" stroke-width="1.6" stroke-dasharray="5 4">
+    <line x1="1650" y1="126"  x2="1624" y2="126"  marker-end="url(#arrowGreen)"/>
+    <line x1="1650" y1="291"  x2="1624" y2="291"  marker-end="url(#arrowGreen)"/>
+    <line x1="1650" y1="486"  x2="1624" y2="486"  marker-end="url(#arrowGreen)"/>
+    <line x1="1650" y1="736"  x2="1624" y2="736"  marker-end="url(#arrowGreen)"/>
+    <line x1="1650" y1="961"  x2="1624" y2="961"  marker-end="url(#arrowGreen)"/>
+    <line x1="1650" y1="1126" x2="1624" y2="1126" marker-end="url(#arrowGreen)"/>
+  </g>
+
+  <!-- ================= 底部脚注 ================= -->
+  <text x="810" y="1232" text-anchor="middle" font-size="12" fill="#475569">边界纪律：不直连 Elasticsearch / 不 import 检索内核 / 不做权限与业务判定 —— 检索、图谱、文档一律走北向端点，权限 · 密级 · 配额以端点返回为准，环境缺口按原码归因、不做代偿</text>
+  <text x="810" y="1256" text-anchor="middle" font-size="12" fill="#475569">SSE 面不走统一响应壳：帧为 data:{type:…}，type = token / tool_start / tool_end / artifact / tool_approval / plan / done / error；approval 模式写工具挂起不发 done，批准后经 /chat/approve 续跑</text>
+  <text x="810" y="1288" text-anchor="middle" font-size="11" fill="#94a3b8">依据 deep-agent 仓库 AGENTS.md / README.md / src 与 tools 源码结构绘制 · 相邻仓 ikc-demo（UI/BFF）· open ikc platform / universal-retriever（检索北向）· ikc-graph-service（图谱北向）</text>
+</svg>

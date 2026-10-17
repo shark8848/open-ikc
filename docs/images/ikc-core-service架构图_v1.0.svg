@@ -31,7 +31,7 @@
   </defs>
   <rect x="0" y="0" width="1900" height="1260" fill="#f8fafc"/>
   <text x="950" y="34" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">ikc-core-service 架构图</text>
-  <text x="950" y="58" text-anchor="middle" font-size="12.5" fill="#64748b">IKC 实例核心服务 · 库与文档权威数据面（FastAPI + Celery + SQLAlchemy 2.0 + PostgreSQL）· v1.0</text>
+  <text x="950" y="58" text-anchor="middle" font-size="12.5" fill="#64748b">IKC 实例核心服务 · 库与文档权威数据面（FastAPI + Celery + SQLAlchemy 2.0 + PostgreSQL）· v1.1</text>
 
   <!-- ================= 调用方 ================= -->
   <text x="93" y="114" transform="rotate(-90 93 114)" font-size="17" font-weight="bold" fill="#334155" text-anchor="middle">调用方</text>
@@ -55,10 +55,10 @@
     <line x1="1223" y1="152" x2="1223" y2="192" marker-end="url(#arrow)"/>
   </g>
   <rect x="410" y="158" width="820" height="24" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3"/>
-  <text x="820" y="174" text-anchor="middle" font-size="11.5" fill="#475569">HTTPS /api/v1 · /api/v2 · /internal（Bearer Token / gateway_header 信任头 · 统一响应壳 errCode/errMsg/data/traceId）＋ Celery（Redis）</text>
+  <text x="820" y="174" text-anchor="middle" font-size="11.5" fill="#475569">HTTPS /api/v1 · /api/v2 · /internal（Bearer Token / gateway_header 信任头 · 统一响应壳 errCode/errMsg/data/traceId）</text>
   <g>
     <rect x="200" y="192" width="296" height="84" rx="10" fill="url(#gTeal)"/>
-    <text x="348" y="222" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">FastAPI 入口 · 19000</text>
+    <text x="348" y="222" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">FastAPI 服务入口</text>
     <text x="348" y="244" text-anchor="middle" font-size="10.5" fill="#ccfbf1">统一响应壳 · 全局异常 → 错误码</text>
     <text x="348" y="262" text-anchor="middle" font-size="10.5" fill="#ccfbf1">/health · /ready · /docs · openapi</text>
     <rect x="508" y="192" width="296" height="84" rx="10" fill="url(#gTeal)"/>
@@ -82,39 +82,35 @@
   </g>
   <g>
     <rect x="200" y="300" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="348" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">知识库 A-01~A-06</text>
+    <text x="348" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">知识库管理</text>
     <text x="348" y="352" text-anchor="middle" font-size="10.5" fill="#e0e7ff">创建 · 修改 · 详情 · 列表</text>
     <text x="348" y="370" text-anchor="middle" font-size="10.5" fill="#e0e7ff">wikiConfig / graphSchema · 索引登记</text>
     <rect x="508" y="300" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="656" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Wiki 管理 W-01~W-07</text>
+    <text x="656" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Wiki 信息管理</text>
     <text x="656" y="352" text-anchor="middle" font-size="10.5" fill="#e0e7ff">页面树 · 详情 · 统计 · 导出（只读）</text>
     <text x="656" y="370" text-anchor="middle" font-size="10.5" fill="#e0e7ff">构建落地与作业（引擎切页）</text>
     <rect x="816" y="300" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="964" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">图谱 G-01~G-17</text>
+    <text x="964" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">图谱管理与运维</text>
     <text x="964" y="352" text-anchor="middle" font-size="10.5" fill="#e0e7ff">统计/节点/关系/导出 · 邻域/路径</text>
     <text x="964" y="370" text-anchor="middle" font-size="10.5" fill="#e0e7ff">修正 · 合并拆分 · 修订回滚</text>
     <rect x="1124" y="300" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="1272" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">本体库 O-01~O-24</text>
+    <text x="1272" y="330" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">本体库管理</text>
     <text x="1272" y="352" text-anchor="middle" font-size="10.5" fill="#e0e7ff">概念 · 属性 · 关系 · 状态机</text>
     <text x="1272" y="370" text-anchor="middle" font-size="10.5" fill="#e0e7ff">编译 graphSchema · 绑定 · 导出</text>
   </g>
   <g>
-    <rect x="200" y="396" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="348" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">文档 B-01 · B-02.2 · B-07</text>
-    <text x="348" y="448" text-anchor="middle" font-size="10.5" fill="#e0e7ff">登记（仅 split）· 上传 7 天暂存</text>
-    <text x="348" y="466" text-anchor="middle" font-size="10.5" fill="#e0e7ff">文档详情 · 版本与生命周期</text>
-    <rect x="508" y="396" width="296" height="84" rx="10" fill="url(#gRose)"/>
-    <text x="656" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">检索 V2 D-03</text>
-    <text x="656" y="448" text-anchor="middle" font-size="10.5" fill="#ffe4e6">/api/v2/knowledge-search/universal-search</text>
-    <text x="656" y="466" text-anchor="middle" font-size="10.5" fill="#ffe4e6">文档 / Wiki / 图谱 / 事实 · 桥接内核</text>
-    <rect x="816" y="396" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="964" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">内部支撑面 /internal/*</text>
-    <text x="964" y="448" text-anchor="middle" font-size="10.5" fill="#e0e7ff">X-Internal-Token 独立鉴权</text>
-    <text x="964" y="466" text-anchor="middle" font-size="10.5" fill="#e0e7ff">审计 · ACL · 分享订阅 · 发布审核</text>
-    <rect x="1124" y="396" width="296" height="84" rx="10" fill="url(#gIndigo)"/>
-    <text x="1272" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">Celery gov 任务面</text>
-    <text x="1272" y="448" text-anchor="middle" font-size="10.5" fill="#e0e7ff">retention_purge · subscription_sweep</text>
-    <text x="1272" y="466" text-anchor="middle" font-size="10.5" fill="#e0e7ff">memory_expire · beat 每 2h</text>
+    <rect x="200" y="396" width="393" height="84" rx="10" fill="url(#gIndigo)"/>
+    <text x="396.5" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">文档接入与管理</text>
+    <text x="396.5" y="448" text-anchor="middle" font-size="10.5" fill="#e0e7ff">登记（仅 split）· 上传 7 天暂存</text>
+    <text x="396.5" y="466" text-anchor="middle" font-size="10.5" fill="#e0e7ff">文档详情 · 版本与生命周期</text>
+    <rect x="613" y="396" width="393" height="84" rx="10" fill="url(#gRose)"/>
+    <text x="809.5" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">统一检索 V2</text>
+    <text x="809.5" y="448" text-anchor="middle" font-size="10.5" fill="#ffe4e6">/api/v2/knowledge-search/universal-search</text>
+    <text x="809.5" y="466" text-anchor="middle" font-size="10.5" fill="#ffe4e6">文档 / Wiki / 图谱 / 事实 · 桥接内核</text>
+    <rect x="1027" y="396" width="393" height="84" rx="10" fill="url(#gIndigo)"/>
+    <text x="1223.5" y="426" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#ffffff">内部支撑面 /internal/*</text>
+    <text x="1223.5" y="448" text-anchor="middle" font-size="10.5" fill="#e0e7ff">X-Internal-Token 独立鉴权</text>
+    <text x="1223.5" y="466" text-anchor="middle" font-size="10.5" fill="#e0e7ff">审计 · ACL · 分享订阅 · 发布审核</text>
   </g>
 
   <!-- ================= 领域服务层 ================= -->
@@ -166,9 +162,9 @@
     <text x="912.5" y="640" text-anchor="middle" font-size="10" fill="#ede9fe">subject_acl allow/deny</text>
     <text x="912.5" y="656" text-anchor="middle" font-size="10" fill="#ede9fe">分享→申请→授权落 ACL</text>
     <rect x="1020" y="592" width="195" height="76" rx="9" fill="url(#gViolet)"/>
-    <text x="1117.5" y="620" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">保留 · 记忆</text>
+    <text x="1117.5" y="620" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">保留与归档</text>
     <text x="1117.5" y="640" text-anchor="middle" font-size="10" fill="#ede9fe">归档快照 · 物理清理开关</text>
-    <text x="1117.5" y="656" text-anchor="middle" font-size="10" fill="#ede9fe">记忆过期 · 沉淀审核</text>
+    <text x="1117.5" y="656" text-anchor="middle" font-size="10" fill="#ede9fe">retention 策略驱动清理</text>
     <rect x="1225" y="592" width="195" height="76" rx="9" fill="url(#gViolet)"/>
     <text x="1322.5" y="620" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">治理支撑域</text>
     <text x="1322.5" y="640" text-anchor="middle" font-size="10" fill="#ede9fe">受控词表 · 分类 · Schema</text>
@@ -231,15 +227,15 @@
       <text x="218" y="1002">· 引擎共享回写表：wiki_page* · graph* · ingest_task · parse_task ·</text>
       <text x="236" y="1023">parse_artifact · download_ticket（引擎按共享表结构回写，core 读接口只读）</text>
       <text x="218" y="1044">· 治理表：subject_acl · share · subscription · review_flow · retention_* ·</text>
-      <text x="236" y="1065">memory · notification · controlled · taxonomy · metadata_schema · audit_log</text>
+      <text x="236" y="1065">notification · controlled · taxonomy · metadata_schema · audit_log</text>
       <text x="218" y="1086">· 内容与元数据一律结构化 JSON 承载，不铺列；文件体仅存 bucket / object_key / sha256 引用</text>
-      <text x="218" y="1107">· 库形态：text / wiki / graph；wiki↔graph 互转默认拒绝（200014）</text>
-      <text x="218" y="1128">· 时间一律 epoch ms；错误码分段 100xxx 通用 / 2xxxxx 领域 / 5xxxxx 系统</text>
+      <text x="218" y="1107">· 库形态：text / wiki / graph；wiki↔graph 互转默认拒绝</text>
+      <text x="218" y="1128">· 时间一律 epoch ms；错误码按通用 / 领域 / 系统分段管理</text>
     </g>
     <rect x="956" y="908" width="210" height="238" rx="12" fill="url(#gSlate)"/>
     <text x="1061" y="942" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Redis</text>
     <text x="1061" y="968" text-anchor="middle" font-size="11" fill="#e2e8f0">Celery broker / result</text>
-    <text x="1061" y="988" text-anchor="middle" font-size="11" fill="#e2e8f0">gov 队列消费</text>
+    <text x="1061" y="988" text-anchor="middle" font-size="11" fill="#e2e8f0">worker 队列消费</text>
     <text x="1061" y="1014" text-anchor="middle" font-size="11" fill="#e2e8f0">队列名常量单一来源</text>
     <text x="1061" y="1034" text-anchor="middle" font-size="11" fill="#e2e8f0">ikc-sdk-lib queues</text>
     <rect x="1182" y="908" width="238" height="238" rx="12" fill="url(#gSlate)"/>
@@ -324,6 +320,5 @@
     <rect x="1140" y="1190" width="22" height="14" rx="3" fill="url(#gSlate)"/><text x="1170" y="1202">数据与设施</text>
     <rect x="1290" y="1188" width="26" height="18" rx="4" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 3"/><text x="1324" y="1202">客户端 SDK</text>
     <rect x="1430" y="1188" width="26" height="18" rx="4" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3"/><text x="1464" y="1202">横切治理</text>
-    <text x="1590" y="1202" fill="#64748b">默认端口 19000（IKC_CORE_HTTP_PORT）</text>
   </g>
 </svg>

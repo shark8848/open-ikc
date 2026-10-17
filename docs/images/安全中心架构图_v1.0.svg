@@ -31,8 +31,7 @@
     <!-- ========== L1 调用方层 ========== -->
   <rect x="60" y="70" width="1240" height="92" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-opacity=".45"/>
   <rect x="72" y="89" width="136" height="54" rx="8" fill="url(#gBlue)"/>
-  <text x="140" y="112" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L1</text>
-  <text x="140" y="130" text-anchor="middle" font-size="11.5" fill="#dbeafe">调用方 · 受信参与</text>
+  <text x="140" y="121" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">调用方 · 受信参与</text>
   <g text-anchor="middle">
     <rect x="228" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
     <text x="312" y="112" font-size="13" font-weight="bold" fill="#ffffff">open ikc gateway</text>
@@ -45,7 +44,7 @@
     <text x="668" y="131" font-size="9.5" fill="#dbeafe">业务 ACL 权威</text>
     <rect x="762" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
     <text x="846" y="112" font-size="13" font-weight="bold" fill="#ffffff">知识引擎</text>
-    <text x="846" y="131" font-size="9.5" fill="#dbeafe">wiki · 图谱 · 检索</text>
+    <text x="846" y="131" font-size="9.5" fill="#dbeafe">wiki · 图谱</text>
     <rect x="940" y="89" width="168" height="54" rx="8" fill="url(#gBlue)"/>
     <text x="1024" y="112" font-size="13" font-weight="bold" fill="#ffffff">基础设施服务</text>
     <text x="1024" y="131" font-size="9.5" fill="#dbeafe">日志 · 文件 · AI 网关</text>
@@ -69,8 +68,7 @@
   <!-- ========== L2 服务层 ========== -->
   <rect x="60" y="226" width="1240" height="248" rx="10" fill="#f0fdfa" stroke="#14b8a6" stroke-opacity=".45"/>
   <rect x="72" y="245" width="136" height="54" rx="8" fill="url(#gTeal)"/>
-  <text x="140" y="268" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L2</text>
-  <text x="140" y="286" text-anchor="middle" font-size="11.5" fill="#ccfbf1">服务层</text>
+  <text x="140" y="277" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">服务层</text>
 
   <!-- 控制面 -->
   <rect x="228" y="245" width="384" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
@@ -125,7 +123,7 @@
     <text x="924" y="418">GET/POST /admin/api/session</text>
   </g>
   <g text-anchor="end" font-size="9.5" fill="#5c6b7a">
-    <text x="1276" y="437">高风险项 · 双人复核（R2-b）</text>
+    <text x="1276" y="437">高风险项 · 双人复核</text>
   </g>
 
   <!-- 管理面修正 → 签发侧 -->
@@ -139,8 +137,7 @@
   <!-- ========== L3 信任内核层 ========== -->
   <rect x="60" y="500" width="1240" height="92" rx="10" fill="#eef2ff" stroke="#6366f1" stroke-opacity=".45"/>
   <rect x="72" y="519" width="136" height="54" rx="8" fill="url(#gIndigo)"/>
-  <text x="140" y="542" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L3</text>
-  <text x="140" y="560" text-anchor="middle" font-size="11.5" fill="#e0e7ff">信任内核层</text>
+  <text x="140" y="551" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">信任内核层</text>
   <g text-anchor="middle">
     <rect x="228" y="519" width="168" height="54" rx="8" fill="url(#gIndigo)"/>
     <text x="312" y="542" font-size="13" font-weight="bold" fill="#ffffff">内部 CA · PKI</text>
@@ -168,8 +165,7 @@
   <!-- ========== L4 凭证与契约模型 ========== -->
   <rect x="60" y="614" width="1240" height="92" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-opacity=".45"/>
   <rect x="72" y="633" width="136" height="54" rx="8" fill="url(#gViolet)"/>
-  <text x="140" y="656" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L4</text>
-  <text x="140" y="674" text-anchor="middle" font-size="11.5" fill="#ede9fe">凭证与契约</text>
+  <text x="140" y="665" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">凭证与契约</text>
   <g text-anchor="middle">
     <rect x="228" y="633" width="253" height="54" rx="8" fill="url(#gViolet)"/>
     <text x="354.5" y="656" font-size="13" font-weight="bold" fill="#ffffff">工作负载身份</text>
@@ -191,8 +187,7 @@
   <!-- ========== L5 运行时底座 ========== -->
   <rect x="60" y="728" width="1240" height="92" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-opacity=".45"/>
   <rect x="72" y="747" width="136" height="54" rx="8" fill="url(#gSlate)"/>
-  <text x="140" y="770" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L5</text>
-  <text x="140" y="788" text-anchor="middle" font-size="11.5" fill="#e2e8f0">运行时底座</text>
+  <text x="140" y="779" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">运行时底座</text>
   <g text-anchor="middle">
     <rect x="228" y="747" width="253" height="54" rx="8" fill="url(#gSlate)"/>
     <text x="354.5" y="770" font-size="13" font-weight="bold" fill="#ffffff">Node.js ≥ 24.20</text>

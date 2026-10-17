@@ -219,7 +219,7 @@
   <line x1="686"  y1="828" x2="686"  y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
   <line x1="934"  y1="828" x2="934"  y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
   <line x1="1182" y1="828" x2="1182" y2="904" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="152" y="890" transform="rotate(-90 152 890)" text-anchor="middle" font-size="10.5" fill="#047857">北向 HTTP 调用 · Bearer api_key</text>
+  <text x="182" y="905" transform="rotate(-90 182 905)" text-anchor="middle" font-size="10.5" fill="#047857">北向 HTTP 调用 · Bearer api_key</text>
 
   <!-- 编排层 → LLM 直连（右侧绕行） -->
   <path d="M 1420 488 L 1450 488 L 1450 961 L 1424 961" fill="none" stroke="#e11d48" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowRose)"/>

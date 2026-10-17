@@ -1418,3 +1418,11 @@
 ### 任务：生成 deep-agent 架构总图 v1.0（2026-10-17）
 
 - 依据相邻仓 `/home/sharkyai/deep-agent`（AGENTS.md/README/src 与 tools 源码结构实证）新建 docs/images/deep-agent架构总图_v1.0.svg（1900×1360，沿用架构总图冷色渐变与栅格规范）：六层=调用方（ikc-demo 页面/样板 BFF/CLI，gBlue）→ HTTP 接入层（routes.py /api/agent/* 四面 + 统一响应壳，gTeal）→ Agent 编排层（create_deep_agent 内核/工作模式与审批/韧性中间件/SSE 事件流，gViolet）→ 工具层（deep-agent-tools 独立 wheel 粉底粉虚线框：registry 装配条 + 检索/图谱/Wiki/文档接入/外部 HTTP 五域，gIndigo）→ 外部北向依赖（样板 BFF/gateway Search V2/图谱北向/平台 /api/v1，gEmerald 无描边 + LLM 端点 gRose）→ 本地落盘 data/ 五文件（gSlate）；右侧绿竖条「配置与运行纪律」五模块（配置来源链/校验脱敏/运行期重建/凭证纪律/部署形态）；LLM 直连调用以玫红虚线右侧绕行标注；修正编排层→工具层箭头穿过粉框标题文字的冲突（缩短至框外沿）；XML 校验通过；仅新增配图，无代码改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：deep-agent 架构总图补渲 PNG（2026-10-17 续）
+
+- 新建 docs/images/deep-agent架构总图_v1.0.png（3800×2720）：首轮 cairosvg 直渲中文全变豆腐块（本机仅装 Noto Sans CJK SC，SVG 首选 PingFang SC 被 fontconfig 落到 DejaVu 无 CJK 字形），改按既有惯例「临时副本注入 Noto Sans CJK SC 首位后 2x 渲染」解决；目检发现左侧两条竖排标注（落盘读写 / 北向调用）在 x≈150 重叠，将北向标注移至 x=182；修复过程中 SearchReplace 意外吞掉主标题/版本行与底部三行脚注，经 git diff 发现后已恢复，最终 SVG 相对上提交仅 1 行净改动；二次渲染目检：标题/中文/脚注齐全、无重叠无溢出。
+
+### 任务：生成安全中心架构图 v1.0（2026-10-17）
+
+- 依据相邻仓 `/home/sharkyai/ikc-security-center`（README / 设计方案 §5-§8 / server 与 admin 路由源码实证）新建 docs/images/安全中心架构图_v1.0.svg/png（1680×860，沿用架构总图冷色渐变与右侧竖条规范）：五层=调用方（gateway/平台边界角色、core、知识引擎、基础设施 + 管理员浏览器 gAmber，gBlue）→ 三面服务层（控制面 :18200 mTLS 六端点 / 数据面 :18201 只读 JWKS / 管理面 :18202 GUI 默认关闭，gTeal 白底端点行）→ 信任内核（内部 CA·PKI / Ed25519 密钥环 / 策略矩阵 / 策略修正 / 吊销台账 / 审计，gIndigo）→ 凭证与契约（X.509 工作负载身份 / 委托票据 300-900s / 非升级不变量 / 契约套件，gViolet）→ 运行时底座（Node ≥24.20 零三方依赖 / /app/data 数据卷 / Docker 离线镜像 / openssl，gSlate）；顶部绿色直连总线标注「中心不在调用链上」，管理面虚线箭头「策略修正·签发侧热生效」；右侧绿虚线条「安全纪律与边界」六框（中心不介入调用链/本地验签/逐跳收窄/缺省拒绝/三面隔离/信任边界 Portal 仅深链）；PNG 经临时副本注入 Noto Sans CJK SC 2x 渲染，放大目检无溢出（策略修正标签与虚线间距微调后二次渲染干净）；仅新增配图，跳过 pytest 与 Claude 只读审查。

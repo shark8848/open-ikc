@@ -28,11 +28,7 @@
   </defs>
   <rect x="0" y="0" width="1680" height="860" fill="#f8fafc"/>
 
-  <!-- ========== 标题 ========== -->
-  <text x="680" y="44" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">安全中心架构图</text>
-  <text x="1630" y="44" text-anchor="end" font-size="13" fill="#64748b">ikc-security-center · v1.0</text>
-
-  <!-- ========== L1 调用方层 ========== -->
+    <!-- ========== L1 调用方层 ========== -->
   <rect x="60" y="70" width="1240" height="92" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-opacity=".45"/>
   <rect x="72" y="89" width="136" height="54" rx="8" fill="url(#gBlue)"/>
   <text x="140" y="112" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L1</text>
@@ -63,23 +59,23 @@
   <text x="760" y="174" text-anchor="middle" font-size="11" fill="#047857">服务 ↔ 服务业务调用直连 · 携带委托票据 · 中心不在调用链上</text>
 
   <!-- L1 → L2 三条链路 -->
-  <line x1="420" y1="192" x2="420" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="420" y1="192" x2="420" y2="241" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="430" y="212" font-size="10" fill="#475569">mTLS · 按需签发 / 交换 / 吊销 / 自省</text>
-  <line x1="760" y1="192" x2="760" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="760" y1="192" x2="760" y2="241" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="770" y="212" font-size="10" fill="#475569">取公钥 · 本地验签 · 缓存 ≤300s</text>
-  <line x1="1098" y1="192" x2="1098" y2="222" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
-  <text x="1108" y="212" font-size="10" fill="#475569">仅管理员网络可达</text>
+  <line x1="1202" y1="192" x2="1202" y2="241" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="1212" y="212" font-size="10" fill="#475569">仅管理员网络可达</text>
 
-  <!-- ========== L2 三面服务层 ========== -->
+  <!-- ========== L2 服务层 ========== -->
   <rect x="60" y="226" width="1240" height="248" rx="10" fill="#f0fdfa" stroke="#14b8a6" stroke-opacity=".45"/>
   <rect x="72" y="245" width="136" height="54" rx="8" fill="url(#gTeal)"/>
   <text x="140" y="268" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">L2</text>
-  <text x="140" y="286" text-anchor="middle" font-size="11.5" fill="#ccfbf1">三面服务层</text>
+  <text x="140" y="286" text-anchor="middle" font-size="11.5" fill="#ccfbf1">服务层</text>
 
   <!-- 控制面 -->
   <rect x="228" y="245" width="384" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
   <path d="M228,255 A10,10 0 0 1 238,245 L602,245 A10,10 0 0 1 612,255 L612,289 L228,289 Z" fill="url(#gTeal)"/>
-  <text x="244" y="273" font-size="14" font-weight="bold" fill="#ffffff">控制面 :18200</text>
+  <text x="244" y="273" font-size="14" font-weight="bold" fill="#ffffff">控制面</text>
   <text x="600" y="273" text-anchor="end" font-size="9.5" fill="#ccfbf1">mTLS · 仅受信工作负载可达</text>
   <g font-family="'SF Mono','DejaVu Sans Mono',Consolas,monospace" font-size="10.5" fill="#0f172a">
     <text x="244" y="314">POST /v1/workload/identity</text>
@@ -99,7 +95,7 @@
   <!-- 数据面 -->
   <rect x="624" y="245" width="272" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
   <path d="M624,255 A10,10 0 0 1 634,245 L886,245 A10,10 0 0 1 896,255 L896,289 L624,289 Z" fill="url(#gTeal)"/>
-  <text x="640" y="273" font-size="14" font-weight="bold" fill="#ffffff">数据面 :18201</text>
+  <text x="640" y="273" font-size="14" font-weight="bold" fill="#ffffff">数据面</text>
   <text x="884" y="273" text-anchor="end" font-size="9.5" fill="#ccfbf1">只读 · 免鉴权</text>
   <g font-family="'SF Mono','DejaVu Sans Mono',Consolas,monospace" font-size="10.5" fill="#0f172a">
     <text x="640" y="314">GET /jwks.json</text>
@@ -119,7 +115,7 @@
   <!-- 管理面 -->
   <rect x="908" y="245" width="380" height="212" rx="10" fill="#ffffff" stroke="#0d9488"/>
   <path d="M908,255 A10,10 0 0 1 918,245 L1278,245 A10,10 0 0 1 1288,255 L1288,289 L908,289 Z" fill="url(#gTeal)"/>
-  <text x="924" y="273" font-size="14" font-weight="bold" fill="#ffffff">管理面 :18202</text>
+  <text x="924" y="273" font-size="14" font-weight="bold" fill="#ffffff">管理面</text>
   <text x="1276" y="273" text-anchor="end" font-size="9.5" fill="#ccfbf1">GUI · 人的身份 · 默认关闭</text>
   <g font-family="'SF Mono','DejaVu Sans Mono',Consolas,monospace" font-size="10.5" fill="#0f172a">
     <text x="924" y="314">GET overview · workloads · audit</text>
@@ -133,12 +129,12 @@
   </g>
 
   <!-- 管理面修正 → 签发侧 -->
-  <line x1="1098" y1="470" x2="428" y2="470" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <path d="M1202,461 V470 H432" fill="none" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
   <text x="763" y="462" text-anchor="middle" font-size="10" fill="#0f766e">策略修正 · 生效在签发侧（热生效）</text>
 
   <!-- L2 → L3 依赖 -->
-  <line x1="420" y1="478" x2="420" y2="500" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
-  <line x1="860" y1="478" x2="860" y2="500" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="340" y1="478" x2="340" y2="500" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="760" y1="478" x2="760" y2="500" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
 
   <!-- ========== L3 信任内核层 ========== -->
   <rect x="60" y="500" width="1240" height="92" rx="10" fill="#eef2ff" stroke="#6366f1" stroke-opacity=".45"/>

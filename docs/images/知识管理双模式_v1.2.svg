@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 72 1440 716"
+     font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <!-- 扁平配色（v1.2）：全部纯色无渐变；人工区改靶蓝系与全局冷色协调 -->
+    <!-- 箭头 marker -->
+    <marker id="aMan" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#6366f1"/>
+    </marker>
+    <marker id="aAg" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#14b8a6"/>
+    </marker>
+    <marker id="aInd" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#0369a1"/>
+    </marker>
+    <marker id="aIn" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="aRv" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="aTs" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="aQy" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#f43f5e"/>
+    </marker>
+    <!-- 矢量图标（替代 emoji，PNG 渲染安全） -->
+    <g id="icPerson"><circle cx="7" cy="3.4" r="2.8"/><path d="M1.2,14 C1.2,9.6 3.9,8 7,8 C10.1,8 12.8,9.6 12.8,14 Z"/></g>
+    <g id="icChat"><rect x="0.5" y="1" width="13" height="9" rx="2"/><path d="M4,9.5 L4,13.6 L8.2,9.5 Z"/></g>
+    <g id="icStar"><path d="M7,0 L8.7,5.3 L14,7 L8.7,8.7 L7,14 L5.3,8.7 L0,7 L5.3,5.3 Z"/></g>
+    <g id="icIn"><path d="M6,0 L8,0 L8,5 L10.8,5 L7,9.8 L3.2,5 L6,5 Z"/><path d="M0.5,11.5 L13.5,11.5 L13.5,14 L0.5,14 Z"/></g>
+    <g id="icEdit"><path d="M1,13 L2.3,9.7 L9,3 L11,5 L4.3,11.7 Z"/><path d="M9.8,2.2 L11.8,0.2 L13.8,2.2 L11.8,4.2 Z"/></g>
+    <g id="icSearch" fill="none" stroke-width="2"><circle cx="5.8" cy="5.8" r="4.2"/><path d="M9.2,9.2 L13.4,13.4"/></g>
+    <g id="icChart"><rect x="0.8" y="7.5" width="3.2" height="6.2"/><rect x="5.4" y="3.5" width="3.2" height="10.2"/><rect x="10" y="5.5" width="3.2" height="8.2"/></g>
+    <g id="icFolder"><path d="M0.5,2.5 L5.2,2.5 L6.8,4.5 L13.5,4.5 L13.5,13 L0.5,13 Z"/></g>
+    <g id="icFile"><path d="M2,0.5 L9,0.5 L12.5,4 L12.5,13.5 L2,13.5 Z"/><path d="M9,0.5 L9,4 L12.5,4 Z" opacity=".4"/></g>
+    <g id="icGear"><circle cx="7" cy="7" r="3.6"/><rect x="5.9" y="0.4" width="2.2" height="13.2" rx="1"/><rect x="0.4" y="5.9" width="13.2" height="2.2" rx="1"/><rect x="5.9" y="0.4" width="2.2" height="13.2" rx="1" transform="rotate(45,7,7)"/><rect x="0.4" y="5.9" width="13.2" height="2.2" rx="1" transform="rotate(45,7,7)"/></g>
+    <g id="icBot"><rect x="6.3" y="0.8" width="1.4" height="3.2"/><circle cx="7" cy="1" r="1.3"/><rect x="1.5" y="4" width="11" height="9.5" rx="2.5"/><circle cx="4.8" cy="8.5" r="1.1" fill="#ffffff"/><circle cx="9.2" cy="8.5" r="1.1" fill="#ffffff"/></g>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1440" height="840" fill="#f8fafc" rx="6"/>
+
+  <!-- ══ 左侧：人工驱动流水线模式 ══ -->
+  <rect x="30" y="78" width="420" height="520" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5" stroke-dasharray="6 3"/>
+
+  <!-- 左区标题 -->
+  <rect x="30" y="78" width="420" height="38" rx="10" fill="#4f46e5"/>
+  <text x="240" y="103" text-anchor="middle" font-size="15" font-weight="bold" fill="white">模式一：人工驱动流水线</text>
+
+  <!-- 角色框 -->
+  <rect x="50" y="124" width="160" height="32" rx="6" fill="white" stroke="#a5b4fc" stroke-width="1"/>
+  <use xlink:href="#icPerson" x="84" y="132" fill="#334155"/><text x="139" y="144" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">开发者 / 运维</text>
+  <rect x="230" y="124" width="200" height="32" rx="6" fill="#ffffff" stroke="#c7d2fe" stroke-width="1"/>
+  <text x="330" y="140" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">对接方式</text>
+  <text x="330" y="155" text-anchor="middle" font-size="10" fill="#64748b">SDK · REST API · MCP CLI</text>
+
+  <!-- 流水线步骤 -->
+  <text x="50" y="180" font-size="11" font-weight="bold" fill="#334155">典型工作流（逐接口手动驱动）</text>
+
+  <!-- Step 1 -->
+  <rect x="50" y="190" width="380" height="34" rx="5" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+  <rect x="50" y="190" width="28" height="34" rx="5" fill="#6366f1"/>
+  <text x="64" y="211" text-anchor="middle" font-size="11" font-weight="bold" fill="white">1</text>
+  <text x="88" y="204" font-size="11" font-weight="bold" fill="#334155">建库与配置</text>
+  <text x="88" y="219" font-size="10" fill="#64748b">kb_create → 手填 kbType / metadataSchema / wikiConfig</text>
+
+  <line x1="240" y1="224" x2="240" y2="238" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aMan)"/>
+
+  <!-- Step 2 -->
+  <rect x="50" y="240" width="380" height="34" rx="5" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+  <rect x="50" y="240" width="28" height="34" rx="5" fill="#6366f1"/>
+  <text x="64" y="261" text-anchor="middle" font-size="11" font-weight="bold" fill="white">2</text>
+  <text x="88" y="254" font-size="11" font-weight="bold" fill="#334155">上传与解析</text>
+  <text x="88" y="269" font-size="10" fill="#64748b">手动上传文件 / 填 URL → 选解析策略 → parse_start</text>
+
+  <line x1="240" y1="274" x2="240" y2="288" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aMan)"/>
+
+  <!-- Step 3 -->
+  <rect x="50" y="290" width="380" height="34" rx="5" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+  <rect x="50" y="290" width="28" height="34" rx="5" fill="#6366f1"/>
+  <text x="64" y="311" text-anchor="middle" font-size="11" font-weight="bold" fill="white">3</text>
+  <text x="88" y="304" font-size="11" font-weight="bold" fill="#334155">检索验证</text>
+  <text x="88" y="319" font-size="10" fill="#64748b">人工写 query → universal-search → 检查命中质量</text>
+
+  <line x1="240" y1="324" x2="240" y2="338" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aMan)"/>
+
+  <!-- Step 4 -->
+  <rect x="50" y="340" width="380" height="34" rx="5" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+  <rect x="50" y="340" width="28" height="34" rx="5" fill="#6366f1"/>
+  <text x="64" y="361" text-anchor="middle" font-size="11" font-weight="bold" fill="white">4</text>
+  <text x="88" y="354" font-size="11" font-weight="bold" fill="#334155">质量问题发现</text>
+  <text x="88" y="369" font-size="10" fill="#64748b">人工巡检 · 听用户反馈 · 发现过期/冲突/缺失（滞后）</text>
+
+  <line x1="240" y1="374" x2="240" y2="388" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aMan)"/>
+
+  <!-- Step 5 -->
+  <rect x="50" y="390" width="380" height="34" rx="5" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+  <rect x="50" y="390" width="28" height="34" rx="5" fill="#6366f1"/>
+  <text x="64" y="411" text-anchor="middle" font-size="11" font-weight="bold" fill="white">5</text>
+  <text x="88" y="404" font-size="11" font-weight="bold" fill="#334155">手动修订</text>
+  <text x="88" y="419" font-size="10" fill="#64748b">人工修改 wiki/graph API · 重新触发 parse · 逐项确认</text>
+
+  <!-- 痛点说明 -->
+  <rect x="50" y="440" width="380" height="75" rx="6" fill="#fff1f2" stroke="#fda4af" stroke-width="1"/>
+  <text x="240" y="460" text-anchor="middle" font-size="11" font-weight="bold" fill="#be123c">⚠ 流水线模式局限</text>
+  <text x="60" y="478" font-size="10" fill="#9f1239">• 每步需人工判断参数，技术门槛高，业务人员难以上手</text>
+  <text x="60" y="493" font-size="10" fill="#9f1239">• 质量问题靠人工巡检，发现滞后，修复周期长</text>
+  <text x="60" y="508" font-size="10" fill="#9f1239">• 修订链路人工驱动，无法支撑规模化知识运营</text>
+
+  <!-- ══ 右侧：Deep Agent 助手辅助模式 ══ -->
+  <rect x="480" y="78" width="930" height="520" rx="10" fill="#f0fdfa" stroke="#5eead4" stroke-width="2"/>
+
+  <!-- 右区标题 -->
+  <rect x="480" y="78" width="930" height="38" rx="10" fill="#0f766e"/>
+  <text x="945" y="103" text-anchor="middle" font-size="15" font-weight="bold" fill="white">模式二：Deep Agent 助手辅助 · 智能知识治理</text>
+
+  <!-- 角色 + 交互入口 -->
+  <rect x="500" y="124" width="200" height="34" rx="6" fill="white" stroke="#5eead4" stroke-width="1.5"/>
+  <use xlink:href="#icPerson" x="528" y="132" fill="#0f766e"/><text x="608" y="144" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f766e">知识管理员 / 业务用户</text>
+
+  <!-- 对话入口 -->
+  <rect x="720" y="124" width="180" height="34" rx="6" fill="#ccfbf1" stroke="#14b8a6" stroke-width="1.5"/>
+  <use xlink:href="#icChat" x="766" y="136" fill="#0f766e"/><text x="817" y="148" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f766e">自然语言对话</text>
+
+  <!-- Agent 编排说明 -->
+  <rect x="920" y="124" width="470" height="34" rx="6" fill="white" stroke="#99f6e4" stroke-width="1"/>
+  <use xlink:href="#icStar" x="1096" y="128" fill="#0f766e"/><text x="1162" y="140" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f766e">Deep Agent 编排</text>
+  <text x="1155" y="155" text-anchor="middle" font-size="10" fill="#0d9488">意图理解 → 任务规划 → 工具选择 → 执行 → 反思 → 人工确认闸门（写操作）</text>
+
+  <!-- 四种能力大区块 -->
+  <text x="500" y="182" font-size="11" font-weight="bold" fill="#0f766e">助手辅助知识管理四大能力</text>
+
+  <!-- 能力1：知识摄入 -->
+  <rect x="500" y="190" width="210" height="155" rx="8" fill="white" stroke="#3b82f6" stroke-width="1.5"/>
+  <rect x="500" y="190" width="210" height="30" rx="8" fill="#2563eb"/>
+  <use xlink:href="#icIn" x="555" y="199" fill="#ffffff"/><text x="612" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="white">智能知识摄入</text>
+  <text x="510" y="236" font-size="10" font-weight="bold" fill="#1d4ed8">Agent 自动完成：</text>
+  <text x="510" y="252" font-size="10" fill="#334155">• 理解上传内容语义</text>
+  <text x="510" y="267" font-size="10" fill="#334155">• 推荐目标知识库</text>
+  <text x="510" y="282" font-size="10" fill="#334155">• 生成标签与元数据</text>
+  <text x="510" y="297" font-size="10" fill="#334155">• document_upload</text>
+  <text x="510" y="312" font-size="10" fill="#334155">• document_register</text>
+  <text x="510" y="327" font-size="10" fill="#334155">• wiki_build（自动建页）</text>
+  <text x="510" y="342" font-size="9" fill="#3b82f6">→ 人工审批闸门后入库</text>
+
+  <!-- 能力2：知识修订 -->
+  <rect x="728" y="190" width="210" height="155" rx="8" fill="white" stroke="#f59e0b" stroke-width="1.5"/>
+  <rect x="728" y="190" width="210" height="30" rx="8" fill="#d97706"/>
+  <use xlink:href="#icEdit" x="796" y="199" fill="#ffffff"/><text x="840" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="white">知识修订</text>
+  <text x="738" y="236" font-size="10" font-weight="bold" fill="#b45309">Agent 主动发现并修复：</text>
+  <text x="738" y="252" font-size="10" fill="#334155">• Wiki 页面过期内容标注</text>
+  <text x="738" y="267" font-size="10" fill="#334155">• wiki_write 修订提案</text>
+  <text x="738" y="282" font-size="10" fill="#334155">• graph_entity_patch</text>
+  <text x="738" y="297" font-size="10" fill="#334155">• graph_corrections_apply</text>
+  <text x="738" y="312" font-size="10" fill="#334155">• graph_revision_revert</text>
+  <text x="738" y="327" font-size="10" fill="#334155">• 多文档冲突检测合并</text>
+  <text x="738" y="342" font-size="9" fill="#d97706">→ 人工确认闸门后写操作生效</text>
+
+  <!-- 能力3：知识测试 -->
+  <rect x="956" y="190" width="210" height="155" rx="8" fill="white" stroke="#8b5cf6" stroke-width="1.5"/>
+  <rect x="956" y="190" width="210" height="30" rx="8" fill="#7c3aed"/>
+  <use xlink:href="#icSearch" x="1024" y="199" stroke="#ffffff"/><text x="1068" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="white">知识测试</text>
+  <text x="966" y="236" font-size="10" font-weight="bold" fill="#5b21b6">Agent 以提问验证知识：</text>
+  <text x="966" y="252" font-size="10" fill="#334155">• universal_search 覆盖测试</text>
+  <text x="966" y="267" font-size="10" fill="#334155">• graph_search 关系验证</text>
+  <text x="966" y="282" font-size="10" fill="#334155">• graph_neighbors 多跳检测</text>
+  <text x="966" y="297" font-size="10" fill="#334155">• wiki_page 内容核查</text>
+  <text x="966" y="312" font-size="10" fill="#334155">• 检索零命中 → 知识空白发现</text>
+  <text x="966" y="327" font-size="10" fill="#334155">• 生成测试用例并记录差距</text>
+  <text x="966" y="342" font-size="9" fill="#7c3aed">→ 输出知识覆盖率报告</text>
+
+  <!-- 能力4：质量分析 -->
+  <rect x="1184" y="190" width="210" height="155" rx="8" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
+  <rect x="1184" y="190" width="210" height="30" rx="8" fill="#e11d48"/>
+  <use xlink:href="#icChart" x="1252" y="199" fill="#ffffff"/><text x="1296" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="white">质量分析</text>
+  <text x="1194" y="236" font-size="10" font-weight="bold" fill="#be123c">Agent 综合分析库质量：</text>
+  <text x="1194" y="252" font-size="10" fill="#334155">• graph_stat schema_coverage</text>
+  <text x="1194" y="267" font-size="10" fill="#334155">• wiki_stat 页面完整度</text>
+  <text x="1194" y="282" font-size="10" fill="#334155">• index_status 索引健康度</text>
+  <text x="1194" y="297" font-size="10" fill="#334155">• 知识新鲜度与有效期检测</text>
+  <text x="1194" y="312" font-size="10" fill="#334155">• 冲突/重复实体识别</text>
+  <text x="1194" y="327" font-size="10" fill="#334155">• 生成改善建议优先级</text>
+  <text x="1194" y="342" font-size="9" fill="#e11d48">→ 输出知识质量评分报告</text>
+
+  <!-- Agent 对话示例框 -->
+  <rect x="500" y="360" width="420" height="222" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1"/>
+  <text x="710" y="382" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f766e">对话示例：助手辅助知识修订</text>
+
+  <!-- 对话气泡 -->
+  <rect x="514" y="392" width="240" height="28" rx="10" fill="#ccfbf1"/>
+  <use xlink:href="#icPerson" x="520" y="399" fill="#134e4a"/><text x="538" y="410" font-size="10" fill="#134e4a">"客服知识库有答案说退货政策是7天，"</text>
+  <rect x="514" y="424" width="200" height="28" rx="10" fill="#ccfbf1"/>
+  <text x="522" y="442" font-size="10" fill="#134e4a">   但最新规定是15天了，能帮我修正吗？"</text>
+
+  <rect x="560" y="460" width="344" height="48" rx="10" fill="white" stroke="#5eead4" stroke-width="1"/>
+  <use xlink:href="#icBot" x="566" y="467" fill="#0f766e"/><text x="586" y="478" font-size="10" fill="#0f766e">Agent：检索确认 → wiki_page 找到过时页面</text>
+  <text x="568" y="494" font-size="10" fill="#0f766e">      → 生成修订提案（diff）→ 等待人工审批</text>
+
+  <rect x="514" y="516" width="320" height="28" rx="10" fill="#ccfbf1"/>
+  <use xlink:href="#icPerson" x="520" y="523" fill="#134e4a"/><text x="538" y="534" font-size="10" fill="#134e4a">"确认修订，并检查还有哪些相关页面需要更新"</text>
+
+  <rect x="560" y="552" width="344" height="28" rx="10" fill="white" stroke="#5eead4" stroke-width="1"/>
+  <use xlink:href="#icBot" x="566" y="559" fill="#0f766e"/><text x="586" y="570" font-size="10" fill="#0f766e">wiki_write 执行修订 · graph_search 找出关联节点</text>
+
+  <!-- Agent 操作链路说明（右侧） -->
+  <rect x="950" y="360" width="444" height="222" rx="8" fill="white" stroke="#99f6e4" stroke-width="1"/>
+  <text x="1172" y="382" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f766e">助手辅助操作链路（相对流水线的核心差异）</text>
+
+  <text x="962" y="402" font-size="10" font-weight="bold" fill="#0d9488">智能决策代替人工判断</text>
+  <text x="962" y="418" font-size="10" fill="#334155">流水线：人工选 API 参数 → Agent：自然语言意图 → 自动映射</text>
+
+  <line x1="962" y1="428" x2="1380" y2="428" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="962" y="444" font-size="10" font-weight="bold" fill="#0d9488">主动发现代替人工巡检</text>
+  <text x="962" y="460" font-size="10" fill="#334155">流水线：靠用户反馈 → Agent：定期测试 → 知识空白/冲突预警</text>
+
+  <line x1="962" y1="470" x2="1380" y2="470" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="962" y="486" font-size="10" font-weight="bold" fill="#0d9488">安全审批闸门保障操作可控</text>
+  <text x="962" y="502" font-size="10" fill="#334155">写操作（document_register / wiki_write / graph_*）触发 interrupt_on</text>
+  <text x="962" y="518" font-size="10" fill="#334155">人工确认后才真正执行，权限模型与流水线完全一致</text>
+
+  <line x1="962" y1="528" x2="1380" y2="528" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="962" y="544" font-size="10" font-weight="bold" fill="#0d9488">多工具联动闭环</text>
+  <text x="962" y="560" font-size="10" fill="#334155">单次对话可串联：search验证 → wiki读取 → 生成修订提案</text>
+  <text x="962" y="576" font-size="10" fill="#334155">→ 人工审批 → 执行修订 → 再次检索确认生效（完整闭环）</text>
+
+  <!-- ══ 中间对比箭头标注 ══ -->
+  <rect x="448" y="290" width="36" height="36" rx="18" fill="#0284c7"/>
+  <text x="466" y="313" text-anchor="middle" font-size="16" fill="white">VS</text>
+
+  <!-- ══ 底部：共享平台底座 ══ -->
+  <rect x="30" y="610" width="1380" height="210" rx="10" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="2"/>
+  <!-- 底座标题 -->
+  <rect x="30" y="610" width="1380" height="34" rx="10" fill="#0284c7"/>
+  <text x="720" y="632" text-anchor="middle" font-size="13" font-weight="bold" fill="white">共享平台底座 —— 开放平台四类能力 API（两种模式最终调用同一套接口，权限模型完全一致）</text>
+
+  <!-- 底座组件：四个能力域 -->
+  <!-- 知识库 -->
+  <rect x="50" y="654" width="316" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <use xlink:href="#icFolder" x="180" y="661" fill="#0369a1"/><text x="214" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">知识库</text>
+  <text x="60" y="690" font-size="10" fill="#475569">/knowledge-bases/create · update · query</text>
+  <text x="60" y="706" font-size="10" fill="#475569">/wiki/tree · page · search · stat · export</text>
+  <text x="60" y="722" font-size="10" fill="#475569">/graph/stat · nodes · edges · neighbors · export</text>
+
+  <!-- 文档 -->
+  <rect x="384" y="654" width="290" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <use xlink:href="#icFile" x="505" y="661" fill="#0369a1"/><text x="534" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">文档</text>
+  <text x="394" y="690" font-size="10" fill="#475569">/knowledge-documents/ingest</text>
+  <text x="394" y="706" font-size="10" fill="#475569">/knowledge-documents/ingest-and-parse</text>
+  <text x="394" y="722" font-size="10" fill="#475569">/{doc_id} 查询文档详情</text>
+
+  <!-- 解析 -->
+  <rect x="692" y="654" width="290" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <use xlink:href="#icGear" x="782" y="661" fill="#0369a1"/><text x="844" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">解析（知识加工）</text>
+  <text x="702" y="690" font-size="10" fill="#475569">/knowledge-documents/parse</text>
+  <text x="702" y="706" font-size="10" fill="#475569">/parse-direct（免库一次性解析）</text>
+  <text x="702" y="722" font-size="10" fill="#475569">/parse-result/query · download</text>
+
+  <!-- 检索 -->
+  <rect x="1000" y="654" width="394" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <use xlink:href="#icSearch" x="1173" y="661" stroke="#0369a1"/><text x="1202" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">检索</text>
+  <text x="1010" y="690" font-size="10" fill="#475569">/knowledge-search/universal-search（全文·向量·混合）</text>
+  <text x="1010" y="706" font-size="10" fill="#475569">/knowledge-search/deep-search（Agentic 多轮规划）</text>
+  <text x="1010" y="722" font-size="10" fill="#475569">鉴权逐库授权 · 权限不降级 · 带引用溯源</text>
+
+  <!-- 接入方式标注 -->
+  <rect x="50" y="746" width="1340" height="32" rx="5" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="720" y="766" text-anchor="middle" font-size="11" fill="#075985">
+    接入方式：REST API（人工/程序调用） ｜ Python SDK / MCP Tool（流水线脚本） ｜ MCP Server（Agent 工具层直连） ｜ Deep Agent 工具域（retrieval / documents / wiki.read+write / graph.read+write / external）
+  </text>
+
+  <!-- 底座向上箭头（两种模式各自调用平台） -->
+  <line x1="240" y1="530" x2="240" y2="608" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aInd)"/>
+  <line x1="945" y1="590" x2="945" y2="608" stroke="#14b8a6" stroke-width="2" marker-end="url(#aInd)"/>
+
+  <!-- 模式标注箭头文字 -->
+  <text x="240" y="566" text-anchor="middle" font-size="9" fill="#4f46e5">人工逐接口调用</text>
+  <text x="945" y="599" text-anchor="middle" font-size="9" fill="#0d9488">Agent 智能工具链编排</text>
+
+  <!-- 右侧竖条标注：助手辅助的核心价值 -->
+  <rect x="1395" y="78" width="16" height="520" fill="#0f766e" opacity="0.5" rx="3"/>
+  <text x="1404" y="340" text-anchor="middle" font-size="9" fill="white" font-weight="bold" transform="rotate(-90,1404,340)">助手辅助·智能治理</text>
+
+  <!-- 左侧竖条 -->
+  <rect x="31" y="78" width="16" height="520" fill="#4f46e5" opacity="0.4" rx="3"/>
+
+
+
+</svg>

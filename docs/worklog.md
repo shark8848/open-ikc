@@ -1488,3 +1488,8 @@
 - 问题：v1.0 PNG 中 emoji 图标（👤💬🧠📥✏️📊️📄️🔎）全部渲染为豆腐块（cairosvg + Noto Sans CJK SC 无 emoji 字形）；右侧竖条「助手辅助·智能治理」用 writing-mode="tb"，cairosvg 不支持导致横排超出画布被裁切。
 - 修复（新建 v1.1，v1.0 保留）：在 defs 手绘 12 个纯矢量图标（icPerson/icChat/icStar/icIn/icEdit/icSearch/icChart/icFolder/icFile/icGear/icBot，仅用 path/rect/circle，颜色经 use 的 fill/stroke 继承），逐处替换 emoji 文本并重排居中；竖排文字改 transform="rotate(-90)"；⚠ 为 CJK 字体可渲染字符保留。
 - 验证：XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染 v1.1.png（2880×1432），目检无豆腐块、图标与标题对齐、竖条文字纵向完整。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：知识管理双模式图 v1.2 扁平化与左侧配色协调（2026-10-18 续）
+
+- 按用户反馈在 v1.1 基础上出 v1.2（v1.1 保留）：①去除全部立体效果——删除 defs 内 9 个 linearGradient，所有 url(#gXxx) 填充改扁平纯色；②减少图层——各标题条原先「圆角矩形+方角补条」双矩形假立体结构合并为单矩形（左右区标题、四能力卡头、平台底座标题共 7 处），对话入口框 opacity 叠色改直接浅青色；③左侧人工区由灰蓝（#64748b/#f1f5f9）改靛蓝系（标题 #4f46e5、底 #eef2ff、描边 #a5b4fc/#c7d2fe、序号徽章与连线 #6366f1/#818cf8、marker aMan 同步），与全图冷色调（青绿/蓝/紫/天蓝）协调。
+- 验证：grep url(#g 与 linearGradient 零残留；XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染 v1.2.png（2880×1432），目检扁平无立体、图标正常、无溢出重叠。仅配图改动，跳过 pytest 与 Claude 只读审查。

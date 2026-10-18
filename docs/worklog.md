@@ -1482,3 +1482,9 @@
 - 基于 docs/images/智能知识库自动与人工结合评测流程图_v1.0.svg 新建 v1.1：删除顶部主标题「自动评测 × 人工结合 · 评测执行流程」与其下描述行、删除底部「注：自动评测全量高频运行…」脚注；内容坐标不动，viewBox 由 `0 0 1380 780` 改 `0 46 1380 720` 裁掉顶部标题留白（上下各留约 44px）。v1.0 保留不动。
 - XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染 v1.1.png（2760×1440），目检无豆腐块、无溢出、无重叠，右侧竖排「回哺迭代·形成闭环」完整。仅配图改动，无代码改动，跳过 pytest 与 Claude 只读审查。
 - 续写（同日）：按用户要求把底部「共享平台底座」蓝色框调淡为天蓝——`gPlatform` 渐变 `#6366f1→#4338ca` 改 `#38bdf8→#0284c7`（标题条白字仍可读，同时影响中间 VS 圆徽为同色系），底座容器 `#eef2ff/#a5b4fc` → `#f0f9ff/#7dd3fc`，四张能力卡描边 `#c7d2fe` → `#bae6fd`、卡标题 `#4338ca` → `#0369a1`，接入方式条 `#e0e7ff/#a5b4fc/#3730a3` → `#e0f2fe/#7dd3fc/#075985`，箭头 marker `aInd` `#4338ca` → `#0369a1`，注释「靛蓝」改「天蓝」；grep 确认图内无 6366f1/4f46e5/818cf8/eef2ff/3730a3 残留。XML 校验 OK，2x 重渲染同名 PNG，目检与右侧青绿模式区色系更协调、白字对比可读。
+
+### 任务：知识管理双模式图 v1.1 修复图标渲染问题（2026-18）
+
+- 问题：v1.0 PNG 中 emoji 图标（👤💬🧠📥✏️📊️📄️🔎）全部渲染为豆腐块（cairosvg + Noto Sans CJK SC 无 emoji 字形）；右侧竖条「助手辅助·智能治理」用 writing-mode="tb"，cairosvg 不支持导致横排超出画布被裁切。
+- 修复（新建 v1.1，v1.0 保留）：在 defs 手绘 12 个纯矢量图标（icPerson/icChat/icStar/icIn/icEdit/icSearch/icChart/icFolder/icFile/icGear/icBot，仅用 path/rect/circle，颜色经 use 的 fill/stroke 继承），逐处替换 emoji 文本并重排居中；竖排文字改 transform="rotate(-90)"；⚠ 为 CJK 字体可渲染字符保留。
+- 验证：XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染 v1.1.png（2880×1432），目检无豆腐块、图标与标题对齐、竖条文字纵向完整。仅配图改动，跳过 pytest 与 Claude 只读审查。

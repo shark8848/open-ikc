@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 660" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/>
+    </marker>
+  </defs>
+
+  <rect width="1380" height="660" fill="#ffffff"/>
+
+
+  <!-- ========== 相位分组底衬 ========== -->
+  <rect x="380" y="32" width="620" height="86" rx="12" fill="#f0fdfa" stroke="#14b8a6" stroke-width="1" stroke-opacity=".4"/>
+  <text x="382" y="26" font-size="12.5" fill="#0f766e">理解相位（意图与权限识别 · 本体映射与问题分解）</text>
+  <rect x="62" y="184" width="1256" height="152" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1" stroke-opacity=".4"/>
+  <text x="1314" y="176" text-anchor="end" font-size="12.5" fill="#4338ca">并行检索相位（扇出五路召回 · 各自可降级不阻断）</text>
+  <rect x="345" y="434" width="690" height="86" rx="12" fill="#fdf4ff" stroke="#8b5cf6" stroke-width="1" stroke-opacity=".4"/>
+  <text x="1033" y="428" text-anchor="end" font-size="12.5" fill="#6d28d9">融合与生成相位（汇聚 · 重排 · 答案）</text>
+
+  <!-- ========== 理解相位：用户问题 → 意图与权限识别 → 本体映射与问题分解（线性串行） ========== -->
+  <rect x="80" y="40" width="200" height="68" rx="12" fill="#475569"/>
+  <text x="180" y="70" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">用户问题</text>
+  <text x="180" y="92" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">自然语言提问进入链路</text>
+
+  <rect x="400" y="40" width="200" height="68" rx="12" fill="#0f766e"/>
+  <text x="500" y="70" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">意图与权限识别</text>
+  <text x="500" y="92" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">判定意图 · 圈定可见范围</text>
+
+  <rect x="780" y="40" width="200" height="68" rx="12" fill="#0f766e"/>
+  <text x="880" y="70" text-anchor="middle" font-size="19" font-weight="bold" fill="#ffffff">本体映射与问题分解</text>
+  <text x="880" y="92" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">映射本体 · 拆解为子检索任务</text>
+
+  <!-- 串行箭头（左 → 右）：先识别意图与权限，再本体映射与分解 -->
+  <line x1="280" y1="74" x2="393" y2="74" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="600" y1="74" x2="773" y2="74" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- 本体分解 → 馈入扇出总线正中（x=690，五路几何中心），避免误读为只指向某一路 -->
+  <polyline points="880,108 880,145 690,145 690,188" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="785" y="138" text-anchor="middle" font-size="12" fill="#64748b">分解为子任务 · 居中扇出五路</text>
+  <text x="420" y="168" text-anchor="middle" font-size="12.5" fill="#0f766e">权限过滤贯穿所有检索路 · 越权结果不进入召回</text>
+
+  <!-- ========== 扇出总线（以正中 x=690 为馈入点，左右对称覆盖五路） ========== -->
+  <line x1="150" y1="176" x2="1230" y2="176" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="150" y1="176" x2="150" y2="188" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="415" y1="176" x2="415" y2="188" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="965" y1="176" x2="965" y2="188" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="1230" y1="176" x2="1230" y2="188" stroke="#1d4ed8" stroke-width="2"/>
+  <circle cx="690" cy="176" r="4.5" fill="#1d4ed8"/>
+  <text x="150" y="168" text-anchor="middle" font-size="11.5" fill="#1d4ed8">扇出</text>
+
+  <!-- ========== 并行检索节点（五路） ========== -->
+  <g>
+    <rect x="75" y="192" width="150" height="112" rx="12" fill="#2563eb"/>
+    <text x="150" y="240" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">LLM Wiki</text>
+    <text x="150" y="264" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">编译型百科答案</text>
+    <text x="150" y="282" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">热点知识直达</text>
+
+    <rect x="340" y="192" width="150" height="112" rx="12" fill="#2563eb"/>
+    <text x="415" y="234" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">全文与向量检索</text>
+    <text x="415" y="258" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">关键词 + 语义近似</text>
+    <text x="415" y="276" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">分块级证据召回</text>
+
+    <rect x="615" y="192" width="150" height="112" rx="12" fill="#2563eb"/>
+    <text x="690" y="240" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">知识图谱</text>
+    <text x="690" y="264" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">实体关系多跳推理</text>
+    <text x="690" y="282" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">结构化关联召回</text>
+
+    <rect x="890" y="192" width="150" height="112" rx="12" fill="#2563eb"/>
+    <text x="965" y="240" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">SQL 查询</text>
+    <text x="965" y="264" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">结构化数据统计</text>
+    <text x="965" y="282" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">精确数值与聚合</text>
+
+    <rect x="1155" y="192" width="150" height="112" rx="12" fill="#2563eb"/>
+    <text x="1230" y="240" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">业务 API</text>
+    <text x="1230" y="264" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">实时业务状态</text>
+    <text x="1230" y="282" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".85">工单 / 订单等事实</text>
+  </g>
+
+  <!-- ========== 汇聚总线 ========== -->
+  <line x1="150" y1="304" x2="150" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="415" y1="304" x2="415" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="690" y1="304" x2="690" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="965" y1="304" x2="965" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="1230" y1="304" x2="1230" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="150" y1="328" x2="676" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="704" y1="328" x2="1230" y2="328" stroke="#1d4ed8" stroke-width="2"/>
+  <circle cx="690" cy="328" r="4" fill="#1d4ed8"/>
+  <text x="770" y="322" font-size="11.5" fill="#1d4ed8">汇聚</text>
+  <line x1="690" y1="328" x2="690" y2="440" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <text x="702" y="390" font-size="12" fill="#64748b">五路召回结果统一进入融合</text>
+
+  <!-- ========== 融合与生成节点 ========== -->
+  <rect x="360" y="442" width="280" height="68" rx="12" fill="#6d28d9"/>
+  <text x="500" y="472" text-anchor="middle" font-size="19" font-weight="bold" fill="#ffffff">证据重排序与一致性检查</text>
+  <text x="500" y="494" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">相关度重排 · 冲突证据消解</text>
+
+  <rect x="740" y="442" width="280" height="68" rx="12" fill="#e11d48"/>
+  <text x="880" y="472" text-anchor="middle" font-size="19" font-weight="bold" fill="#ffffff">生成带来源的答案</text>
+  <text x="880" y="494" text-anchor="middle" font-size="11.5" fill="#ffffff" opacity=".85">引用溯源 · 置信度与缺口标注</text>
+
+  <line x1="640" y1="476" x2="733" y2="476" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ========== 图例与脚注 ========== -->
+  <g font-size="12.5">
+    <rect x="60" y="580" width="26" height="16" rx="4" fill="#0f766e"/>
+    <text x="94" y="593" fill="#475569">理解相位</text>
+    <rect x="185" y="580" width="26" height="16" rx="4" fill="#2563eb"/>
+    <text x="219" y="593" fill="#475569">并行检索路</text>
+    <rect x="325" y="580" width="26" height="16" rx="4" fill="#6d28d9"/>
+    <text x="359" y="593" fill="#475569">融合重排</text>
+    <rect x="450" y="580" width="26" height="16" rx="4" fill="#e11d48"/>
+    <text x="484" y="593" fill="#475569">答案生成</text>
+    <line x1="585" y1="588" x2="625" y2="588" stroke="#1d4ed8" stroke-width="2"/>
+    <circle cx="605" cy="588" r="4" fill="#1d4ed8"/>
+    <text x="633" y="593" fill="#475569">扇出 / 汇聚（并行分支）</text>
+  </g>
+</svg>

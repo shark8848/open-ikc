@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 46 1380 720" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/></linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/></linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+    <marker id="arrBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/></marker>
+    <marker id="arrDash" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker>
+  </defs>
+
+  <rect width="1380" height="780" fill="#ffffff"/>
+
+  <!-- ========== ① 评测准备 ========== -->
+  <rect x="40" y="90" width="1300" height="76" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1" stroke-opacity=".4"/>
+  <text x="58" y="146" font-size="14" font-weight="bold" fill="#475569">① 评测准备</text>
+  <g font-size="13.5" fill="#334155">
+    <rect x="280" y="122" width="290" height="40" rx="8" fill="#ffffff" stroke="#64748b" stroke-opacity=".5"/><text x="425" y="147" text-anchor="middle">构建评测集 Golden Set</text>
+    <rect x="600" y="122" width="280" height="40" rx="8" fill="#ffffff" stroke="#64748b" stroke-opacity=".5"/><text x="740" y="147" text-anchor="middle">定义四维指标与阈值</text>
+    <rect x="910" y="122" width="410" height="40" rx="8" fill="#ffffff" stroke="#64748b" stroke-opacity=".5"/><text x="1115" y="147" text-anchor="middle">分层抽样 · 高频 / 长尾 / 高风险 / 边界</text>
+  </g>
+  <line x1="570" y1="142" x2="595" y2="142" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="880" y1="142" x2="905" y2="142" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ========== 泳道底衬 ========== -->
+  <rect x="40" y="182" width="636" height="366" rx="12" fill="#eff6ff"/>
+  <rect x="704" y="182" width="636" height="366" rx="12" fill="#f5f3ff"/>
+  <rect x="40" y="182" width="636" height="42" rx="12" fill="url(#gBlue)"/><rect x="40" y="206" width="636" height="18" fill="url(#gBlue)"/>
+  <text x="58" y="209" font-size="16" font-weight="bold" fill="#ffffff">② 自动评测 · 全量 · 秒级 · 低成本</text>
+  <rect x="704" y="182" width="636" height="42" rx="12" fill="url(#gViolet)"/><rect x="704" y="206" width="636" height="18" fill="url(#gViolet)"/>
+  <text x="722" y="209" font-size="16" font-weight="bold" fill="#ffffff">③ 人工评测 · 抽样 · 精准 · 高可信</text>
+
+  <!-- ========== 自动评测步骤 ========== -->
+  <g font-size="14" fill="#1e293b">
+    <rect x="64" y="240" width="588" height="54" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-opacity=".55"/><text x="358" y="272" text-anchor="middle">离线批量回归 · CI 触发 · 全量执行</text>
+    <rect x="64" y="312" width="588" height="54" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-opacity=".55"/><text x="358" y="344" text-anchor="middle">规则自动判分 · 权限 / 引用定位 / SQL 精确匹配</text>
+    <rect x="64" y="384" width="588" height="54" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-opacity=".55"/><text x="358" y="416" text-anchor="middle">LLM-as-Judge 模型判分 · 正确性 / 完整性 / 一致性</text>
+    <rect x="64" y="456" width="588" height="54" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-opacity=".55"/><text x="358" y="488" text-anchor="middle">指标聚合与基线对比 · 生成评测报告</text>
+  </g>
+  <line x1="358" y1="294" x2="358" y2="308" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <line x1="358" y1="366" x2="358" y2="380" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <line x1="358" y1="438" x2="358" y2="452" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrBlue)"/>
+
+  <!-- ========== 人工评测步骤 ========== -->
+  <g font-size="14" fill="#1e293b">
+    <rect x="728" y="240" width="588" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-opacity=".55"/><text x="1022" y="272" text-anchor="middle">双人独立标注 ＋ 仲裁 · 一致性 Kappa 校验</text>
+    <rect x="728" y="384" width="588" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-opacity=".55"/><text x="1022" y="416" text-anchor="middle">抽样复核 · 校准 LLM-as-Judge 判分</text>
+    <rect x="728" y="456" width="588" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-opacity=".55"/><text x="1022" y="488" text-anchor="middle">疑难 / 高风险人工裁决 · 低置信样本</text>
+  </g>
+  <line x1="1022" y1="294" x2="1022" y2="380" stroke="#6d28d9" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="1022" y1="438" x2="1022" y2="452" stroke="#6d28d9" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ========== 双向咬合（自动 ↔ 人工） ========== -->
+  <line x1="652" y1="404" x2="722" y2="404" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <text x="687" y="399" text-anchor="middle" font-size="10.5" fill="#1d4ed8">判分→抽检</text>
+  <line x1="722" y1="426" x2="658" y2="426" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arrDash)"/>
+  <text x="687" y="440" text-anchor="middle" font-size="10.5" fill="#64748b">校准回哺</text>
+  <line x1="652" y1="484" x2="722" y2="484" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <text x="687" y="479" text-anchor="middle" font-size="10.5" fill="#1d4ed8">低置信→裁决</text>
+
+  <!-- ========== 汇聚总线 → 结果融合 ========== -->
+  <line x1="358" y1="510" x2="358" y2="560" stroke="#475569" stroke-width="2"/>
+  <line x1="1022" y1="510" x2="1022" y2="560" stroke="#475569" stroke-width="2"/>
+  <line x1="220" y1="560" x2="1022" y2="560" stroke="#475569" stroke-width="2"/>
+  <circle cx="358" cy="560" r="4" fill="#475569"/><circle cx="1022" cy="560" r="4" fill="#475569"/>
+  <text x="690" y="553" text-anchor="middle" font-size="11" fill="#64748b">自动 + 人工结果汇聚</text>
+  <line x1="220" y1="560" x2="220" y2="606" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ========== ④ 融合 · 门禁 · 回哺闭环 ========== -->
+  <rect x="40" y="572" width="1300" height="150" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1" stroke-opacity=".4"/>
+  <text x="58" y="596" font-size="14" font-weight="bold" fill="#4338ca">④ 结果融合 · 质量门禁 · 回哺闭环</text>
+  <g font-size="13" fill="#1e293b">
+    <rect x="70" y="612" width="300" height="52" rx="8" fill="#ffffff" stroke="#6366f1" stroke-opacity=".55"/><text x="220" y="643" text-anchor="middle">结果融合 · 人工为准 · 判分一致率</text>
+    <rect x="680" y="612" width="230" height="52" rx="8" fill="#ffffff" stroke="#6366f1" stroke-opacity=".55"/><text x="795" y="643" text-anchor="middle">badcase 归因分类</text>
+    <rect x="940" y="612" width="370" height="52" rx="8" fill="#ffffff" stroke="#6366f1" stroke-opacity=".55"/><text x="1125" y="643" text-anchor="middle">回哺优化 · 评测集 / 模型 / 知识 / 检索</text>
+  </g>
+  <rect x="400" y="612" width="250" height="52" rx="8" fill="url(#gRose)"/>
+  <text x="525" y="637" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">质量门禁</text>
+  <text x="525" y="654" text-anchor="middle" font-size="11" fill="#ffffff" opacity=".9">通过发布 / 拦截打回</text>
+  <line x1="370" y1="638" x2="395" y2="638" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="650" y1="638" x2="675" y2="638" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="910" y1="638" x2="935" y2="638" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ========== 闭环回哺（右侧虚线返回评测准备） ========== -->
+  <polyline points="1310,638 1356,638 1356,142 1324,142" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#arrDash)"/>
+  <text x="1364" y="392" text-anchor="middle" font-size="11" fill="#94a3b8" transform="rotate(-90,1364,392)">回哺迭代 · 形成闭环</text>
+
+</svg>

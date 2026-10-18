@@ -36,9 +36,9 @@
     <linearGradient id="gQuality" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#f43f5e"/><stop offset="1" stop-color="#e11d48"/>
     </linearGradient>
-    <!-- 平台底座：靛蓝 -->
+    <!-- 平台底座：天蓝 -->
     <linearGradient id="gPlatform" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+      <stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#0284c7"/>
     </linearGradient>
     <!-- 箭头 marker -->
     <marker id="aMan" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
@@ -48,7 +48,7 @@
       <path d="M0,0 L0,6 L7,3 z" fill="#14b8a6"/>
     </marker>
     <marker id="aInd" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L7,3 z" fill="#4338ca"/>
+      <path d="M0,0 L0,6 L7,3 z" fill="#0369a1"/>
     </marker>
     <marker id="aIn" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
       <path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/>
@@ -261,7 +261,7 @@
   <text x="466" y="313" text-anchor="middle" font-size="16" fill="white">VS</text>
 
   <!-- ══ 底部：共享平台底座 ══ -->
-  <rect x="30" y="610" width="1380" height="210" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="2"/>
+  <rect x="30" y="610" width="1380" height="210" rx="10" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="2"/>
   <!-- 底座标题 -->
   <rect x="30" y="610" width="1380" height="34" rx="10" fill="url(#gPlatform)"/>
   <rect x="30" y="630" width="1380" height="14" fill="url(#gPlatform)"/>
@@ -269,36 +269,36 @@
 
   <!-- 底座组件：四个能力域 -->
   <!-- 知识库 -->
-  <rect x="50" y="654" width="316" height="80" rx="6" fill="white" stroke="#c7d2fe" stroke-width="1"/>
-  <text x="208" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#4338ca">🗂️ 知识库</text>
+  <rect x="50" y="654" width="316" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <text x="208" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">🗂️ 知识库</text>
   <text x="60" y="690" font-size="10" fill="#475569">/knowledge-bases/create · update · query</text>
   <text x="60" y="706" font-size="10" fill="#475569">/wiki/tree · page · search · stat · export</text>
   <text x="60" y="722" font-size="10" fill="#475569">/graph/stat · nodes · edges · neighbors · export</text>
 
   <!-- 文档 -->
-  <rect x="384" y="654" width="290" height="80" rx="6" fill="white" stroke="#c7d2fe" stroke-width="1"/>
-  <text x="529" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#4338ca">📄 文档</text>
+  <rect x="384" y="654" width="290" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <text x="529" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">📄 文档</text>
   <text x="394" y="690" font-size="10" fill="#475569">/knowledge-documents/ingest</text>
   <text x="394" y="706" font-size="10" fill="#475569">/knowledge-documents/ingest-and-parse</text>
   <text x="394" y="722" font-size="10" fill="#475569">/{doc_id} 查询文档详情</text>
 
   <!-- 解析 -->
-  <rect x="692" y="654" width="290" height="80" rx="6" fill="white" stroke="#c7d2fe" stroke-width="1"/>
-  <text x="837" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#4338ca">⚙️ 解析（知识加工）</text>
+  <rect x="692" y="654" width="290" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <text x="837" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">⚙️ 解析（知识加工）</text>
   <text x="702" y="690" font-size="10" fill="#475569">/knowledge-documents/parse</text>
   <text x="702" y="706" font-size="10" fill="#475569">/parse-direct（免库一次性解析）</text>
   <text x="702" y="722" font-size="10" fill="#475569">/parse-result/query · download</text>
 
   <!-- 检索 -->
-  <rect x="1000" y="654" width="394" height="80" rx="6" fill="white" stroke="#c7d2fe" stroke-width="1"/>
-  <text x="1197" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#4338ca">🔎 检索</text>
+  <rect x="1000" y="654" width="394" height="80" rx="6" fill="white" stroke="#bae6fd" stroke-width="1"/>
+  <text x="1197" y="672" text-anchor="middle" font-size="11" font-weight="bold" fill="#0369a1">🔎 检索</text>
   <text x="1010" y="690" font-size="10" fill="#475569">/knowledge-search/universal-search（全文·向量·混合）</text>
   <text x="1010" y="706" font-size="10" fill="#475569">/knowledge-search/deep-search（Agentic 多轮规划）</text>
   <text x="1010" y="722" font-size="10" fill="#475569">鉴权逐库授权 · 权限不降级 · 带引用溯源</text>
 
   <!-- 接入方式标注 -->
-  <rect x="50" y="746" width="1340" height="32" rx="5" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1"/>
-  <text x="720" y="766" text-anchor="middle" font-size="11" fill="#3730a3">
+  <rect x="50" y="746" width="1340" height="32" rx="5" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="720" y="766" text-anchor="middle" font-size="11" fill="#075985">
     接入方式：REST API（人工/程序调用） ｜ Python SDK / MCP Tool（流水线脚本） ｜ MCP Server（Agent 工具层直连） ｜ Deep Agent 工具域（retrieval / documents / wiki.read+write / graph.read+write / external）
   </text>
 

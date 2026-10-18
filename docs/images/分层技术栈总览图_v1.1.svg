@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 56 1680 1168" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="gAmber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#fcd34d"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <!-- 层标签矢量图标（14×14，白） -->
+    <g id="icBrowser" fill="none" stroke-width="1.4"><rect x="0.8" y="2" width="12.4" height="10" rx="1.5"/><path d="M0.8,5.4 H13.2"/><path d="M2.8,3.7 H4.6"/></g>
+    <g id="icServer" fill="none" stroke-width="1.4" stroke-linecap="round"><rect x="1" y="1.8" width="12" height="4.6" rx="1.4"/><rect x="1" y="7.6" width="12" height="4.6" rx="1.4"/><path d="M3.6,4.1 H3.61 M3.6,9.9 H3.61"/></g>
+    <g id="icDoc" fill="none" stroke-width="1.4" stroke-linejoin="round"><path d="M3,1.2 H9.4 L11.6,3.4 V12.8 H3 Z"/><path d="M5.2,6 H9.4 M5.2,8.4 H9.4 M5.2,10.8 H7.8"/></g>
+    <g id="icChip" fill="none" stroke-width="1.3"><rect x="3.6" y="3.6" width="6.8" height="6.8" rx="1"/><path d="M6,1.2 V3.6 M8,1.2 V3.6 M6,10.4 V12.8 M8,10.4 V12.8 M1.2,6 H3.6 M1.2,8 H3.6 M10.4,6 H12.8 M10.4,8 H12.8"/></g>
+    <g id="icClock" fill="none" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.6"/><path d="M7,3.8 V7.2 L9.4,8.8"/></g>
+    <g id="icLock" fill="none" stroke-width="1.4"><rect x="2.4" y="6" width="9.2" height="7" rx="1.6"/><path d="M4.7,6 V4.3 A2.3,2.3 0 0 1 9.3,4.3 V6"/></g>
+    <g id="icLayers" fill="none" stroke-width="1.4" stroke-linejoin="round"><path d="M7,1.4 L13,4.4 L7,7.4 L1,4.4 Z"/><path d="M1,7.9 L7,10.9 L13,7.9"/><path d="M1,10.9 L7,13.9 L13,10.9"/></g>
+    <g id="icDb" fill="none" stroke-width="1.4"><ellipse cx="7" cy="3.4" rx="5.6" ry="2.2"/><path d="M1.4,3.4 V10.6 A5.6,2.2 0 0 1 12.6,10.6 V3.4"/><path d="M1.4,7 A5.6,2.2 0 0 1 12.6,7"/></g>
+    <g id="icGear" stroke="none"><circle cx="7" cy="7" r="3.6"/><rect x="5.9" y="0.4" width="2.2" height="13.2" rx="1"/><rect x="0.4" y="5.9" width="13.2" height="2.2" rx="1"/><rect x="5.9" y="0.4" width="2.2" height="13.2" rx="1" transform="rotate(45,7,7)"/><rect x="0.4" y="5.9" width="13.2" height="2.2" rx="1" transform="rotate(45,7,7)"/></g>
+  </defs>
+  <rect x="0" y="0" width="1680" height="1224" fill="#f8fafc"/>
+
+  <!-- v1.1：去除主标题，viewBox 上缘裁剪至 y=56 -->
+  <text x="42" y="639" transform="rotate(-90 42 639)" text-anchor="middle" font-size="12.5" fill="#94a3b8">下层为底座 · 上层依赖并调用下层 ▼</text>
+
+  <!-- ========== L9 应用与前端层 ========== -->
+  <rect x="60" y="100" width="1240" height="86" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1" stroke-opacity=".45"/>
+  <rect x="72" y="116" width="136" height="54" rx="8" fill="url(#gBlue)"/>
+  <use xlink:href="#icBrowser" x="133" y="123" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="157" text-anchor="middle" font-size="11.5" fill="#dbeafe">应用与前端层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="116" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="357.5" y="139" font-size="13" font-weight="bold" fill="#ffffff">React 18 + Vite 8 + TS 5.6</text>
+    <text x="357.5" y="158" font-size="9.5" fill="#ffffff" opacity=".85">管理 Portal（库·文档·解析·检索·监控）</text>
+    <rect x="495" y="116" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="624.5" y="139" font-size="13" font-weight="bold" fill="#ffffff">swagger-ui / redoc</text>
+    <text x="624.5" y="158" font-size="9.5" fill="#ffffff" opacity=".85">本地静态资源 · /docs /redoc 离线可用</text>
+    <rect x="762" y="116" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="891.5" y="139" font-size="13" font-weight="bold" fill="#ffffff">API Browser · api-manual</text>
+    <text x="891.5" y="158" font-size="9.5" fill="#ffffff" opacity=".85">markdown-it-py 渲染 · /api/catalog</text>
+    <rect x="1029" y="116" width="259" height="54" rx="8" fill="url(#gBlue)"/>
+    <text x="1158.5" y="139" font-size="13" font-weight="bold" fill="#ffffff">3rd App · AI Agent</text>
+    <text x="1158.5" y="158" font-size="9.5" fill="#ffffff" opacity=".85">HTTPS API / MCP / CLI（Bearer 认证）</text>
+  </g>
+  <line x1="680" y1="187" x2="680" y2="198" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L8 服务框架与接入层 ========== -->
+  <rect x="60" y="200" width="1240" height="86" rx="10" fill="#f0fdfa" stroke="#14b8a6" stroke-width="1" stroke-opacity=".45"/>
+  <rect x="72" y="216" width="136" height="54" rx="8" fill="url(#gTeal)"/>
+  <use xlink:href="#icServer" x="133" y="223" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="257" text-anchor="middle" font-size="11.5" fill="#ccfbf1">服务框架与接入层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="216" width="207.2" height="54" rx="8" fill="url(#gTeal)"/>
+    <text x="331.6" y="239" font-size="13" font-weight="bold" fill="#ffffff">FastAPI ≥0.115</text>
+    <text x="331.6" y="258" font-size="9.5" fill="#ffffff" opacity=".85">北向 API · 统一响应壳</text>
+    <rect x="443.2" y="216" width="207.2" height="54" rx="8" fill="url(#gTeal)"/>
+    <text x="546.8" y="239" font-size="13" font-weight="bold" fill="#ffffff">Uvicorn[standard]</text>
+    <text x="546.8" y="258" font-size="9.5" fill="#ffffff" opacity=".85">ASGI 服务器 · :18000</text>
+    <rect x="658.4" y="216" width="207.2" height="54" rx="8" fill="url(#gTeal)"/>
+    <text x="762" y="239" font-size="13" font-weight="bold" fill="#ffffff">Flask / Starlette</text>
+    <text x="762" y="258" font-size="9.5" fill="#ffffff" opacity=".85">log-center 挂载适配</text>
+    <rect x="873.6" y="216" width="207.2" height="54" rx="8" fill="url(#gTeal)"/>
+    <text x="977.2" y="239" font-size="13" font-weight="bold" fill="#ffffff">HAProxy</text>
+    <text x="977.2" y="258" font-size="9.5" fill="#ffffff" opacity=".85">容器反代 · :80 唯一入口</text>
+    <rect x="1088.8" y="216" width="207.2" height="54" rx="8" fill="url(#gTeal)"/>
+    <text x="1192.4" y="239" font-size="13" font-weight="bold" fill="#ffffff">open ikc gateway</text>
+    <text x="1192.4" y="258" font-size="9.5" fill="#ffffff" opacity=".85">认证鉴权 · 限流路由 · Trace</text>
+  </g>
+  <line x1="680" y1="287" x2="680" y2="298" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L7 解析引擎层 ========== -->
+  <rect x="60" y="300" width="1240" height="150" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1" stroke-opacity=".45"/>
+  <rect x="72" y="348" width="136" height="54" rx="8" fill="url(#gViolet)"/>
+  <use xlink:href="#icDoc" x="133" y="355" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="389" text-anchor="middle" font-size="11.5" fill="#ede9fe">解析引擎层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="316" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="313" y="339" font-size="13" font-weight="bold" fill="#ffffff">pypdf</text>
+    <text x="313" y="358" font-size="9.5" fill="#ffffff" opacity=".85">PDF 版面解析</text>
+    <rect x="406" y="316" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="491" y="339" font-size="13" font-weight="bold" fill="#ffffff">markdownify</text>
+    <text x="491" y="358" font-size="9.5" fill="#ffffff" opacity=".85">Markdown 转换</text>
+    <rect x="584" y="316" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="669" y="339" font-size="13" font-weight="bold" fill="#ffffff">beautifulsoup4</text>
+    <text x="669" y="358" font-size="9.5" fill="#ffffff" opacity=".85">HTML 解析</text>
+    <rect x="762" y="316" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="847" y="339" font-size="13" font-weight="bold" fill="#ffffff">markdown-it-py</text>
+    <text x="847" y="358" font-size="9.5" fill="#ffffff" opacity=".85">MD 渲染（手册 / 页面）</text>
+    <rect x="940" y="316" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="1025" y="339" font-size="12" font-weight="bold" fill="#ffffff">python-multipart</text>
+    <text x="1025" y="358" font-size="9.5" fill="#ffffff" opacity=".85">表单与文件上传</text>
+    <rect x="1118" y="316" width="170" height="54" rx="8" fill="url(#gViolet)" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <text x="1203" y="339" font-size="13" font-weight="bold" fill="#ffffff">多模态解析引擎族</text>
+    <text x="1203" y="358" font-size="9.5" fill="#ffffff" opacity=".85">ikc-parse-sdk 统一封装</text>
+  </g>
+  <g text-anchor="middle">
+    <rect x="228" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="313" y="403" font-size="13" font-weight="bold" fill="#ffffff">LibreOffice</text>
+    <text x="313" y="422" font-size="9.5" fill="#ffffff" opacity=".85">soffice · Office 无头格式转换</text>
+    <rect x="406" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="491" y="403" font-size="13" font-weight="bold" fill="#ffffff">FFmpeg / ffprobe</text>
+    <text x="491" y="422" font-size="9.5" fill="#ffffff" opacity=".85">音视频解码 · 抽帧 · 输出</text>
+    <rect x="584" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="669" y="403" font-size="13" font-weight="bold" fill="#ffffff">Pandoc</text>
+    <text x="669" y="422" font-size="9.5" fill="#ffffff" opacity=".85">文档格式通用转换</text>
+    <rect x="762" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="847" y="403" font-size="13" font-weight="bold" fill="#ffffff">PaddleOCR</text>
+    <text x="847" y="422" font-size="9.5" fill="#ffffff" opacity=".85">深度学习 OCR · 中英文识别</text>
+    <rect x="940" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="1025" y="403" font-size="13" font-weight="bold" fill="#ffffff">MinerU</text>
+    <text x="1025" y="422" font-size="9.5" fill="#ffffff" opacity=".85">PDF 版面解析 · MD 转换</text>
+    <rect x="1118" y="380" width="170" height="54" rx="8" fill="url(#gViolet)"/>
+    <text x="1203" y="403" font-size="13" font-weight="bold" fill="#ffffff">Whisper</text>
+    <text x="1203" y="422" font-size="9.5" fill="#ffffff" opacity=".85">语音转写 ASR</text>
+  </g>
+  <line x1="680" y1="451" x2="680" y2="462" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L6 模型与 AI 能力层 ========== -->
+  <rect x="60" y="464" width="1240" height="86" rx="10" fill="#fff1f2" stroke="#fb7185" stroke-width="1" stroke-opacity=".45"/>
+  <rect x="72" y="480" width="136" height="54" rx="8" fill="url(#gRose)"/>
+  <use xlink:href="#icChip" x="133" y="487" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="521" text-anchor="middle" font-size="11.5" fill="#ffe4e6">模型与 AI 能力层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="290.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">LiteLLM</text>
+    <text x="290.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">LLM Gateway · 配额路由</text>
+    <rect x="361.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="424.25" y="503" font-size="13" font-weight="bold" fill="#ffffff">LangChain</text>
+    <text x="424.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">组件链 · 模型适配</text>
+    <rect x="495" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="557.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">LangGraph</text>
+    <text x="557.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">多步 Agent 流程</text>
+    <rect x="628.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="691.25" y="503" font-size="13" font-weight="bold" fill="#ffffff">openwiki</text>
+    <text x="691.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">Wiki 加工 · 词条生成</text>
+    <rect x="762" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="824.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">semantica</text>
+    <text x="824.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">图谱构建 · 图谱查询</text>
+    <rect x="895.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="958.25" y="503" font-size="12" font-weight="bold" fill="#ffffff">deepsearcher</text>
+    <text x="958.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">Agentic 深度检索</text>
+    <rect x="1029" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="1091.75" y="503" font-size="13" font-weight="bold" fill="#ffffff">tiktoken</text>
+    <text x="1091.75" y="522" font-size="9.5" fill="#ffffff" opacity=".85">token 计量</text>
+    <rect x="1162.5" y="480" width="125.5" height="54" rx="8" fill="url(#gRose)"/>
+    <text x="1225.25" y="503" font-size="13" font-weight="bold" fill="#ffffff">Model Provider</text>
+    <text x="1225.25" y="522" font-size="9.5" fill="#ffffff" opacity=".85">dashscope·Ollama·vLLM</text>
+  </g>
+  <line x1="680" y1="551" x2="680" y2="562" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L5 异步任务与编排层 ========== -->
+  <rect x="60" y="564" width="1240" height="86" rx="10" fill="#eef2ff" stroke="#6366f1" stroke-width="1" stroke-opacity=".45"/>
+  <rect x="72" y="580" width="136" height="54" rx="8" fill="url(#gIndigo)"/>
+  <use xlink:href="#icClock" x="133" y="587" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="621" text-anchor="middle" font-size="11.5" fill="#e0e7ff">任务与编排层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="580" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="357.5" y="603" font-size="13" font-weight="bold" fill="#ffffff">Celery 5.3 / 5.5</text>
+    <text x="357.5" y="622" font-size="9.5" fill="#ffffff" opacity=".85">分布式任务 Worker · Flower 监控</text>
+    <rect x="495" y="580" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="624.5" y="603" font-size="13" font-weight="bold" fill="#ffffff">Redis broker</text>
+    <text x="624.5" y="622" font-size="9.5" fill="#ffffff" opacity=".85">任务队列 · 延迟队列 · 结果回写</text>
+    <rect x="762" y="580" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="891.5" y="603" font-size="13" font-weight="bold" fill="#ffffff">Task 调度器 → Pipeline</text>
+    <text x="891.5" y="622" font-size="9.5" fill="#ffffff" opacity=".85">状态机编排 · 重试 · 优先级</text>
+    <rect x="1029" y="580" width="259" height="54" rx="8" fill="url(#gIndigo)"/>
+    <text x="1158.5" y="603" font-size="13" font-weight="bold" fill="#ffffff">asyncio / aiofiles / anyio</text>
+    <text x="1158.5" y="622" font-size="9.5" fill="#ffffff" opacity=".85">异步 I/O 底座</text>
+  </g>
+  <line x1="680" y1="651" x2="680" y2="662" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L4 协议通信与认证层（双行） ========== -->
+  <rect x="60" y="664" width="1240" height="150" rx="10" fill="#ecfeff" stroke="#06b6d4" stroke-width="1" stroke-opacity=".45"/>
+  <rect x="72" y="712" width="136" height="54" rx="8" fill="url(#gCyan)"/>
+  <use xlink:href="#icLock" x="133" y="719" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="753" text-anchor="middle" font-size="11.5" fill="#cffafe">协议与认证层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="678" width="207.2" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="331.6" y="701" font-size="13" font-weight="bold" fill="#ffffff">HTTPS REST · JSON</text>
+    <text x="331.6" y="720" font-size="9.5" fill="#ffffff" opacity=".85">北向 API · 统一响应体</text>
+    <rect x="443.2" y="678" width="207.2" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="546.8" y="701" font-size="13" font-weight="bold" fill="#ffffff">MCP</text>
+    <text x="546.8" y="720" font-size="9.5" fill="#ffffff" opacity=".85">mcp≥2.0 · Agent 工具通道</text>
+    <rect x="658.4" y="678" width="207.2" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="762" y="701" font-size="13" font-weight="bold" fill="#ffffff">CLI</text>
+    <text x="762" y="720" font-size="9.5" fill="#ffffff" opacity=".85">typer · ikc 命令入口</text>
+    <rect x="873.6" y="678" width="207.2" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="977.2" y="701" font-size="13" font-weight="bold" fill="#ffffff">gRPC</text>
+    <text x="977.2" y="720" font-size="9.5" fill="#ffffff" opacity=".85">grpcio · 服务间 · 日志投递</text>
+    <rect x="1088.8" y="678" width="207.2" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="1192.4" y="701" font-size="13" font-weight="bold" fill="#ffffff">AMQP</text>
+    <text x="1192.4" y="720" font-size="9.5" fill="#ffffff" opacity=".85">Celery 消息协议</text>
+    <rect x="228" y="744" width="259" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="357.5" y="767" font-size="13" font-weight="bold" fill="#ffffff">认证协议</text>
+    <text x="357.5" y="786" font-size="9.5" fill="#ffffff" opacity=".85">Bearer · OAuth2 · OIDC · JWT（PyJWT）</text>
+    <rect x="495" y="744" width="259" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="624.5" y="767" font-size="13" font-weight="bold" fill="#ffffff">HTTP 客户端</text>
+    <text x="624.5" y="786" font-size="9.5" fill="#ffffff" opacity=".85">httpx · requests · aiohttp</text>
+    <rect x="762" y="744" width="259" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="891.5" y="767" font-size="13" font-weight="bold" fill="#ffffff">pyuploadX</text>
+    <text x="891.5" y="786" font-size="9.5" fill="#ffffff" opacity=".85">分片上传 · 秒传 · 下载票据</text>
+    <rect x="1029" y="744" width="259" height="54" rx="8" fill="url(#gCyan)"/>
+    <text x="1158.5" y="767" font-size="13" font-weight="bold" fill="#ffffff">Trace 透传</text>
+    <text x="1158.5" y="786" font-size="9.5" fill="#ffffff" opacity=".85">X-Trace-Id · X-Request-Id · 23 位 traceId</text>
+  </g>
+  <line x1="680" y1="815" x2="680" y2="826" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L3 数据访问与模型层 ========== -->
+  <rect x="60" y="828" width="1240" height="86" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" stroke-opacity=".6"/>
+  <rect x="72" y="844" width="136" height="54" rx="8" fill="url(#gSlate)"/>
+  <use xlink:href="#icLayers" x="133" y="851" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="885" text-anchor="middle" font-size="11.5" fill="#e2e8f0">数据访问层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="844" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="331.6" y="867" font-size="13" font-weight="bold" fill="#ffffff">Pydantic v2</text>
+    <text x="331.6" y="886" font-size="9.5" fill="#ffffff" opacity=".85">+ pydantic-settings 配置模型</text>
+    <rect x="443.2" y="844" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="546.8" y="867" font-size="13" font-weight="bold" fill="#ffffff">SQLAlchemy 2.0</text>
+    <text x="546.8" y="886" font-size="9.5" fill="#ffffff" opacity=".85">ORM（rag-conversion-engine）</text>
+    <rect x="658.4" y="844" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="762" y="867" font-size="13" font-weight="bold" fill="#ffffff">orjson / serde</text>
+    <text x="762" y="886" font-size="9.5" fill="#ffffff" opacity=".85">高性能序列化</text>
+    <rect x="873.6" y="844" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="977.2" y="867" font-size="13" font-weight="bold" fill="#ffffff">jinja2</text>
+    <text x="977.2" y="886" font-size="9.5" fill="#ffffff" opacity=".85">模板渲染</text>
+    <rect x="1088.8" y="844" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="1192.4" y="867" font-size="13" font-weight="bold" fill="#ffffff">sqlite3 薄封装</text>
+    <text x="1192.4" y="886" font-size="9.5" fill="#ffffff" opacity=".85">ikc-open-platform 管理面直存</text>
+  </g>
+  <line x1="680" y1="915" x2="680" y2="926" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L2 存储与数据设施层（双行） ========== -->
+  <rect x="60" y="928" width="1240" height="150" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1" stroke-opacity=".5"/>
+  <rect x="72" y="976" width="136" height="54" rx="8" fill="url(#gSlate)"/>
+  <use xlink:href="#icDb" x="133" y="983" fill="#ffffff" stroke="#ffffff"/>
+  <text x="140" y="1017" text-anchor="middle" font-size="11.5" fill="#e2e8f0">存储与设施层</text>
+  <g text-anchor="middle">
+    <rect x="228" y="942" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="331.6" y="965" font-size="13" font-weight="bold" fill="#ffffff">PostgreSQL</text>
+    <text x="331.6" y="984" font-size="9.5" fill="#ffffff" opacity=".85">Wiki 页面主存 · 元数据</text>
+    <rect x="443.2" y="942" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="546.8" y="965" font-size="13" font-weight="bold" fill="#ffffff">SQLite</text>
+    <text x="546.8" y="984" font-size="9.5" fill="#ffffff" opacity=".85">管理面 token · 请求统计</text>
+    <rect x="658.4" y="942" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="762" y="965" font-size="13" font-weight="bold" fill="#ffffff">Nebula / Neo4j</text>
+    <text x="762" y="984" font-size="9.5" fill="#ffffff" opacity=".85">图数据库 · 互链投影</text>
+    <rect x="873.6" y="942" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="977.2" y="965" font-size="13" font-weight="bold" fill="#ffffff">Elasticsearch 8.x</text>
+    <text x="977.2" y="984" font-size="9.5" fill="#ffffff" opacity=".85">全文 · 向量索引</text>
+    <rect x="1088.8" y="942" width="207.2" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="1192.4" y="965" font-size="13" font-weight="bold" fill="#ffffff">MinIO / S3</text>
+    <text x="1192.4" y="984" font-size="9.5" fill="#ffffff" opacity=".85">对象存储 · 原始文件与产物</text>
+    <rect x="228" y="1008" width="259" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="357.5" y="1031" font-size="13" font-weight="bold" fill="#ffffff">Redis</text>
+    <text x="357.5" y="1050" font-size="9.5" fill="#ffffff" opacity=".85">KV · 队列 · Parser Cache</text>
+    <rect x="495" y="1008" width="259" height="54" rx="8" fill="url(#gAmber)"/>
+    <text x="624.5" y="1031" font-size="13" font-weight="bold" fill="#92400e">OWL / RDF / SKOS</text>
+    <text x="624.5" y="1050" font-size="9.5" fill="#a16207">本体存储 · 概念词典</text>
+    <rect x="762" y="1008" width="259" height="54" rx="8" fill="url(#gSlate)" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <text x="891.5" y="1031" font-size="13" font-weight="bold" fill="#ffffff">记忆库 Memory Store</text>
+    <text x="891.5" y="1050" font-size="9.5" fill="#ffffff" opacity=".85">短期·长期记忆 · Agent 会话上下文</text>
+    <rect x="1029" y="1008" width="259" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="1158.5" y="1031" font-size="13" font-weight="bold" fill="#ffffff">MySQL / Oracle 适配</text>
+    <text x="1158.5" y="1050" font-size="9.5" fill="#ffffff" opacity=".85">mysql-connector · oracledb（log-center）</text>
+  </g>
+  <line x1="680" y1="1079" x2="680" y2="1090" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ========== L1 语言与运行时层 ========== -->
+  <rect x="60" y="1092" width="1240" height="86" rx="10" fill="#f8fafc" stroke="#475569" stroke-width="1" stroke-opacity=".55"/>
+  <rect x="72" y="1108" width="136" height="54" rx="8" fill="url(#gSlate)"/>
+  <use xlink:href="#icGear" x="133" y="1115" fill="#ffffff"/>
+  <text x="140" y="1149" text-anchor="middle" font-size="11.5" fill="#e2e8f0">语言与运行时</text>
+  <g text-anchor="middle">
+    <rect x="228" y="1108" width="348" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="402" y="1131" font-size="13" font-weight="bold" fill="#ffffff">Python ≥3.10 – 3.12</text>
+    <text x="402" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">全部后端服务 · FastAPI 栈</text>
+    <rect x="584" y="1108" width="348" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="758" y="1131" font-size="13" font-weight="bold" fill="#ffffff">Java（Maven）</text>
+    <text x="758" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">ikc-open-platform SDK · log-center SDK</text>
+    <rect x="940" y="1108" width="348" height="54" rx="8" fill="url(#gSlate)"/>
+    <text x="1114" y="1131" font-size="13" font-weight="bold" fill="#ffffff">TypeScript 5.6 + Node</text>
+    <text x="1114" y="1150" font-size="9.5" fill="#ffffff" opacity=".85">Portal 前端 · Vite 构建</text>
+  </g>
+
+  <!-- ========== 右侧竖条一：SDK 与集成层（粉虚线） ========== -->
+  <rect x="1320" y="100" width="150" height="1078" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="1395" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#be185d">SDK 与集成层</text>
+  <text x="1395" y="141" text-anchor="middle" font-size="9.5" fill="#9d174d">纵向贯穿应用层→接入层</text>
+  <g text-anchor="middle">
+    <rect x="1332" y="156" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
+    <text x="1395" y="176" font-size="10.5" font-weight="bold" fill="#be185d">ikc-open-platform</text>
+    <text x="1395" y="192" font-size="9" fill="#9d174d">Python SDK · httpx·mcp</text>
+    <rect x="1332" y="216" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
+    <text x="1395" y="236" font-size="10.5" font-weight="bold" fill="#be185d">ikc-open-platform</text>
+    <text x="1395" y="252" font-size="9" fill="#9d174d">Java SDK · Maven</text>
+    <rect x="1332" y="276" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
+    <text x="1395" y="296" font-size="10.5" font-weight="bold" fill="#be185d">ikc-core-sdk</text>
+    <text x="1395" y="312" font-size="9" fill="#9d174d">知识库 · 文档核心</text>
+    <rect x="1332" y="336" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2"/>
+    <text x="1395" y="356" font-size="10.5" font-weight="bold" fill="#be185d">pyuploadx</text>
+    <text x="1395" y="372" font-size="9" fill="#9d174d">分片上传 · 秒传</text>
+    <rect x="1332" y="396" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="1395" y="416" font-size="10.5" font-weight="bold" fill="#be185d">ikc-parse-sdk</text>
+    <text x="1395" y="432" font-size="9" fill="#9d174d">解析引擎族统一调用</text>
+    <rect x="1332" y="456" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="1395" y="476" font-size="10.5" font-weight="bold" fill="#be185d">connector / cache-sdk</text>
+    <text x="1395" y="492" font-size="9" fill="#9d174d">采集 · 缓存调用</text>
+    <rect x="1332" y="516" width="126" height="46" rx="6" fill="#ffffff" stroke="#ec4899" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="1395" y="536" font-size="9.5" font-weight="bold" fill="#be185d">ontology·retriever-sdk</text>
+    <text x="1395" y="552" font-size="9" fill="#9d174d">本体 · 检索封装</text>
+  </g>
+  <text x="1395" y="1154" text-anchor="middle" font-size="9.5" fill="#9d174d">公共对象模型 · 协议封装</text>
+
+  <!-- ========== 右侧竖条二：横切基础设施（绿虚线） ========== -->
+  <rect x="1490" y="100" width="150" height="1078" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="1565" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#047857">横切基础设施</text>
+  <text x="1565" y="141" text-anchor="middle" font-size="9.5" fill="#065f46">贯穿全部九层</text>
+  <g text-anchor="middle">
+    <rect x="1502" y="156" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="176" font-size="10.5" font-weight="bold" fill="#047857">ikc-log-center 1.4.9</text>
+    <text x="1565" y="192" font-size="9" fill="#065f46">HTTP·gRPC·Celery 投递</text>
+    <rect x="1502" y="216" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="236" font-size="10.5" font-weight="bold" fill="#047857">日志 SDK</text>
+    <text x="1565" y="252" font-size="9" fill="#065f46">Python · Java</text>
+    <rect x="1502" y="276" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="296" font-size="10.5" font-weight="bold" fill="#047857">traceId 23 位</text>
+    <text x="1565" y="312" font-size="9" fill="#065f46">全链路贯穿 · 下游透传</text>
+    <rect x="1502" y="336" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="356" font-size="10.5" font-weight="bold" fill="#047857">日志与指标</text>
+    <text x="1565" y="372" font-size="9" fill="#065f46">structlog · prometheus</text>
+    <rect x="1502" y="396" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="416" font-size="10.5" font-weight="bold" fill="#047857">安全合规</text>
+    <text x="1565" y="432" font-size="9" fill="#065f46">argon2 · 脱敏 · 水印</text>
+    <rect x="1502" y="456" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="476" font-size="10.5" font-weight="bold" fill="#047857">评测与监控</text>
+    <text x="1565" y="492" font-size="9" fill="#065f46">基准集 · 评分 · 告警</text>
+    <rect x="1502" y="516" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="536" font-size="10.5" font-weight="bold" fill="#047857">Docker 多阶段</text>
+    <text x="1565" y="552" font-size="9" fill="#065f46">compose · entrypoint</text>
+    <rect x="1502" y="576" width="126" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+    <text x="1565" y="596" font-size="10.5" font-weight="bold" fill="#047857">pytest · ruff</text>
+    <text x="1565" y="612" font-size="9" fill="#065f46">playwright 观测</text>
+  </g>
+  <text x="1565" y="1154" text-anchor="middle" font-size="9.5" fill="#065f46">观测 · 治理 · 构建部署</text>
+
+  <!-- ========== 图例与脚注 ========== -->
+  <g font-size="11.5">
+    <rect x="60" y="1192" width="16" height="14" rx="3" fill="url(#gViolet)"/>
+    <text x="82" y="1204" fill="#475569">实底渐变 = 核心组件</text>
+    <rect x="210" y="1192" width="16" height="14" rx="3" fill="url(#gViolet)" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="3 2"/>
+    <text x="232" y="1204" fill="#475569">白虚线描边 = 扩展组件</text>
+    <rect x="390" y="1192" width="16" height="14" rx="3" fill="url(#gAmber)"/>
+    <text x="412" y="1204" fill="#475569">琥珀色 = 本体专属</text>
+    <line x1="540" y1="1199" x2="574" y2="1199" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <text x="582" y="1204" fill="#475569">层间依赖方向（上层 → 下层）</text>
+  </g>
+</svg>

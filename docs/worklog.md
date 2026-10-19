@@ -1564,3 +1564,8 @@
 
 - 按「IKC 生态架构图统一存储至 open-ikc/docs/images」规范，将相邻仓库 `/home/sharkyai/PyUploadX/docs/PyUploadX分层系统框架_v1.0.svg/png` 复制一份到 docs/images/ 做生态级统一归档（cp -p 保留时间戳）；PyUploadX 仓库自身作为独立交付物保留原件不动，避免破坏其仓内文档引用。复制后 XML 校验 OK。
 - 仅新增配图副本，无代码改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：Excel 解析器框架图去除「问答与回显」层（2026-10-19 续）
+
+- 按用户要求就地修改 docs/images/Excel解析器整体框架_v1.0.svg：整带删除 BAND 5 智能问答与前端回显（徽章/层名/带底/检索流程·前端展示·高亮回显·人工介入四卡），末带「技术栈与运行」整体上移 166px 补位为第 5 带；层间箭头删至 4 条（末条 719→731 保留）、旁注「chunk 命中后回表」删除、「支撑组件与性能指标」移至 y=729；defs 清理未再使用的 gIndigo；viewBox 与背景高 1082→916。grep 确认 问答与回显/gIndigo/检索流程/高亮回显 零残留。
+- 验证：XML OK；cairosvg 2x 重渲染同名 PNG（3560×1832），目检五带排布紧凑、徽章与卡片无位移错位、无残留空白区。仅配图改动，跳过 pytest 与 Claude 只读审查。

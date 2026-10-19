@@ -1,0 +1,431 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1920" height="1080" viewBox="0 0 1920 1080">
+  <title>套餐推荐：融合的检索与推理服务、本体推理服务与业务MCP协同</title>
+  <desc>
+    顶部140像素为PPT标题预留区域。
+    智能体通过API或MCP调用知识中心的“融合的检索和推理服务”。
+    该服务内部先检索召回候选，再进入推理；推理时调用本体中心推理服务，由本体模型和规则引擎完成规则求值。
+    智能体通过对应业务系统MCP调用客户查询、预检、建单和状态查询模块。
+    工单状态采用事件回执返回，客户不认可时更新需求并重新推荐。
+    各服务模块仅呈现名称与职责，不展开其内部能力清单。
+  </desc>
+
+  <defs>
+    <style>
+      text {
+        font-family: "Microsoft YaHei", "PingFang SC",
+                     "Noto Sans CJK SC", Arial, sans-serif;
+      }
+      .head {
+        font-size: 23px;
+        font-weight: 700;
+        fill: #193E68;
+      }
+      .sub {
+        font-size: 15px;
+        fill: #526E8C;
+      }
+      .head-white {
+        font-size: 23px;
+        font-weight: 700;
+        fill: #FFFFFF;
+      }
+      .sub-white {
+        font-size: 15px;
+        fill: #DEEBFF;
+      }
+      .title {
+        font-size: 19px;
+        font-weight: 700;
+        fill: #193E68;
+      }
+      .body {
+        font-size: 16px;
+        fill: #445F7A;
+      }
+      .small {
+        font-size: 14px;
+        fill: #5A738B;
+      }
+      .label {
+        font-size: 16px;
+        fill: #315F94;
+      }
+      .label-teal {
+        font-size: 16px;
+        fill: #137D79;
+      }
+      .label-purple {
+        font-size: 15px;
+        fill: #7653A6;
+      }
+      .request {
+        fill: none;
+        stroke: #3978BD;
+        stroke-width: 2.5;
+        marker-end: url(#blue-arrow);
+      }
+      .response {
+        fill: none;
+        stroke: #26938D;
+        stroke-width: 2.3;
+        stroke-dasharray: 7 5;
+        marker-end: url(#teal-arrow);
+      }
+      .inference {
+        fill: none;
+        stroke: #8863B5;
+        stroke-width: 2.6;
+        marker-end: url(#purple-arrow);
+      }
+      .retry {
+        fill: none;
+        stroke: #D28B2E;
+        stroke-width: 2.4;
+        stroke-dasharray: 8 5;
+        marker-end: url(#orange-arrow);
+      }
+      .separator {
+        stroke: #DAE4EF;
+        stroke-width: 1;
+        stroke-dasharray: 4 7;
+      }
+    </style>
+
+    <marker id="blue-arrow"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#3978BD"/>
+    </marker>
+
+    <marker id="teal-arrow"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#26938D"/>
+    </marker>
+
+    <marker id="purple-arrow"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#8863B5"/>
+    </marker>
+
+    <marker id="orange-arrow"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#D28B2E"/>
+    </marker>
+  </defs>
+
+  <!-- 画布：顶部0～140px刻意留白，供PPT添加标题 -->
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+
+  <!-- 图示说明及图例 -->
+  <text x="60" y="153" font-size="18" fill="#526E8C">
+    运行顺序：采集画像 → 融合检索与推理 → 确认受理 → 回执闭环
+  </text>
+
+  <path d="M1055 147 H1095" class="request"/>
+  <text x="1105" y="153" font-size="15" fill="#526E8C">API / MCP调用</text>
+
+  <path d="M1265 147 H1305" class="inference"/>
+  <text x="1315" y="153" font-size="15" fill="#526E8C">本体推理调用</text>
+
+  <path d="M1470 147 H1510" class="response"/>
+  <text x="1520" y="153" font-size="15" fill="#526E8C">返回 / 回执</text>
+
+  <path d="M1670 147 H1710" class="retry"/>
+  <text x="1720" y="153" font-size="15" fill="#526E8C">拒绝重推</text>
+
+  <!-- ====================================================
+       六条泳道
+       ==================================================== -->
+  <rect x="60" y="170" width="1800" height="812"
+        rx="16" fill="#FFFFFF" stroke="#D4E0ED" stroke-width="1.5"/>
+
+  <path d="M76 170 H360 V982 H76 Q60 982 60 966
+           V186 Q60 170 76 170" fill="#F8FAFD"/>
+  <rect x="360" y="170" width="300" height="812" fill="#EFF5FE"/>
+  <rect x="660" y="170" width="300" height="812" fill="#F5FAF8"/>
+  <rect x="960" y="170" width="300" height="812" fill="#F1F6FF"/>
+  <rect x="1260" y="170" width="300" height="812" fill="#F7F3FC"/>
+  <path d="M1560 170 H1844 Q1860 170 1860 186
+           V966 Q1860 982 1844 982 H1560 Z" fill="#F5FAF8"/>
+
+  <g stroke="#D7E2EE" stroke-width="1.2">
+    <line x1="360" y1="170" x2="360" y2="982"/>
+    <line x1="660" y1="170" x2="660" y2="982"/>
+    <line x1="960" y1="170" x2="960" y2="982"/>
+    <line x1="1260" y1="170" x2="1260" y2="982"/>
+    <line x1="1560" y1="170" x2="1560" y2="982"/>
+  </g>
+
+  <!-- 泳道标题区 -->
+  <path d="M76 170 H360 V240 H60 V186 Q60 170 76 170"
+        fill="#E8EFF8"/>
+  <rect x="360" y="170" width="300" height="70" fill="#DCEAFF"/>
+  <rect x="660" y="170" width="300" height="70" fill="#DDEFE8"/>
+  <rect x="960" y="170" width="300" height="70" fill="#24558F"/>
+  <rect x="1260" y="170" width="300" height="70" fill="#66508D"/>
+  <path d="M1560 170 H1844 Q1860 170 1860 186
+           V240 H1560 Z" fill="#DDEFE8"/>
+
+  <text x="210" y="200" text-anchor="middle" class="head">坐席工作台 / 语音渠道</text>
+  <text x="210" y="225" text-anchor="middle" class="sub">接入 · 身份校验 · 客户交互</text>
+
+  <text x="510" y="200" text-anchor="middle" class="head">智能体编排服务</text>
+  <text x="510" y="225" text-anchor="middle" class="sub">会话编排 · API客户端 · MCP客户端</text>
+
+  <text x="810" y="200" text-anchor="middle" class="head">CRM / 客户业务系统</text>
+  <text x="810" y="225" text-anchor="middle" class="sub">客户上下文查询</text>
+
+  <text x="1110" y="200" text-anchor="middle" class="head-white">知识中心</text>
+  <text x="1110" y="225" text-anchor="middle" class="sub-white">融合的检索与推理服务</text>
+
+  <text x="1410" y="200" text-anchor="middle" class="head-white">本体中心</text>
+  <text x="1410" y="225" text-anchor="middle" class="sub-white">推理服务</text>
+
+  <text x="1710" y="200" text-anchor="middle" class="head">预受理 / 工单系统</text>
+  <text x="1710" y="225" text-anchor="middle" class="sub">预检 · 建单 · 状态查询</text>
+
+  <!-- 阶段分隔 -->
+  <line x1="75" y1="389" x2="1845" y2="389" class="separator"/>
+  <line x1="75" y1="526" x2="1845" y2="526" class="separator"/>
+  <line x1="75" y1="686" x2="1845" y2="686" class="separator"/>
+  <line x1="75" y1="874" x2="1845" y2="874" class="separator"/>
+
+  <!-- ====================================================
+       01 采集画像：业务查询必须经过CRM MCP
+       ==================================================== -->
+  <rect x="80" y="269" width="260" height="86" rx="10"
+        fill="#FFFFFF" stroke="#A7BED8" stroke-width="1.5"/>
+  <text x="96" y="295" class="title">客户来电 / 诉求采集</text>
+  <text x="96" y="321" class="body">身份校验 · 语音转写 / 人工录入</text>
+  <text x="96" y="344" class="body">入：客户标识、预算、速率、流量</text>
+
+  <rect x="380" y="269" width="260" height="86" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="295" class="title">01 识别诉求 / 补全画像</text>
+  <text x="396" y="321" class="body">提取需求槽位；缺失信息追问</text>
+  <text x="396" y="344" class="body">MCP客户端发起客户事实查询</text>
+
+  <rect x="680" y="280" width="260" height="64" rx="10"
+        fill="#E0F0E8" stroke="#70A28E" stroke-width="1.8"/>
+  <text x="810" y="319" text-anchor="middle"
+        font-size="18" font-weight="700" fill="#28654F">CRM MCP服务</text>
+
+  <path d="M340 309 H380" class="request"/>
+  <text x="360" y="298" text-anchor="middle"
+        font-size="13" fill="#315F94">诉求</text>
+
+  <path d="M640 312 H680" class="request"/>
+  <text x="660" y="301" text-anchor="middle"
+        font-size="12" font-weight="700" fill="#315F94">MCP</text>
+
+  <path d="M810 344 V378 H510 V355" class="response"/>
+  <text x="660" y="370" text-anchor="middle"
+        font-size="15" fill="#137D79">
+    套餐 · 合约 · 用量 · 客群 · 事实版本
+  </text>
+
+  <!-- 当前阶段空闲区域展示架构约束 -->
+  <rect x="980" y="266" width="850" height="94" rx="10"
+        fill="#FFFFFF" stroke="#D8E2EF" stroke-width="1"/>
+  <text x="1000" y="292" font-size="18" font-weight="700" fill="#365A80">
+    调用边界：知识服务走 API / MCP，业务操作走对应系统 MCP
+  </text>
+  <text x="1000" y="318" font-size="16" fill="#526F8B">
+    知识中心提供“融合的检索和推理服务”，推理时调用本体中心推理服务完成规则求值。
+  </text>
+  <text x="1000" y="343" font-size="16" fill="#526F8B">
+    API / MCP 是同一知识能力的两种接入方式，按集成方式选用，不重复执行。
+  </text>
+
+  <!-- ====================================================
+       02 融合的检索和推理服务（知识中心）
+       ==================================================== -->
+  <rect x="380" y="448" width="260" height="64" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="474" class="title">02 调用融合检索与推理</text>
+  <text x="396" y="498" class="body">需求条件 + 客户事实</text>
+
+  <!-- 外框：融合的检索和推理服务 -->
+  <rect x="966" y="396" width="288" height="240" rx="14"
+        fill="#EAF1FB" stroke="#527EB7" stroke-width="2"/>
+  <text x="1110" y="423" text-anchor="middle"
+        font-size="17" font-weight="700" fill="#24558F">融合的检索和推理服务</text>
+  <line x1="980" y1="435" x2="1240" y2="435" stroke="#B9CDE6" stroke-width="1"/>
+
+  <rect x="986" y="448" width="248" height="64" rx="8"
+        fill="#FFFFFF" stroke="#527EB7" stroke-width="1.6"/>
+  <text x="1110" y="487" text-anchor="middle" class="title">检索</text>
+
+  <rect x="986" y="556" width="248" height="64" rx="8"
+        fill="#FFFFFF" stroke="#527EB7" stroke-width="1.6"/>
+  <text x="1110" y="595" text-anchor="middle" class="title">推理</text>
+
+  <path d="M640 480 H986" class="request"/>
+  <text x="810" y="470" text-anchor="middle" class="label">
+    检索 + 推理请求｜需求条件 + 客户事实
+  </text>
+
+  <!-- 服务内部：检索 → 推理 -->
+  <path d="M1110 512 V556" class="request"/>
+
+  <!-- ====================================================
+       03 推理时调用本体中心推理服务
+       ==================================================== -->
+  <rect x="380" y="556" width="260" height="64" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="582" class="title">03 接收决策 / 形成推荐</text>
+  <text x="396" y="606" class="body">排序 · 生成讲解话术</text>
+
+  <rect x="1280" y="556" width="260" height="64" rx="10"
+        fill="#F1ECF8" stroke="#9476BC" stroke-width="1.8"/>
+  <text x="1410" y="595" text-anchor="middle"
+        font-size="18" font-weight="700" fill="#67458F">本体中心推理服务</text>
+
+  <!-- 核心跨中心调用：推理 → 本体推理服务 -->
+  <path d="M1234 578 H1280" class="inference"/>
+  <text x="1257" y="571" text-anchor="middle"
+        font-size="11" font-weight="700" fill="#7653A6">调用</text>
+
+  <path d="M1410 620 V644 H1110 V620" class="response"/>
+  <text x="1260" y="638" text-anchor="middle"
+        font-size="14" fill="#7653A6">
+    决策ID · 命中规则 · 规则版本
+  </text>
+
+  <path d="M1065 620 V662 H510 V620" class="response"/>
+  <text x="790" y="654" text-anchor="middle"
+        font-size="15" fill="#137D79">
+    可办结果 · 变更类型 · 费用条件 · 派单建议 · 决策依据
+  </text>
+
+  <!-- 无可办或关键数据缺失 -->
+  <rect x="95" y="552" width="230" height="77" rx="9"
+        fill="#FFF7E9" stroke="#EBD1AA" stroke-width="1"/>
+  <text x="110" y="577" font-size="17" font-weight="700" fill="#A47128">
+    无可办方案 / 关键事实缺失
+  </text>
+  <text x="110" y="601" font-size="15" fill="#A47128">
+    说明原因 → 补充信息或转人工
+  </text>
+  <text x="110" y="621" font-size="15" fill="#A47128">
+    智能体不自行推测办理资格
+  </text>
+
+  <!-- ====================================================
+       04 预检、客户确认、建单：均经工单MCP
+       ==================================================== -->
+  <rect x="80" y="704" width="260" height="125" rx="10"
+        fill="#FFFFFF" stroke="#A7BED8" stroke-width="1.5"/>
+  <text x="96" y="730" class="title">方案讲解 / 最终确认</text>
+  <text x="96" y="756" class="body">展示：套餐差异、收益与限制</text>
+  <text x="96" y="780" class="body">确认：费用、合约、生效方式</text>
+  <text x="96" y="804" class="small">出：确认ID、方案快照、确认凭证</text>
+  <text x="96" y="822" font-size="14" fill="#B27B2C">
+    认可推荐 ≠ 已完成办理确认
+  </text>
+
+  <rect x="380" y="704" width="260" height="125" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="730" class="title">04 复核 / 确认 / 提交</text>
+  <text x="396" y="755" class="body">① 原路径刷新事实、知识与推理</text>
+  <text x="396" y="780" class="body">② MCP预检 → 展示最终条件</text>
+  <text x="396" y="804" class="body">③ 客户确认 → MCP幂等建单</text>
+  <text x="396" y="822" class="small">条件变化或预检过期：重新确认</text>
+
+  <rect x="1580" y="704" width="260" height="125" rx="10"
+        fill="#E0F0E8" stroke="#70A28E" stroke-width="1.8"/>
+  <text x="1710" y="772" text-anchor="middle"
+        font-size="18" font-weight="700" fill="#28654F">工单MCP服务</text>
+
+  <!-- 坐席交互 -->
+  <path d="M380 751 H340" class="request"/>
+  <text x="360" y="740" text-anchor="middle"
+        font-size="12" fill="#315F94">讲解</text>
+
+  <path d="M340 797 H380" class="request"/>
+  <text x="360" y="786" text-anchor="middle"
+        font-size="12" fill="#315F94">确认</text>
+
+  <!-- 调用工单MCP预检 -->
+  <path d="M640 725 H1580" class="request"/>
+  <text x="1110" y="714" text-anchor="middle" class="label">
+    MCP预检｜客户ID · 套餐 / 活动ID · 规则决策ID · 事实版本
+  </text>
+
+  <path d="M1580 763 H640" class="response"/>
+  <text x="1110" y="752" text-anchor="middle" class="label-teal">
+    预检凭证 · 权威费用 · 合约 / 生效条件 · 有效期
+  </text>
+
+  <!-- 最终确认后的MCP写入 -->
+  <path d="M640 805 H1580" class="request"/>
+  <text x="1110" y="794" text-anchor="middle" class="label">
+    MCP建单｜工单草稿 + 确认ID + 预检凭证 + 幂等键
+  </text>
+
+  <path d="M1710 829 V859 H510 V829" class="response"/>
+  <text x="1110" y="850" text-anchor="middle" class="label-teal">
+    预受理单号 · 工单号 · 受理 / 派单状态（预受理成功 ≠ 办理完成）
+  </text>
+
+  <!-- 客户不认可后的闭环 -->
+  <path d="M80 790 H69 V399 H510 V409" class="retry"/>
+  <rect x="100" y="388" width="330" height="23" rx="5" fill="#FFF8EB"/>
+  <text x="265" y="405" text-anchor="middle"
+        font-size="15" font-weight="700" fill="#B27B2C">
+    不认可 → 记录原因 / 更新需求 → 重新检索与推理
+  </text>
+
+  <!-- ====================================================
+       05 回执闭环与MCP状态对账
+       ==================================================== -->
+  <rect x="80" y="894" width="260" height="72" rx="10"
+        fill="#FFFFFF" stroke="#A7BED8" stroke-width="1.5"/>
+  <text x="96" y="920" class="title">进度通知 / 补件跟进</text>
+  <text x="96" y="946" class="body">告知结果；异常转人工跟进待办</text>
+
+  <rect x="380" y="894" width="260" height="72" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="920" class="title">05 状态与意向闭环</text>
+  <text x="396" y="946" class="body">回执校验 · 事件去重 · 状态更新</text>
+
+  <rect x="1580" y="894" width="260" height="72" rx="10"
+        fill="#E0F0E8" stroke="#70A28E" stroke-width="1.8"/>
+  <text x="1710" y="936" text-anchor="middle"
+        font-size="17" font-weight="700" fill="#28654F">状态查询 / 事件模块</text>
+
+  <path d="M1580 916 H640" class="response"/>
+  <text x="1110" y="904" text-anchor="middle" class="label-teal">
+    事件回执 / Webhook｜事件ID · 单号 · 状态 / 版本 · 失败原因
+  </text>
+
+  <path d="M640 956 H1580" class="request"/>
+  <text x="1110" y="945" text-anchor="middle" class="label">
+    MCP状态查询｜超时或结果未知时，按单号 / 幂等键对账，避免重复建单
+  </text>
+
+  <path d="M380 931 H340" class="request"/>
+  <text x="360" y="920" text-anchor="middle"
+        font-size="12" fill="#315F94">通知</text>
+
+  <!-- ====================================================
+       底部总结：数据链与调用边界
+       ==================================================== -->
+  <rect x="60" y="996" width="1800" height="62" rx="10"
+        fill="#EDF3FA" stroke="#D9E4F0" stroke-width="1"/>
+
+  <text x="80" y="1021" font-size="17" font-weight="700" fill="#24558F">
+    核心数据链
+  </text>
+  <text x="195" y="1021" font-size="17" fill="#365675">
+    需求画像 → 客户事实 → 融合检索与推理 → 本体规则决策 → 推荐快照 → 客户确认 → 预受理 / 工单 → 处理结果
+  </text>
+
+  <text x="80" y="1046" font-size="15" fill="#617B94">
+    边界：知识中心提供融合的检索与推理服务，推理时调用本体中心推理服务 ｜ 业务操作经对应MCP ｜ 事件回执独立接入 ｜ 全链路鉴权、版本溯源、幂等与审计
+  </text>
+</svg>

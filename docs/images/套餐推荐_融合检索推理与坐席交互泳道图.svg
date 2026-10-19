@@ -1,0 +1,601 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1920" height="1080" viewBox="0 0 1920 1080">
+
+  <title>套餐推荐：融合检索推理与坐席交互泳道图</title>
+  <desc>
+    顶部140像素预留PPT标题区域。
+    六条泳道为坐席工作台、智能体编排服务、CRM系统、
+    知识中心、本体中心、预受理与工单系统。
+    知识中心以虚线框表示融合的检索和推理服务。
+    基于本体与规则的判断调用本体中心推理服务。
+    业务查询、预检、建单、状态查询及结果回写经对应系统MCP。
+    图中接口及工具名称为建议定义。
+  </desc>
+
+  <defs>
+    <style>
+      text {
+        font-family: "Microsoft YaHei", "PingFang SC",
+                     "Noto Sans CJK SC", Arial, sans-serif;
+      }
+      .header {
+        font-size: 23px;
+        font-weight: 700;
+        fill: #193E68;
+      }
+      .header-white {
+        font-size: 23px;
+        font-weight: 700;
+        fill: #FFFFFF;
+      }
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+        fill: #193E68;
+      }
+      .body {
+        font-size: 16px;
+        fill: #445F7A;
+      }
+      .small {
+        font-size: 14px;
+        fill: #617A93;
+      }
+      .api {
+        font-family: Consolas, "DejaVu Sans Mono", monospace;
+        font-size: 13px;
+        fill: #315F94;
+      }
+      .label {
+        font-size: 16px;
+        fill: #315F94;
+      }
+      .return-label {
+        font-size: 15px;
+        fill: #137D79;
+      }
+      .mcp-title {
+        font-size: 16px;
+        font-weight: 700;
+        fill: #28654F;
+      }
+      .request {
+        fill: none;
+        stroke: #3978BD;
+        stroke-width: 2.4;
+        marker-end: url(#arrow-blue);
+      }
+      .response {
+        fill: none;
+        stroke: #26938D;
+        stroke-width: 2.2;
+        stroke-dasharray: 7 5;
+        marker-end: url(#arrow-teal);
+      }
+      .inference {
+        fill: none;
+        stroke: #8863B5;
+        stroke-width: 2.5;
+        marker-end: url(#arrow-purple);
+      }
+      .input {
+        fill: none;
+        stroke: #3978BD;
+        stroke-width: 3;
+        marker-end: url(#arrow-blue);
+      }
+      .output {
+        fill: none;
+        stroke: #20958C;
+        stroke-width: 3;
+        marker-end: url(#arrow-teal);
+      }
+      .retry {
+        fill: none;
+        stroke: #D28B2E;
+        stroke-width: 2.4;
+        stroke-dasharray: 7 5;
+        marker-end: url(#arrow-orange);
+      }
+      .separator {
+        stroke: #D9E3EF;
+        stroke-width: 1;
+        stroke-dasharray: 4 7;
+      }
+    </style>
+
+    <marker id="arrow-blue"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#3978BD"/>
+    </marker>
+
+    <marker id="arrow-teal"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#26938D"/>
+    </marker>
+
+    <marker id="arrow-purple"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#8863B5"/>
+    </marker>
+
+    <marker id="arrow-orange"
+            viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#D28B2E"/>
+    </marker>
+
+    <!-- 坐席图标 -->
+    <g id="icon-seat" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="16" cy="11" r="5"/>
+      <path d="M8 12 V10 A8 8 0 0 1 24 10 V15"/>
+      <rect x="5" y="11" width="4" height="7" rx="2"/>
+      <rect x="23" y="11" width="4" height="7" rx="2"/>
+      <path d="M25 18 V21 H19"/>
+      <path d="M5 29 C6 20 26 20 27 29"/>
+    </g>
+
+    <!-- 智能体图标 -->
+    <g id="icon-agent" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="8" width="22" height="20" rx="5"/>
+      <path d="M16 8 V4"/>
+      <circle cx="16" cy="3" r="1.5"/>
+      <circle cx="11" cy="16" r="1.5"/>
+      <circle cx="21" cy="16" r="1.5"/>
+      <path d="M11 22 H21 M2 14 V22 M30 14 V22"/>
+    </g>
+
+    <!-- 数据库图标 -->
+    <g id="icon-database" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="16" cy="7" rx="11" ry="4"/>
+      <path d="M5 7 V25 C5 30 27 30 27 25 V7"/>
+      <path d="M5 15 C5 20 27 20 27 15"/>
+      <path d="M5 22 C5 27 27 27 27 22"/>
+    </g>
+
+    <!-- 知识图标 -->
+    <g id="icon-book" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 8 C11 4 5 4 2 6 V26 C7 24 12 25 16 28"/>
+      <path d="M16 8 C21 4 27 4 30 6 V26 C25 24 20 25 16 28"/>
+      <path d="M16 8 V28 M6 11 L12 13 M20 13 L26 11"/>
+    </g>
+
+    <!-- 本体图标 -->
+    <g id="icon-graph" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="16" cy="6" r="4"/>
+      <circle cx="6" cy="25" r="4"/>
+      <circle cx="26" cy="25" r="4"/>
+      <path d="M14 10 L8 21 M18 10 L24 21 M10 25 H22"/>
+    </g>
+
+    <!-- 工单图标 -->
+    <g id="icon-order" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="5" width="21" height="25" rx="3"/>
+      <rect x="12" y="2" width="9" height="6" rx="2"/>
+      <path d="M11 14 H22 M11 20 H22 M11 26 H18"/>
+    </g>
+
+    <!-- 对话图标 -->
+    <g id="icon-chat" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 4 H26 Q30 4 30 8 V21 Q30 25 26 25
+               H14 L7 30 V25 H6 Q2 25 2 21 V8 Q2 4 6 4 Z"/>
+      <path d="M8 11 H24 M8 17 H20"/>
+    </g>
+
+    <!-- 结果图标 -->
+    <g id="icon-check" fill="none" stroke="currentColor"
+       stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="16" cy="16" r="12"/>
+      <path d="M9 16 L14 21 L23 11"/>
+    </g>
+  </defs>
+
+  <!-- 顶部0～140px预留标题 -->
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+
+  <!-- 图例 -->
+  <text x="60" y="153" font-size="18" fill="#526E8C">
+    套餐推荐｜采集需求 → 检索推理 → 推荐反馈 → 确认办理 → 回执闭环
+  </text>
+
+  <path d="M1080 147 H1115" class="request"/>
+  <text x="1125" y="153" font-size="15" fill="#526E8C">调用 / 输入</text>
+
+  <path d="M1260 147 H1295" class="inference"/>
+  <text x="1305" y="153" font-size="15" fill="#526E8C">本体推理</text>
+
+  <path d="M1430 147 H1465" class="response"/>
+  <text x="1475" y="153" font-size="15" fill="#526E8C">返回 / 回执</text>
+
+  <path d="M1620 147 H1655" class="retry"/>
+  <text x="1665" y="153" font-size="15" fill="#526E8C">不认可，重新推荐</text>
+
+  <!-- 六条泳道 -->
+  <rect x="60" y="170" width="1800" height="812"
+        rx="16" fill="#FFFFFF" stroke="#D4E0ED" stroke-width="1.5"/>
+
+  <path d="M76 170 H360 V982 H76 Q60 982 60 966
+           V186 Q60 170 76 170" fill="#F8FAFD"/>
+  <rect x="360" y="170" width="300" height="812" fill="#EFF5FE"/>
+  <rect x="660" y="170" width="300" height="812" fill="#F5FAF8"/>
+  <rect x="960" y="170" width="300" height="812" fill="#F1F6FF"/>
+  <rect x="1260" y="170" width="300" height="812" fill="#F7F3FC"/>
+  <path d="M1560 170 H1844 Q1860 170 1860 186
+           V966 Q1860 982 1844 982 H1560 Z" fill="#F5FAF8"/>
+
+  <g stroke="#D7E2EE" stroke-width="1.2">
+    <line x1="360" y1="170" x2="360" y2="982"/>
+    <line x1="660" y1="170" x2="660" y2="982"/>
+    <line x1="960" y1="170" x2="960" y2="982"/>
+    <line x1="1260" y1="170" x2="1260" y2="982"/>
+    <line x1="1560" y1="170" x2="1560" y2="982"/>
+  </g>
+
+  <!-- 系统标题 -->
+  <path d="M76 170 H360 V233 H60 V186 Q60 170 76 170"
+        fill="#E8EFF8"/>
+  <rect x="360" y="170" width="300" height="63" fill="#DCEAFF"/>
+  <rect x="660" y="170" width="300" height="63" fill="#DDEFE8"/>
+  <rect x="960" y="170" width="300" height="63" fill="#24558F"/>
+  <rect x="1260" y="170" width="300" height="63" fill="#66508D"/>
+  <path d="M1560 170 H1844 Q1860 170 1860 186
+           V233 H1560 Z" fill="#DDEFE8"/>
+
+  <use xlink:href="#icon-seat" x="117" y="185" color="#315F94"/>
+  <text x="162" y="210" class="header">坐席工作台</text>
+
+  <use xlink:href="#icon-agent" x="393" y="185" color="#315F94"/>
+  <text x="438" y="210" class="header">智能体编排服务</text>
+
+  <use xlink:href="#icon-database" x="733" y="185" color="#28654F"/>
+  <text x="778" y="210" class="header">CRM系统</text>
+
+  <use xlink:href="#icon-book" x="1028" y="185" color="#FFFFFF"/>
+  <text x="1073" y="210" class="header-white">知识中心</text>
+
+  <use xlink:href="#icon-graph" x="1328" y="185" color="#FFFFFF"/>
+  <text x="1373" y="210" class="header-white">本体中心</text>
+
+  <use xlink:href="#icon-order" x="1596" y="185" color="#28654F"/>
+  <text x="1639" y="210" class="header">预受理 / 工单系统</text>
+
+  <!-- 阶段分隔 -->
+  <line x1="75" y1="357" x2="1845" y2="357" class="separator"/>
+  <line x1="75" y1="460" x2="1845" y2="460" class="separator"/>
+  <line x1="75" y1="574" x2="1845" y2="574" class="separator"/>
+  <line x1="75" y1="687" x2="1845" y2="687" class="separator"/>
+  <line x1="75" y1="879" x2="1845" y2="879" class="separator"/>
+
+  <!-- 知识中心融合服务虚线框 -->
+  <rect x="969" y="329" width="282" height="239" rx="16"
+        fill="#EAF2FF" fill-opacity="0.72"
+        stroke="#527EB7" stroke-width="2" stroke-dasharray="9 6"/>
+
+  <rect x="984" y="340" width="252" height="26" rx="8" fill="#EAF2FF"/>
+  <text x="1110" y="359" text-anchor="middle"
+        font-size="18" font-weight="700" fill="#24558F">
+    融合的检索和推理服务
+  </text>
+
+  <!-- ==================================================
+       01 坐席输入与客户画像
+       ================================================== -->
+  <rect x="80" y="250" width="260" height="82" rx="12"
+        fill="#EAF2FF" stroke="#84A9D6" stroke-width="1.5"/>
+  <use xlink:href="#icon-seat" x="93" y="260" color="#3978BD"/>
+  <text x="134" y="282" class="title">坐席输入：客户诉求</text>
+  <text x="96" y="307" class="body">客户号码、预算、速率、流量</text>
+  <text x="96" y="326" class="small">“想降低月费，同时保留当前速率。”</text>
+
+  <rect x="380" y="250" width="260" height="82" rx="12"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <use xlink:href="#icon-agent" x="393" y="260" color="#3978BD"/>
+  <text x="434" y="282" class="title">01 识别诉求 / 查画像</text>
+  <text x="396" y="307" class="body">提取需求，合并客户事实</text>
+  <text x="396" y="326" class="small">关联身份校验凭证与事实版本</text>
+
+  <rect x="680" y="250" width="260" height="82" rx="10"
+        fill="#FFFFFF" stroke="#70A28E" stroke-width="1.5"/>
+  <text x="696" y="277" class="mcp-title">CRM MCP｜客户上下文查询</text>
+  <text x="696" y="301" class="api">crm.get_customer_context</text>
+  <text x="696" y="324" class="small">当前套餐、合约、用量、客群、工单</text>
+
+  <path d="M340 290 H380" class="input"/>
+  <text x="360" y="278" text-anchor="middle"
+        font-size="12" font-weight="700" fill="#3978BD">输入</text>
+
+  <path d="M640 290 H680" class="request"/>
+  <text x="660" y="278" text-anchor="middle"
+        font-size="12" font-weight="700" fill="#3978BD">MCP</text>
+
+  <path d="M810 332 V348 H510 V332" class="response"/>
+  <text x="660" y="342" text-anchor="middle"
+        font-size="14" fill="#137D79">
+    套餐 · 合约 · 消费用量 · 客群 · 工单 · 版本
+  </text>
+
+  <!-- ==================================================
+       02 追问补全与候选套餐检索
+       ================================================== -->
+  <rect x="80" y="373" width="260" height="61" rx="12"
+        fill="#E8F6F2" stroke="#8EC6BA" stroke-width="1.5"/>
+  <use xlink:href="#icon-chat" x="94" y="385" color="#20958C"/>
+  <text x="134" y="398" font-size="17" font-weight="700" fill="#167C73">
+    智能体输出：补充问题
+  </text>
+  <text x="134" y="421" font-size="15" fill="#397568">
+    预算上限？是否接受新合约？
+  </text>
+
+  <rect x="380" y="373" width="260" height="61" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="398" class="title">02 补全需求 / 检索套餐</text>
+  <text x="396" y="421" class="body">形成预算、权益、地域等条件</text>
+
+  <path d="M380 391 H340" class="output"/>
+  <text x="360" y="380" text-anchor="middle"
+        font-size="11" fill="#167C73">追问</text>
+
+  <path d="M340 425 H380" class="input"/>
+  <text x="360" y="414" text-anchor="middle"
+        font-size="11" fill="#3978BD">补录</text>
+
+  <rect x="980" y="374" width="260" height="65" rx="10"
+        fill="#FFFFFF" stroke="#527EB7" stroke-width="1.8"/>
+  <path d="M990 374 H1230 Q1240 374 1240 384 V400
+           H980 V384 Q980 374 990 374" fill="#DCEAFF"/>
+  <text x="1110" y="393" text-anchor="middle"
+        font-size="17" font-weight="700" fill="#24558F">检索｜API / MCP</text>
+  <text x="994" y="416" class="api">API POST /packages/search</text>
+  <text x="994" y="433" class="api">MCP knowledge.search_packages</text>
+
+  <path d="M640 407 H980" class="request"/>
+  <text x="810" y="395" text-anchor="middle" class="label">
+    预算 · 速率 · 流量 · 地域 · 客户属性
+  </text>
+
+  <path d="M1110 439 V453 H510 V434" class="response"/>
+  <text x="810" y="447" text-anchor="middle" class="return-label">
+    候选套餐 · 资费权益 · 活动 / 受理口径 · 来源引用 / 知识版本
+  </text>
+
+  <!-- ==================================================
+       03 知识中心推理编排 → 本体中心规则推理
+       ================================================== -->
+  <rect x="380" y="476" width="260" height="64" rx="10"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="501" class="title">03 发起资格 / 变更判定</text>
+  <text x="396" y="525" class="body">当前套餐 + 候选套餐 + 客户事实</text>
+
+  <rect x="980" y="468" width="260" height="76" rx="10"
+        fill="#FFFFFF" stroke="#527EB7" stroke-width="1.8"/>
+  <path d="M990 468 H1230 Q1240 468 1240 478 V496
+           H980 V478 Q980 468 990 468" fill="#DCEAFF"/>
+  <text x="1110" y="488" text-anchor="middle"
+        font-size="17" font-weight="700" fill="#24558F">推理｜事实与候选方案编排</text>
+  <text x="994" y="516" class="api">API POST /reasoning/evaluate</text>
+  <text x="994" y="535" class="api">MCP knowledge.reason_packages</text>
+
+  <rect x="1280" y="468" width="260" height="76" rx="10"
+        fill="#FFFFFF" stroke="#9476BC" stroke-width="1.8"/>
+  <path d="M1290 468 H1530 Q1540 468 1540 478 V496
+           H1280 V478 Q1280 468 1290 468" fill="#EBE2F6"/>
+  <text x="1410" y="488" text-anchor="middle"
+        font-size="17" font-weight="700" fill="#67458F">推理服务｜资格 / 变更 / 派单</text>
+  <text x="1294" y="516" class="api">POST /inference/evaluate</text>
+  <text x="1294" y="535" class="small">本体关系、合约约束、专属政策规则</text>
+
+  <path d="M640 507 H980" class="request"/>
+  <text x="810" y="495" text-anchor="middle" class="label">
+    推理请求｜客户事实 + 套餐 + 合约
+  </text>
+
+  <path d="M1240 511 H1280" class="inference"/>
+  <text x="1260" y="499" text-anchor="middle"
+        font-size="12" font-weight="700" fill="#7653A6">API</text>
+
+  <path d="M1410 544 V554 H1110 V544" class="response"/>
+  <path d="M1060 544 V565 H510 V540" class="response"/>
+  <text x="790" y="558" text-anchor="middle" class="return-label">
+    可办结果 · 升级 / 低迁 / 平迁 · 限制条件 · 派单建议 · 决策 / 规则版本
+  </text>
+
+  <!-- ==================================================
+       04 输出推荐，坐席反馈，不认可重新推荐
+       ================================================== -->
+  <rect x="80" y="584" width="260" height="47" rx="10"
+        fill="#E8F6F2" stroke="#8EC6BA" stroke-width="1.5"/>
+  <use xlink:href="#icon-agent" x="93" y="591" color="#20958C"/>
+  <text x="134" y="604" font-size="17" font-weight="700" fill="#167C73">
+    智能体输出：推荐方案
+  </text>
+  <text x="134" y="623" font-size="14" fill="#397568">
+    套餐对比、费用差异、推荐话术
+  </text>
+
+  <rect x="80" y="638" width="260" height="39" rx="10"
+        fill="#EAF2FF" stroke="#84A9D6" stroke-width="1.5"/>
+  <use xlink:href="#icon-seat" x="93" y="641" color="#3978BD"/>
+  <text x="134" y="654" font-size="16" font-weight="700" fill="#315F94">
+    坐席输入：认可 / 拒绝 / 暂缓
+  </text>
+  <text x="134" y="671" font-size="13" fill="#526E8C">
+    选中套餐、拒绝原因或新需求
+  </text>
+
+  <rect x="380" y="584" width="260" height="93" rx="12"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="609" class="title">04 生成推荐 / 接收反馈</text>
+  <text x="396" y="634" class="body">可办方案排序，生成推荐快照</text>
+  <text x="396" y="657" class="body">认可：进入复核与最终确认</text>
+  <text x="396" y="673" class="small">不认可：更新需求，重新检索推理</text>
+
+  <path d="M380 607 H340" class="output"/>
+  <text x="360" y="595" text-anchor="middle"
+        font-size="11" fill="#167C73">输出</text>
+
+  <path d="M340 658 H380" class="input"/>
+  <text x="360" y="647" text-anchor="middle"
+        font-size="11" fill="#3978BD">输入</text>
+
+  <!-- 重新推荐回路 -->
+  <path d="M80 658 H69 V366 H510 V373" class="retry"/>
+  <rect x="100" y="356" width="315" height="20" rx="5" fill="#FFF7E9"/>
+  <text x="257" y="371" text-anchor="middle"
+        font-size="14" font-weight="700" fill="#B17A2B">
+    不认可且愿意继续 → 更新需求 → 重新推荐
+  </text>
+
+  <!-- 无可办方案的处理结果 -->
+  <rect x="980" y="592" width="560" height="67" rx="10"
+        fill="#FFF7E9" stroke="#EBD1AA" stroke-width="1.2"/>
+  <text x="998" y="617" font-size="17" font-weight="700" fill="#A47128">
+    无可办方案 / 关键事实缺失
+  </text>
+  <text x="998" y="641" font-size="16" fill="#9A743B">
+    输出限制原因与补充问题，由坐席确认调整需求或转人工
+  </text>
+
+  <!-- ==================================================
+       05 预检、最终确认、幂等建单
+       ================================================== -->
+  <rect x="80" y="701" width="260" height="78" rx="12"
+        fill="#E8F6F2" stroke="#8EC6BA" stroke-width="1.5"/>
+  <use xlink:href="#icon-chat" x="93" y="710" color="#20958C"/>
+  <text x="134" y="731" font-size="17" font-weight="700" fill="#167C73">
+    智能体输出：最终条件
+  </text>
+  <text x="96" y="754" class="body">最终费用、合约、生效时间</text>
+  <text x="96" y="772" class="small">预检通过后，供坐席向客户确认</text>
+
+  <rect x="80" y="792" width="260" height="64" rx="12"
+        fill="#EAF2FF" stroke="#84A9D6" stroke-width="1.5"/>
+  <use xlink:href="#icon-seat" x="93" y="801" color="#3978BD"/>
+  <text x="134" y="822" font-size="17" font-weight="700" fill="#315F94">
+    坐席输入：最终确认
+  </text>
+  <text x="96" y="846" class="body">确认 / 取消、方案快照、凭证</text>
+
+  <rect x="380" y="701" width="260" height="155" rx="12"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <use xlink:href="#icon-agent" x="393" y="710" color="#3978BD"/>
+  <text x="434" y="732" class="title">05 复核 / 确认 / 提交</text>
+  <text x="396" y="758" class="body">① 原路径刷新事实、知识与推理</text>
+  <text x="396" y="783" class="body">② MCP预检，生成最终确认卡</text>
+  <text x="396" y="808" class="body">③ 客户确认后，MCP幂等建单</text>
+  <text x="396" y="833" class="small">条件变化：重新确认；取消：不建单</text>
+  <text x="396" y="850" class="small">保留确认ID、决策ID、预检凭证</text>
+
+  <path d="M380 748 H340" class="output"/>
+  <text x="360" y="736" text-anchor="middle"
+        font-size="11" fill="#167C73">输出</text>
+
+  <path d="M340 825 H380" class="input"/>
+  <text x="360" y="813" text-anchor="middle"
+        font-size="11" fill="#3978BD">确认</text>
+
+  <!-- 预受理预检MCP -->
+  <rect x="1580" y="697" width="260" height="80" rx="10"
+        fill="#FFFFFF" stroke="#70A28E" stroke-width="1.5"/>
+  <text x="1594" y="722" class="mcp-title">工单MCP｜办理预检</text>
+  <text x="1594" y="746" class="api">order.validate_preorder</text>
+  <text x="1594" y="767" class="small">实时资格、权威费用、生效条件</text>
+
+  <path d="M640 723 H1580" class="request"/>
+  <text x="1110" y="711" text-anchor="middle" class="label">
+    预检请求｜客户ID + 套餐 / 活动ID + 决策ID + 事实版本
+  </text>
+
+  <path d="M1580 766 H640" class="response"/>
+  <text x="1110" y="754" text-anchor="middle" class="return-label">
+    预检凭证 · 权威费用 · 合约 / 生效条件 · 有效期
+  </text>
+
+  <!-- 预受理建单MCP -->
+  <rect x="1580" y="789" width="260" height="67" rx="10"
+        fill="#FFFFFF" stroke="#70A28E" stroke-width="1.5"/>
+  <text x="1594" y="813" class="mcp-title">工单MCP｜预受理 / 派单</text>
+  <text x="1594" y="835" class="api">order.create_preorder</text>
+  <text x="1594" y="851" class="small">确认校验、幂等建单、派单执行</text>
+
+  <path d="M640 817 H1580" class="request"/>
+  <text x="1110" y="805" text-anchor="middle" class="label">
+    建单请求｜工单草稿 + 确认ID + 预检凭证 + 幂等键
+  </text>
+
+  <path d="M1710 856 V871 H510 V856" class="response"/>
+  <text x="1110" y="865" text-anchor="middle" class="return-label">
+    预受理单号 · 工单号 · 受理状态 · 派单状态
+  </text>
+
+  <!-- ==================================================
+       06 状态回执、CRM回写、坐席结果输出
+       ================================================== -->
+  <rect x="80" y="894" width="260" height="72" rx="12"
+        fill="#E8F6F2" stroke="#8EC6BA" stroke-width="1.6"/>
+  <use xlink:href="#icon-check" x="93" y="903" color="#20958C"/>
+  <text x="134" y="925" font-size="17" font-weight="700" fill="#167C73">
+    智能体输出：办理结果
+  </text>
+  <text x="96" y="948" class="body">单号、处理状态、补件或跟进项</text>
+  <text x="96" y="963" class="small">坐席告知客户进度与后续处理方式</text>
+
+  <rect x="380" y="894" width="260" height="72" rx="12"
+        fill="#FFFFFF" stroke="#6D9CD3" stroke-width="1.8"/>
+  <text x="396" y="920" class="title">06 更新状态 / 意向闭环</text>
+  <text x="396" y="944" class="body">回执去重，更新意向与工单关联</text>
+  <text x="396" y="961" class="small">预受理成功与办理完成分开展示</text>
+
+  <path d="M380 936 H340" class="output"/>
+  <text x="360" y="924" text-anchor="middle"
+        font-size="11" fill="#167C73">输出</text>
+
+  <rect x="680" y="925" width="260" height="42" rx="8"
+        fill="#FFFFFF" stroke="#70A28E" stroke-width="1.4"/>
+  <text x="694" y="943" class="mcp-title">CRM MCP｜意向 / 结果回写</text>
+  <text x="694" y="960" class="api">crm.save_recommendation_result</text>
+
+  <path d="M640 946 H680" class="request"/>
+  <text x="660" y="934" text-anchor="middle"
+        font-size="11" font-weight="700" fill="#3978BD">MCP</text>
+
+  <rect x="1580" y="891" width="260" height="76" rx="10"
+        fill="#FFFFFF" stroke="#70A28E" stroke-width="1.5"/>
+  <text x="1594" y="915" class="mcp-title">工单MCP｜状态查询</text>
+  <text x="1594" y="938" class="api">order.get_preorder_status</text>
+  <text x="1594" y="958" class="small">执行回执：工单系统事件推送</text>
+
+  <path d="M1580 913 H640" class="response"/>
+  <text x="1110" y="901" text-anchor="middle" class="return-label">
+    事件回执｜事件ID · 单号 · 状态 / 版本 · 失败原因 · 完成时间
+  </text>
+
+  <path d="M620 966 V976 H1550 V951 H1580" class="request"/>
+  <text x="1240" y="965" text-anchor="middle"
+        font-size="14" fill="#315F94">
+    超时 / 结果未知：工单MCP按单号或幂等键查询
+  </text>
+
+  <!-- 核心数据链 -->
+  <rect x="60" y="1000" width="1800" height="54" rx="12"
+        fill="#EDF3FA" stroke="#D9E4F0" stroke-width="1"/>
+
+  <text x="82" y="1033" font-size="18" font-weight="700" fill="#24558F">
+    核心数据
+  </text>
+
+  <text x="195" y="1033" font-size="17" fill="#365675">
+    坐席输入 → 需求画像 → 客户事实 → 候选套餐 → 规则决策 → 推荐快照 → 客户确认 → 预受理 / 工单 → 结果反馈
+  </text>
+</svg>

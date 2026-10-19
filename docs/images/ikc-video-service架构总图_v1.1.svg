@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 1240" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowPink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ec4899"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1900" height="1240" fill="#f8fafc"/>
+    <!-- ===== L1 调用方层 ===== -->
+  <g transform="translate(70,94)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gBlue)"/>
+    <g fill="#ffffff"><circle cx="22" cy="15" r="6"/><path d="M10,34 a12,12 0 0 1 24,0 z"/></g>
+  </g>
+  <text x="92" y="152" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">调用方层</text>
+  <rect x="160" y="80" width="1260" height="110" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <rect x="220" y="96" width="380" height="78" rx="10" fill="url(#gBlue)"/>
+  <text x="410" y="128" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">知识管线 pipeline</text>
+  <text x="410" y="152" text-anchor="middle" font-size="11" fill="#dbeafe">文档接入链路 · 引用视频片段进入知识主链路</text>
+  <rect x="620" y="96" width="380" height="78" rx="10" fill="url(#gBlue)"/>
+  <text x="810" y="128" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">开放平台网关 open ikc gateway</text>
+  <text x="810" y="152" text-anchor="middle" font-size="11" fill="#dbeafe">统一协议 · 认证鉴权 · 限流路由后转发视频请求</text>
+  <rect x="1020" y="96" width="380" height="78" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1210" y="128" text-anchor="middle" font-size="15" font-weight="bold" fill="#be185d">ikc-video-sdk</text>
+  <text x="1210" y="152" text-anchor="middle" font-size="11" fill="#9d174d">typed 视频资源方法 · 统一壳解包 · 错误码→类型化异常</text>
+
+  <line x1="810" y1="190" x2="810" y2="230" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="830" y="215" font-size="12" fill="#334155">HTTPS POST /api/v1/video/**（Bearer Token · traceId 透传）</text>
+
+  <!-- ===== L2 接入层 ===== -->
+  <g transform="translate(70,294)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gTeal)"/>
+    <g stroke="#ffffff" stroke-width="2" fill="none"><circle cx="22" cy="22" r="12"/><path d="M10,22 h24 M22,10 c5,7 5,17 0,24 M22,10 c-5,7 -5,17 0,24"/></g>
+  </g>
+  <text x="92" y="352" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f766e">接入层</text>
+  <text x="92" y="370" text-anchor="middle" font-size="10.5" fill="#64748b">HTTP · HAProxy</text>
+  <rect x="160" y="230" width="1260" height="170" rx="14" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+  <rect x="220" y="250" width="250" height="130" rx="10" fill="url(#gTeal)"/>
+  <text x="345" y="284" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">HAProxy 入口</text>
+  <text x="345" y="308" text-anchor="middle" font-size="11" fill="#ccfbf1">宿主机 :19200 · stats :8424</text>
+  <text x="345" y="330" text-anchor="middle" font-size="11" fill="#ccfbf1">单镜像内置 → uvicorn :18200</text>
+  <text x="345" y="352" text-anchor="middle" font-size="11" fill="#ccfbf1">api / worker 双容器部署</text>
+  <rect x="490" y="250" width="290" height="130" rx="10" fill="url(#gTeal)"/>
+  <text x="635" y="284" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">V-01 异步切片</text>
+  <text x="635" y="308" text-anchor="middle" font-size="11" fill="#ccfbf1">POST /api/v1/video/slice</text>
+  <text x="635" y="330" text-anchor="middle" font-size="11" fill="#ccfbf1">嵌套 media → 扁平入参投递任务</text>
+  <text x="635" y="352" text-anchor="middle" font-size="11" fill="#ccfbf1">立即返回 taskId</text>
+  <rect x="800" y="250" width="290" height="130" rx="10" fill="url(#gTeal)"/>
+  <text x="945" y="284" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">V-02 同步处理</text>
+  <text x="945" y="308" text-anchor="middle" font-size="11" fill="#ccfbf1">POST /api/v1/video/process</text>
+  <text x="945" y="330" text-anchor="middle" font-size="11" fill="#ccfbf1">投递任务并等待结果</text>
+  <text x="945" y="352" text-anchor="middle" font-size="11" fill="#ccfbf1">返回 mm-schema 清单</text>
+  <rect x="1110" y="250" width="290" height="130" rx="10" fill="url(#gTeal)"/>
+  <text x="1255" y="284" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">横切面 api/core</text>
+  <text x="1255" y="308" text-anchor="middle" font-size="11" fill="#ccfbf1">Trace · AuthN · 统一壳 errCode/errMsg/data</text>
+  <text x="1255" y="330" text-anchor="middle" font-size="11" fill="#ccfbf1">错误码 registry · 全局异常处理器</text>
+  <text x="1255" y="352" text-anchor="middle" font-size="11" fill="#ccfbf1">catalog · 系统路由 /api/error-codes</text>
+
+  <line x1="810" y1="400" x2="810" y2="440" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="830" y="425" font-size="12" fill="#334155">Celery 投递任务（video.process / video.orchestrate · payload 携带 trace_id）</text>
+
+  <!-- ===== L3 调度层 ===== -->
+  <g transform="translate(70,474)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gIndigo)"/>
+    <g stroke="#ffffff" stroke-width="2" fill="none"><circle cx="22" cy="22" r="12"/><path d="M22,14 V22 L28,27"/></g>
+  </g>
+  <text x="92" y="532" text-anchor="middle" font-size="14" font-weight="bold" fill="#4338ca">调度层</text>
+  <text x="92" y="550" text-anchor="middle" font-size="10.5" fill="#64748b">Celery · Redis</text>
+  <rect x="160" y="440" width="1260" height="120" rx="14" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <rect x="220" y="456" width="370" height="88" rx="10" fill="url(#gIndigo)"/>
+  <text x="405" y="490" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">任务投递（API 侧）</text>
+  <text x="405" y="514" text-anchor="middle" font-size="11" fill="#e0e7ff">send_task → 队列 video · 异步不阻塞 HTTP</text>
+  <rect x="630" y="456" width="370" height="88" rx="10" fill="url(#gIndigo)"/>
+  <text x="815" y="490" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Redis Broker</text>
+  <text x="815" y="514" text-anchor="middle" font-size="11" fill="#e0e7ff">本服务 db7/db8 · 队列 video</text>
+  <rect x="1040" y="456" width="360" height="88" rx="10" fill="url(#gIndigo)"/>
+  <text x="1220" y="490" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Celery worker</text>
+  <text x="1220" y="514" text-anchor="middle" font-size="11" fill="#e0e7ff">-Q video · 消费 video.process / video.orchestrate</text>
+
+  <line x1="1220" y1="544" x2="1220" y2="600" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="1240" y="576" font-size="12" fill="#334155">worker 执行主流程</text>
+
+  <!-- ===== L4 任务主流程 ===== -->
+  <g transform="translate(70,694)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gViolet)"/>
+    <g stroke="#ffffff" stroke-width="1.8" fill="none"><circle cx="12" cy="12" r="4"/><circle cx="32" cy="12" r="4"/><circle cx="12" cy="32" r="4"/><circle cx="32" cy="32" r="4"/><path d="M16,12 H28 M12,16 V28 M32,16 V28 M16,32 H28"/></g>
+  </g>
+  <text x="92" y="752" text-anchor="middle" font-size="14" font-weight="bold" fill="#6d28d9">任务主流程</text>
+  <text x="92" y="770" text-anchor="middle" font-size="10.5" fill="#64748b">video.process</text>
+  <rect x="160" y="600" width="1260" height="240" rx="14" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.5"/>
+  <text x="220" y="626" font-size="13" font-weight="bold" fill="#6b21a8">video.process 主流程（10 步）· 无音轨输入跳过音频抽取 / 切片 / ASR</text>
+  <!-- 行1 -->
+  <rect x="220" y="636" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="330" y="662" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">① 参数校验</text>
+  <text x="330" y="682" text-anchor="middle" font-size="10" fill="#ede9fe">_validate_request · 扁平入参</text>
+  <line x1="440" y1="668" x2="458" y2="668" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="460" y="636" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="570" y="662" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">② 媒体落盘</text>
+  <text x="570" y="682" text-anchor="middle" font-size="10" fill="#ede9fe">object_key→PyUploadX · url→httpx</text>
+  <line x1="680" y1="668" x2="698" y2="668" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="700" y="636" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="810" y="662" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">③ 时长探测</text>
+  <text x="810" y="682" text-anchor="middle" font-size="10" fill="#ede9fe">ffprobe · 严格音轨检测</text>
+  <line x1="920" y1="668" x2="938" y2="668" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="940" y="636" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="1050" y="662" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">④ 分段</text>
+  <text x="1050" y="682" text-anchor="middle" font-size="10" fill="#ede9fe">场景切分优先 · 固定回退 · 超限260002</text>
+  <line x1="1160" y1="668" x2="1178" y2="668" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="1180" y="636" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="1290" y="662" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">⑤ 切片上传</text>
+  <text x="1290" y="682" text-anchor="middle" font-size="10" fill="#ede9fe">视频重编码 / 音频copy → PyUploadX</text>
+  <!-- 回绕连线 -->
+  <path d="M 1290 700 L 1290 718 L 330 718 L 330 734" fill="none" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- 行2 -->
+  <rect x="220" y="736" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="330" y="762" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">⑥ 抽帧去重</text>
+  <text x="330" y="782" text-anchor="middle" font-size="10" fill="#ede9fe">帧内去重 FrameSimilarity · 上传</text>
+  <line x1="440" y1="768" x2="458" y2="768" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="460" y="736" width="220" height="64" rx="9" fill="url(#gRose)"/>
+  <text x="570" y="762" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">⑦ ASR 转写</text>
+  <text x="570" y="782" text-anchor="middle" font-size="10" fill="#ffe4e6">asr.transcribe · 经 ai-gateway 队列</text>
+  <text x="692" y="772" font-size="13" font-weight="bold" fill="#e11d48">‖</text>
+  <rect x="700" y="736" width="220" height="64" rx="9" fill="url(#gRose)"/>
+  <text x="810" y="762" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">⑧ 关键帧描述</text>
+  <text x="810" y="782" text-anchor="middle" font-size="10" fill="#ffe4e6">mm.analyze · 多模态 · 并行执行</text>
+  <line x1="920" y1="768" x2="938" y2="768" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="940" y="736" width="220" height="64" rx="9" fill="url(#gRose)"/>
+  <text x="1050" y="762" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">⑨ 分段摘要</text>
+  <text x="1050" y="782" text-anchor="middle" font-size="10" fill="#ffe4e6">llm.chat · 为空回退转写文本</text>
+  <line x1="1160" y1="768" x2="1178" y2="768" stroke="#7e22ce" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="1180" y="736" width="220" height="64" rx="9" fill="url(#gViolet)"/>
+  <text x="1290" y="762" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">⑩ mm-schema 清单</text>
+  <text x="1290" y="782" text-anchor="middle" font-size="10" fill="#ede9fe">清单上传 · 返回 segments 视图</text>
+
+  <line x1="810" y1="840" x2="810" y2="880" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="830" y="865" font-size="12" fill="#334155">主流程调用集成门面（文件上传 / 队列投递 / 工具方法）</text>
+
+  <!-- ===== L5 集成层 ===== -->
+  <g transform="translate(70,914)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gCyan)"/>
+    <g stroke="#ffffff" stroke-width="1.8" fill="none"><rect x="14" y="14" width="16" height="16" rx="3"/><path d="M20,14 V7 M26,14 V7 M14,20 H7 M14,26 H7 M30,20 H37 M30,26 H37 M20,30 V37 M26,30 V37"/></g>
+  </g>
+  <text x="92" y="972" text-anchor="middle" font-size="14" font-weight="bold" fill="#0891b2">集成层</text>
+  <text x="92" y="990" text-anchor="middle" font-size="10.5" fill="#64748b">integrations</text>
+  <rect x="160" y="880" width="1260" height="120" rx="14" fill="#ecfeff" stroke="#67e8e9" stroke-width="1.5"/>
+  <rect x="220" y="896" width="280" height="88" rx="10" fill="url(#gCyan)"/>
+  <text x="360" y="930" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">pyuploadx_storage</text>
+  <text x="360" y="954" text-anchor="middle" font-size="11" fill="#cffafe">文件体上传 / 下载门面（pyuploadx SDK）</text>
+  <rect x="520" y="896" width="280" height="88" rx="10" fill="url(#gCyan)"/>
+  <text x="660" y="930" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">aigw</text>
+  <text x="660" y="954" text-anchor="middle" font-size="11" fill="#cffafe">模型/音频能力 · Celery 投递 asr/mm/llm 队列</text>
+  <rect x="820" y="896" width="280" height="88" rx="10" fill="url(#gCyan)"/>
+  <text x="960" y="930" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">model_info · des</text>
+  <text x="960" y="954" text-anchor="middle" font-size="11" fill="#cffafe">模型信息查询 · 辅助能力门面</text>
+  <rect x="1120" y="896" width="280" height="88" rx="10" fill="url(#gCyan)"/>
+  <text x="1260" y="930" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">工具集 media / text / prompts</text>
+  <text x="1260" y="954" text-anchor="middle" font-size="11" fill="#cffafe">帧相似度去重 · 文本清洗 · 提示词模板</text>
+
+  <line x1="360" y1="984" x2="360" y2="1040" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="375" y="1016" font-size="11" fill="#334155">SDK（HTTP）· 只留 bucket/object_key/url 引用</text>
+  <line x1="660" y1="984" x2="660" y2="1040" stroke="#e11d48" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text x="675" y="1016" font-size="11" fill="#e11d48">Celery 队列投递（禁直连模型）· Redis db5/db6</text>
+
+  <!-- ===== L6 外部依赖层 ===== -->
+  <g transform="translate(70,1078)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gSlate)"/>
+    <g stroke="#ffffff" stroke-width="1.8" fill="none"><ellipse cx="22" cy="13" rx="10" ry="4"/><path d="M12,13 V31 a10,4 0 0 0 20,0 V13"/><path d="M12,22 a10,4 0 0 0 20,0"/></g>
+  </g>
+  <text x="92" y="1136" text-anchor="middle" font-size="14" font-weight="bold" fill="#475569">外部依赖层</text>
+  <rect x="160" y="1040" width="1260" height="128" rx="14" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <rect x="220" y="1056" width="380" height="96" rx="10" fill="url(#gSlate)"/>
+  <text x="410" y="1090" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">PyUploadX 文件服务</text>
+  <text x="410" y="1114" text-anchor="middle" font-size="11" fill="#e2e8f0">文件体：原视频/切片/音频/关键帧/mm-schema 清单</text>
+  <text x="410" y="1136" text-anchor="middle" font-size="11" fill="#e2e8f0">产物桶 ikc-video 须预先放行（否则 509101）</text>
+  <rect x="620" y="1056" width="380" height="96" rx="10" fill="url(#gSlate)"/>
+  <text x="810" y="1090" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">ikc-ai-gateway</text>
+  <text x="810" y="1114" text-anchor="middle" font-size="11" fill="#e2e8f0">asr / mm / llm worker · 队列 Redis db5/db6</text>
+  <text x="810" y="1136" text-anchor="middle" font-size="11" fill="#e2e8f0">超时：asr / vision / llm_timeout_sec 可配</text>
+  <rect x="1020" y="1056" width="380" height="96" rx="10" fill="url(#gSlate)"/>
+  <text x="1210" y="1090" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">运行时依赖</text>
+  <text x="1210" y="1114" text-anchor="middle" font-size="11" fill="#e2e8f0">ffmpeg / ffprobe（镜像内置）· Redis db7/db8</text>
+  <text x="1210" y="1136" text-anchor="middle" font-size="11" fill="#e2e8f0">转码 CPU 密集 · 高并发时优先扩 worker</text>
+
+  <!-- ===== 右侧纵向组件条：ikc-sdk-lib ===== -->
+  <rect x="1460" y="250" width="140" height="310" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1530" y="284" text-anchor="middle" font-size="14" font-weight="bold" fill="#be185d">ikc-sdk-lib</text>
+  <text x="1530" y="312" text-anchor="middle" font-size="10" fill="#9d174d">错误码表 / 标准头</text>
+  <text x="1530" y="332" text-anchor="middle" font-size="10" fill="#9d174d">队列名 / Celery 工厂</text>
+  <text x="1530" y="352" text-anchor="middle" font-size="10" fill="#9d174d">公共协议封装</text>
+  <text x="1530" y="380" text-anchor="middle" font-size="10" fill="#9d174d">celery==5.6.3</text>
+  <text x="1530" y="398" text-anchor="middle" font-size="10" fill="#9d174d">kombu==5.6.2</text>
+  <text x="1530" y="416" text-anchor="middle" font-size="10" fill="#9d174d">redis==6.2.0</text>
+  <text x="1530" y="444" text-anchor="middle" font-size="10" fill="#9d174d">版本强制契约</text>
+  <line x1="1460" y1="315" x2="1424" y2="315" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrowPink)"/>
+  <line x1="1460" y1="500" x2="1424" y2="500" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrowPink)"/>
+
+  <!-- ===== 右侧纵向组件条：可观测与日志 ===== -->
+  <rect x="1650" y="80" width="200" height="1088" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1750" y="118" text-anchor="middle" font-size="16" font-weight="bold" fill="#047857">可观测与日志</text>
+  <rect x="1670" y="150" width="160" height="150" rx="9" fill="url(#gGreen)"/>
+  <text x="1750" y="184" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">traceId 全链路</text>
+  <text x="1750" y="210" text-anchor="middle" font-size="10" fill="#d1fae5">HTTP 头复用注入</text>
+  <text x="1750" y="230" text-anchor="middle" font-size="10" fill="#d1fae5">随 Celery payload 透传</text>
+  <text x="1750" y="250" text-anchor="middle" font-size="10" fill="#d1fae5">API → 任务 → worker → 日志</text>
+  <text x="1750" y="278" text-anchor="middle" font-size="10" fill="#d1fae5">X-Trace-Id 下游透传</text>
+  <rect x="1670" y="330" width="160" height="130" rx="9" fill="url(#gGreen)"/>
+  <text x="1750" y="364" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">日志投递</text>
+  <text x="1750" y="390" text-anchor="middle" font-size="10" fill="#d1fae5">ikc-log-center（强制）</text>
+  <text x="1750" y="410" text-anchor="middle" font-size="10" fill="#d1fae5">LOG_CENTER_ENABLE=true</text>
+  <text x="1750" y="430" text-anchor="middle" font-size="10" fill="#d1fae5">API + worker 全量投递</text>
+  <rect x="1670" y="490" width="160" height="150" rx="9" fill="url(#gGreen)"/>
+  <text x="1750" y="524" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">错误码分段</text>
+  <text x="1750" y="550" text-anchor="middle" font-size="10" fill="#d1fae5">100xxx 通用（sdk-lib）</text>
+  <text x="1750" y="570" text-anchor="middle" font-size="10" fill="#d1fae5">260xxx 视频域</text>
+  <text x="1750" y="590" text-anchor="middle" font-size="10" fill="#d1fae5">509xxx 下游依赖</text>
+  <text x="1750" y="618" text-anchor="middle" font-size="10" fill="#d1fae5">/api/error-codes 可查</text>
+  <rect x="1670" y="670" width="160" height="130" rx="9" fill="url(#gGreen)"/>
+  <text x="1750" y="704" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">入口与实例</text>
+  <text x="1750" y="730" text-anchor="middle" font-size="10" fill="#d1fae5">HAProxy stats :8424</text>
+  <text x="1750" y="750" text-anchor="middle" font-size="10" fill="#d1fae5">api / worker 容器健康</text>
+  <text x="1750" y="778" text-anchor="middle" font-size="10" fill="#d1fae5">统一响应壳含 traceId</text>
+  <text x="1750" y="850" text-anchor="middle" font-size="11" fill="#047857">贯穿全部六层</text>
+  <text x="1750" y="880" text-anchor="middle" font-size="10" fill="#059669">日志禁止记录密钥与真实 token</text>
+  <line x1="1670" y1="225" x2="1424" y2="225" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1670" y1="480" x2="1604" y2="480" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1670" y1="720" x2="1424" y2="720" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1670" y1="940" x2="1424" y2="940" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1670" y1="1104" x2="1424" y2="1104" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+</svg>

@@ -1514,3 +1514,8 @@
 
 - 按用户要求就地修改 docs/images/Semantica-Graph-Engine整体框架_v1.0.svg：①删除顶部主标题文本「Semantica Graph Engine · 整体框架」（y=42）；②删除底部两行说明脚注（GraphEngineService 用例编排 / 守卫式降级，y=1122·1142 的 `<g font-size="12">` 块）；③viewBox 由 `0 0 2200 1240` 改 `0 55 2200 1032` 裁上下留白（顶留 15px、底含 y=1057「外部·部署」标签与 y=1066 持久层带 rect 完整不裁切）。
 - 验证：XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染覆盖 v1.0.png（4400×2064），目检标题/脚注已去除、底部标签与卡片无裁切、中文无豆腐块。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：ikc-video-service 架构总图 v1.1 左侧层标签改 wiki 徽章式（2026-10-19）
+
+- 按用户要求基于 v1.0 新建 docs/images/ikc-video-service架构总图_v1.1.svg（v1.0 保留）：左侧六层层标签由「rotate(-90) 竖排文字」改为 OpenWiki-Server 框架图同款「44×44 圆角渐变图标徽章（x=70，带内垂直居中）+ 徽章下方层名（14px bold 取各层色深阶）+ 副行（10.5px 灰，HTTP·HAProxy / Celery·Redis / video.process / integrations）」；图标为手绘白描矢量：调用方层人形（gBlue）、接入层地球（gTeal）、调度层时钟（gIndigo）、任务主流程四节点链路（gViolet）、集成层芯片（gCyan）、外部依赖层数据库柱（gSlate），复用图内既有渐变，未新增 defs；font-family 首位改 Noto Sans CJK SC 免临时副本。
+- 验证：XML 校验 OK；cairosvg 2x 渲染同名 PNG，目检六徽章图标全部正常、无豆腐块、文字未侵入层带（层带左缘 x=160）、布局与连线无位移。仅配图改动，无代码改动，跳过 pytest 与 Claude 只读审查。

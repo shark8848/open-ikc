@@ -1,0 +1,324 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 55 2200 1032" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">
+  <defs>
+    <linearGradient id="gcyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient>
+    <linearGradient id="gblue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#0284c7"/></linearGradient>
+    <linearGradient id="gviolet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
+    <linearGradient id="gindigo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#3730a3"/></linearGradient>
+    <linearGradient id="gslate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient>
+    <linearGradient id="gdeep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#475569"/><stop offset="1" stop-color="#334155"/></linearGradient>
+    <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#059669"/></linearGradient>
+    <marker id="arrDown" markerWidth="9" markerHeight="8" refX="4.5" refY="6" orient="auto"><path d="M0,0 L9,0 L4.5,7 Z" fill="#94a3b8"/></marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker>
+    <marker id="arrowPink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ec4899"/></marker>
+  </defs>
+  <rect x="0" y="0" width="2200" height="1240" fill="#f8fafc"/>
+  <g stroke="#cbd5e1" stroke-width="2">
+    <line x1="950" y1="212" x2="950" y2="220" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="364" x2="950" y2="372" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="496" x2="950" y2="504" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="648" x2="950" y2="656" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="800" x2="950" y2="808" marker-end="url(#arrDown)"/>
+    <line x1="950" y1="942" x2="950" y2="950" marker-end="url(#arrDown)"/>
+  </g>
+  <g transform="translate(90,118)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gcyan)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+  </g>
+  <text x="112" y="180" text-anchor="middle" font-size="14" font-weight="bold" fill="#0e7490">调用方/入口</text>
+  <rect x="180" y="70" width="1560" height="140" rx="14" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="86" width="370" height="108" rx="12" fill="url(#gcyan)"/>
+    <g transform="translate(208,97)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="6" cy="6" r="2.4"/><circle cx="16" cy="16" r="2.4"/><path d="M8,7 L14,15"/></g></g>
+    <text x="381" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">open-ikc / ikc-core-service</text>
+    <text x="381" y="140" text-anchor="middle" font-size="10.5" fill="#ecfeff">HTTP·gRPC 消费图谱 G 域能力</text>
+    <text x="381" y="157" text-anchor="middle" font-size="10.5" fill="#ecfeff">构建载荷下发约束画像</text>
+    <rect x="582" y="86" width="370" height="108" rx="12" fill="url(#gcyan)"/>
+    <g transform="translate(594,97)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="4" y="6" width="14" height="11" rx="2"/><circle cx="9" cy="11" r="1.3" fill="#fff" stroke="none"/><circle cx="14" cy="11" r="1.3" fill="#fff" stroke="none"/><path d="M11,6 V3"/></g></g>
+    <text x="767" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">AI Agent / MCP Client</text>
+    <text x="767" y="140" text-anchor="middle" font-size="10.5" fill="#ecfeff">stdio JSON-RPC 工具调用</text>
+    <text x="767" y="157" text-anchor="middle" font-size="10.5" fill="#ecfeff">28 工具与 HTTP 语义一致</text>
+    <rect x="968" y="86" width="370" height="108" rx="12" fill="url(#gcyan)"/>
+    <g transform="translate(980,97)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M6,9 l3,2 l-3,2"/><line x1="11" y1="14" x2="15" y2="14"/></g></g>
+    <text x="1153" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">开发者 / 运维</text>
+    <text x="1153" y="140" text-anchor="middle" font-size="10.5" fill="#ecfeff">graph-engine CLI（typer）</text>
+    <text x="1153" y="157" text-anchor="middle" font-size="10.5" fill="#ecfeff">退出码 0/1/6 对齐 open-ikc</text>
+    <rect x="1354" y="86" width="370" height="108" rx="12" fill="url(#gcyan)"/>
+    <g transform="translate(1366,97)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,3 l7,4 v9 l-7,4 l-7,-4 V7 z"/><path d="M4,7 l7,4 l7,-4 M11,11 v9"/></g></g>
+    <text x="1539" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">应用集成 SDK</text>
+    <text x="1539" y="140" text-anchor="middle" font-size="10.5" fill="#ecfeff">GraphEngineClient / Async</text>
+    <text x="1539" y="157" text-anchor="middle" font-size="10.5" fill="#ecfeff">httpx·client_from_env·CallerIdentity</text>
+  </g>
+  <g transform="translate(90,270)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gblue)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,8 h14 M4,14 h14"/><circle cx="8" cy="8" r="2" fill="#fff" stroke="none"/><circle cx="15" cy="14" r="2" fill="#fff" stroke="none"/></g></g>
+  </g>
+  <text x="112" y="332" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">协议接口层</text>
+  <text x="112" y="350" text-anchor="middle" font-size="10.5" fill="#64748b">interfaces/</text>
+  <rect x="180" y="222" width="1560" height="140" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="238" width="294" height="108" rx="12" fill="url(#gblue)"/>
+    <g transform="translate(208,249)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,8 h14 M4,14 h14"/><circle cx="8" cy="8" r="2" fill="#fff" stroke="none"/><circle cx="15" cy="14" r="2" fill="#fff" stroke="none"/></g></g>
+    <text x="343" y="272" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">HTTP · FastAPI</text>
+    <text x="343" y="292" text-anchor="middle" font-size="10.5" fill="#dbeafe">/api/v1/graph/* 33 路由</text>
+    <text x="343" y="309" text-anchor="middle" font-size="10.5" fill="#dbeafe">envelope 对齐 open-ikc</text>
+    <text x="343" y="326" text-anchor="middle" font-size="10.5" fill="#dbeafe">/health · /ready 探针</text>
+    <rect x="504" y="238" width="294" height="108" rx="12" fill="url(#gblue)"/>
+    <g transform="translate(516,249)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="4" y="6" width="14" height="10" rx="2"/><path d="M7,6 V3 M15,6 V3 M7,16 v3 M15,16 v3"/></g></g>
+    <text x="651" y="272" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">gRPC</text>
+    <text x="651" y="292" text-anchor="middle" font-size="10.5" fill="#dbeafe">graph.v1.GraphService 24 RPC</text>
+    <text x="651" y="309" text-anchor="middle" font-size="10.5" fill="#dbeafe">运行时动态 descriptor</text>
+    <text x="651" y="326" text-anchor="middle" font-size="10.5" fill="#dbeafe">proto 为权威契约</text>
+    <rect x="812" y="238" width="294" height="108" rx="12" fill="url(#gblue)"/>
+    <g transform="translate(824,249)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="7"/><path d="M11,7 v4 l3,2"/></g></g>
+    <text x="959" y="272" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Celery Worker</text>
+    <text x="959" y="292" text-anchor="middle" font-size="10.5" fill="#dbeafe">6 类任务：build / merge</text>
+    <text x="959" y="309" text-anchor="middle" font-size="10.5" fill="#dbeafe">deprecate_doc / export</text>
+    <text x="959" y="326" text-anchor="middle" font-size="10.5" fill="#dbeafe">ontology / validate</text>
+    <rect x="1120" y="238" width="294" height="108" rx="12" fill="url(#gblue)"/>
+    <g transform="translate(1132,249)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="7"/><path d="M8,11 h6 M11,8 v6"/></g></g>
+    <text x="1267" y="272" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">MCP Server</text>
+    <text x="1267" y="292" text-anchor="middle" font-size="10.5" fill="#dbeafe">stdio JSON-RPC 最小实现</text>
+    <text x="1267" y="309" text-anchor="middle" font-size="10.5" fill="#dbeafe">initialize / tools/list</text>
+    <text x="1267" y="326" text-anchor="middle" font-size="10.5" fill="#dbeafe">tools/call</text>
+    <rect x="1428" y="238" width="294" height="108" rx="12" fill="url(#gblue)"/>
+    <g transform="translate(1440,249)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+    <text x="1575" y="272" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">CLI · typer</text>
+    <text x="1575" y="292" text-anchor="middle" font-size="10.5" fill="#dbeafe">serve http|grpc|mcp|worker</text>
+    <text x="1575" y="309" text-anchor="middle" font-size="10.5" fill="#dbeafe">create / build / stat</text>
+    <text x="1575" y="326" text-anchor="middle" font-size="10.5" fill="#dbeafe">sparql / ontology-*</text>
+  </g>
+  <g transform="translate(90,412)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gsky)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="3"/><path d="M11,3 v3 M11,16 v3 M3,11 h3 M16,11 h3"/></g></g>
+  </g>
+  <text x="112" y="474" text-anchor="middle" font-size="14" font-weight="bold" fill="#0284c7">应用服务层</text>
+  <text x="112" y="492" text-anchor="middle" font-size="10.5" fill="#64748b">application</text>
+  <rect x="180" y="374" width="1560" height="120" rx="14" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="1.5"/>
+  <rect x="196" y="390" width="1528" height="88" rx="12" fill="url(#gsky)"/>
+  <g transform="translate(208,401)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,4 l7,4 l-7,4 l-7,-4 z"/><path d="M4,12 l7,4 l7,-4"/></g></g>
+  <text x="960" y="416" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">GraphEngineService —— 五面共用的用例编排（async=1 登记 job，终态由 _run_job 统一回写）</text>
+  <rect x="208" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="298" y="449" text-anchor="middle" font-size="10.5" fill="#075985">图谱 CRUD·schema 校验</text>
+  <rect x="397" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="487" y="449" text-anchor="middle" font-size="10.5" fill="#075985">build·merge·废弃</text>
+  <rect x="586" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="676" y="449" text-anchor="middle" font-size="10.5" fill="#075985">stat·邻域·路径</text>
+  <rect x="775" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="865" y="449" text-anchor="middle" font-size="10.5" fill="#075985">检索·SPARQL·导出</text>
+  <rect x="964" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="1054" y="449" text-anchor="middle" font-size="10.5" fill="#075985">本体面 O-21 ~ O-24</text>
+  <rect x="1153" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="1243" y="449" text-anchor="middle" font-size="10.5" fill="#075985">作业登记/执行/查询</text>
+  <rect x="1342" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="1432" y="449" text-anchor="middle" font-size="10.5" fill="#075985">约束画像读写</text>
+  <rect x="1531" y="430" width="181" height="30" rx="8" fill="#e0f2fe"/>
+  <text x="1621" y="449" text-anchor="middle" font-size="10.5" fill="#075985">行 → 视图映射</text>
+  <g transform="translate(90,554)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gviolet)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="7"/><path d="M8,11 h6 M11,8 v6"/></g></g>
+  </g>
+  <text x="112" y="616" text-anchor="middle" font-size="14" font-weight="bold" fill="#6d28d9">领域层</text>
+  <text x="112" y="634" text-anchor="middle" font-size="10.5" fill="#64748b">domain</text>
+  <rect x="180" y="506" width="1560" height="140" rx="14" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="522" width="246" height="108" rx="12" fill="url(#gviolet)"/>
+    <g transform="translate(208,533)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="6" width="16" height="11" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M12,10 h5 M12,14 h5"/></g></g>
+    <text x="319" y="556" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">ids · 稳定 ID</text>
+    <text x="319" y="576" text-anchor="middle" font-size="10" fill="#ede9fe">graph_/ent_/rel_ + sha1</text>
+    <text x="319" y="593" text-anchor="middle" font-size="10" fill="#ede9fe">名称归一化·跨系统一致</text>
+    <rect x="452" y="522" width="246" height="108" rx="12" fill="url(#gviolet)"/>
+    <g transform="translate(464,533)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,3 l7,3 v5 c0,5 -7,8 -7,8 c0,0 -7,-3 -7,-8 V6 z"/><path d="M8,11 l2,2 l4,-4"/></g></g>
+    <text x="575" y="556" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">schema · 校验</text>
+    <text x="575" y="576" text-anchor="middle" font-size="10" fill="#ede9fe">entity / relationTypes</text>
+    <text x="575" y="593" text-anchor="middle" font-size="10" fill="#ede9fe">未声明类型 200001 拒绝</text>
+    <rect x="708" y="522" width="246" height="108" rx="12" fill="url(#gviolet)"/>
+    <g transform="translate(720,533)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M7,4 v4 a4,4 0 0 0 4,4 h4 M15,8 l3,4 -3,4" /></g></g>
+    <text x="831" y="556" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">merge · 增量合并</text>
+    <text x="831" y="576" text-anchor="middle" font-size="10" fill="#ede9fe">别名并集·证据去重</text>
+    <text x="831" y="593" text-anchor="middle" font-size="10" fill="#ede9fe">置信度取大·只收敛</text>
+    <rect x="964" y="522" width="246" height="108" rx="12" fill="url(#gviolet)"/>
+    <g transform="translate(976,533)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,4 h7 l7,7 -7,7 -7,-7 z"/><circle cx="8" cy="8" r="1.4" fill="#fff" stroke="none"/></g></g>
+    <text x="1087" y="556" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">constraints 约束画像</text>
+    <text x="1087" y="576" text-anchor="middle" font-size="10" fill="#ede9fe">改名/黑名单/few-shot</text>
+    <text x="1087" y="593" text-anchor="middle" font-size="10" fill="#ede9fe">派生稳定 ID 前生效</text>
+    <rect x="1220" y="522" width="246" height="108" rx="12" fill="url(#gviolet)"/>
+    <g transform="translate(1232,533)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="4"/><path d="M11,2 v3 M11,17 v3 M2,11 h3 M17,11 h3 M5,5 l2,2 M15,15 l2,2 M17,5 l-2,2 M7,15 l-2,2"/></g></g>
+    <text x="1343" y="556" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">ontology · 本体</text>
+    <text x="1343" y="576" text-anchor="middle" font-size="10" fill="#ede9fe">定义归一·实例体检</text>
+    <text x="1343" y="593" text-anchor="middle" font-size="10" fill="#ede9fe">候选聚合（D6 只产候选）</text>
+    <rect x="1476" y="522" width="246" height="108" rx="12" fill="url(#gviolet)"/>
+    <g transform="translate(1488,533)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+    <text x="1599" y="556" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">models · errors</text>
+    <text x="1599" y="576" text-anchor="middle" font-size="10" fill="#ede9fe">引擎内部记录类型</text>
+    <text x="1599" y="593" text-anchor="middle" font-size="10" fill="#ede9fe">2xxxxx / 260xxx 错误码</text>
+  </g>
+  <g transform="translate(90,706)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gindigo)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M9,13 a4,4 0 0 1 0,-6 l2,-2 a4,4 0 0 1 6,6 l-1,1"/><path d="M13,9 a4,4 0 0 1 0,6 l-2,2 a4,4 0 0 1 -6,-6 l1,-1"/></g></g>
+  </g>
+  <text x="112" y="768" text-anchor="middle" font-size="14" font-weight="bold" fill="#3730a3">适配层</text>
+  <text x="112" y="786" text-anchor="middle" font-size="10.5" fill="#64748b">adapters</text>
+  <rect x="180" y="658" width="1560" height="140" rx="14" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(208,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="6" y="6" width="10" height="10" rx="1.5"/><path d="M9,3 v3 M13,3 v3 M9,16 v3 M13,16 v3 M3,9 h3 M3,13 h3 M16,9 h3 M16,13 h3"/></g></g>
+    <text x="301" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">semantica</text>
+    <text x="301" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">GraphBuilder/Analyzer</text>
+    <text x="301" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">可整体关闭</text>
+    <rect x="415" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(427,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="4" y="6" width="14" height="11" rx="2"/><circle cx="9" cy="11" r="1.3" fill="#fff" stroke="none"/><circle cx="14" cy="11" r="1.3" fill="#fff" stroke="none"/><path d="M11,6 V3"/></g></g>
+    <text x="520" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">llm</text>
+    <text x="520" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">实体抽取增强</text>
+    <text x="520" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">默认关闭·降级</text>
+    <rect x="634" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(646,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="6" cy="6" r="2.4"/><circle cx="16" cy="16" r="2.4"/><path d="M8,7 L14,15"/></g></g>
+    <text x="739" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">entities·relations</text>
+    <text x="739" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">markdown 术语候选</text>
+    <text x="739" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">同句共现·不联网</text>
+    <rect x="853" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(865,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M2,11 a9,6 0 0 1 18,0 a9,6 0 0 1 -18,0"/><circle cx="11" cy="11" r="2.5"/></g></g>
+    <text x="958" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">rdf</text>
+    <text x="958" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">pyoxigraph 只读</text>
+    <text x="958" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">SPARQL 双护栏</text>
+    <rect x="1072" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(1084,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="7"/><path d="M8,11 h6 M11,8 v6"/></g></g>
+    <text x="1177" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">retrieval</text>
+    <text x="1177" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">builtin-lexical</text>
+    <text x="1177" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">向量后端注入</text>
+    <rect x="1291" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(1303,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="4"/><path d="M11,2 v3 M11,17 v3 M2,11 h3 M17,11 h3 M5,5 l2,2 M15,15 l2,2 M17,5 l-2,2 M7,15 l-2,2"/></g></g>
+    <text x="1396" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">ontology</text>
+    <text x="1396" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">owl/turtle/shacl</text>
+    <text x="1396" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">缺依赖降级 260009</text>
+    <rect x="1510" y="674" width="211" height="108" rx="12" fill="url(#gindigo)"/>
+    <g transform="translate(1522,685)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,4 v10 M7,10 l4,4 l4,-4"/><path d="M5,18 h12"/></g></g>
+    <text x="1615" y="708" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">core_writeback</text>
+    <text x="1615" y="728" text-anchor="middle" font-size="9.5" fill="#e0e7ff">回写 core(唯一写库)</text>
+    <text x="1615" y="745" text-anchor="middle" font-size="9.5" fill="#e0e7ff">未配 base 即关闭</text>
+  </g>
+  <g transform="translate(90,853)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gslate)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+  </g>
+  <text x="112" y="915" text-anchor="middle" font-size="14" font-weight="bold" fill="#475569">持久化层</text>
+  <text x="112" y="933" text-anchor="middle" font-size="10.5" fill="#64748b">persistence</text>
+  <rect x="180" y="810" width="1560" height="130" rx="14" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="826" width="498" height="98" rx="12" fill="url(#gslate)"/>
+    <g transform="translate(208,837)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+    <text x="445" y="860" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">neo4j_store.py · 缺省后端</text>
+    <text x="445" y="880" text-anchor="middle" font-size="10.5" fill="#e2e8f0">Neo4j Bolt 镜像落库 · :GraphEngineGraphConstraint</text>
+    <text x="445" y="897" text-anchor="middle" font-size="10.5" fill="#e2e8f0">驱动独立 requirements-neo4j.txt 层</text>
+    <rect x="710" y="826" width="498" height="98" rx="12" fill="url(#gslate)"/>
+    <g transform="translate(722,837)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/><path d="M4,11 a7,2.6 0 0 0 14,0"/></g></g>
+    <text x="959" y="860" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">sqlite_store.py · 降级/单机</text>
+    <text x="959" y="880" text-anchor="middle" font-size="10.5" fill="#e2e8f0">六表 graphs·entities·relations·jobs</text>
+    <text x="959" y="897" text-anchor="middle" font-size="10.5" fill="#e2e8f0">graph_constraints·graph_ontology（WAL）</text>
+    <rect x="1224" y="826" width="498" height="98" rx="12" fill="url(#gslate)"/>
+    <g transform="translate(1236,837)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="4" y="4" width="14" height="14" rx="2"/><path d="M4,9 h14"/></g></g>
+    <text x="1473" y="860" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">存储资产口径</text>
+    <text x="1473" y="880" text-anchor="middle" font-size="10.5" fill="#e2e8f0">图谱元数据·证据/置信度/别名·约束画像</text>
+    <text x="1473" y="897" text-anchor="middle" font-size="10.5" fill="#e2e8f0">本体编译快照（D1）· 作业记录</text>
+  </g>
+  <g transform="translate(90,995)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gdeep)"/>
+    <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="5" width="16" height="5" rx="1.5"/><rect x="3" y="12" width="16" height="5" rx="1.5"/><circle cx="6" cy="7.5" r="1" fill="#fff" stroke="none"/><circle cx="6" cy="14.5" r="1" fill="#fff" stroke="none"/></g></g>
+  </g>
+  <text x="112" y="1057" text-anchor="middle" font-size="14" font-weight="bold" fill="#334155">外部·部署</text>
+  <rect x="180" y="952" width="1560" height="130" rx="14" fill="#e9edf2" stroke="#475569" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="968" width="294" height="98" rx="12" fill="url(#gdeep)"/>
+    <g transform="translate(208,979)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="6" y="6" width="10" height="10" rx="1.5"/><path d="M9,3 v3 M13,3 v3 M9,16 v3 M13,16 v3 M3,9 h3 M3,13 h3 M16,9 h3 M16,13 h3"/></g></g>
+    <text x="343" y="1002" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">semantica 0.6.5</text>
+    <text x="343" y="1022" text-anchor="middle" font-size="10.5" fill="#dbe2ea">知识图谱内核（pip 已装）</text>
+    <text x="343" y="1039" text-anchor="middle" font-size="10.5" fill="#dbe2ea">torch/spacy 等重依赖</text>
+    <rect x="504" y="968" width="294" height="98" rx="12" fill="url(#gdeep)"/>
+    <g transform="translate(516,979)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+    <text x="651" y="1002" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">Neo4j</text>
+    <text x="651" y="1022" text-anchor="middle" font-size="10.5" fill="#dbe2ea">Bolt 7687 · 独立容器</text>
+    <text x="651" y="1039" text-anchor="middle" font-size="10.5" fill="#dbe2ea">7474 Browser</text>
+    <rect x="812" y="968" width="294" height="98" rx="12" fill="url(#gdeep)"/>
+    <g transform="translate(824,979)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M7,15 a4,4 0 0 1 0,-8 a5,5 0 0 1 9,1 a3.5,3.5 0 0 1 -1,7 z"/></g></g>
+    <text x="959" y="1002" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">Redis</text>
+    <text x="959" y="1022" text-anchor="middle" font-size="10.5" fill="#dbe2ea">Celery broker / backend</text>
+    <text x="959" y="1039" text-anchor="middle" font-size="10.5" fill="#dbe2ea">单机 / 哨兵模式</text>
+    <rect x="1120" y="968" width="294" height="98" rx="12" fill="url(#gdeep)"/>
+    <g transform="translate(1132,979)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M9,13 a4,4 0 0 1 0,-6 l2,-2 a4,4 0 0 1 6,6 l-1,1"/><path d="M13,9 a4,4 0 0 1 0,6 l-2,2 a4,4 0 0 1 -6,-6 l1,-1"/></g></g>
+    <text x="1267" y="1002" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">ikc-core-service</text>
+    <text x="1267" y="1022" text-anchor="middle" font-size="10.5" fill="#dbe2ea">POST /internal/graph/build</text>
+    <text x="1267" y="1039" text-anchor="middle" font-size="10.5" fill="#dbe2ea">X-Internal-Token 内部鉴权</text>
+    <rect x="1428" y="968" width="294" height="98" rx="12" fill="url(#gdeep)"/>
+    <g transform="translate(1440,979)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="5" width="16" height="5" rx="1.5"/><rect x="3" y="12" width="16" height="5" rx="1.5"/><circle cx="6" cy="7.5" r="1" fill="#fff" stroke="none"/><circle cx="6" cy="14.5" r="1" fill="#fff" stroke="none"/></g></g>
+    <text x="1575" y="1002" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#ffffff">Docker + HAProxy</text>
+    <text x="1575" y="1022" text-anchor="middle" font-size="10.5" fill="#dbe2ea">单镜像多组件 · 非 root</text>
+    <text x="1575" y="1039" text-anchor="middle" font-size="10.5" fill="#dbe2ea">18180 / 18151 / 8406</text>
+  </g>
+  <rect x="1775" y="70" width="150" height="424" rx="10" fill="#fdf2f8" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1850" y="110" text-anchor="middle" font-size="13" font-weight="bold" fill="#be185d">ikc-sdk-lib</text>
+  <text x="1850" y="150" text-anchor="middle" font-size="9" fill="#9d174d">错误码表 / 标准头</text>
+  <text x="1850" y="176" text-anchor="middle" font-size="9" fill="#9d174d">Envelope 统一壳</text>
+  <text x="1850" y="202" text-anchor="middle" font-size="9" fill="#9d174d">EngineJobView</text>
+  <text x="1850" y="228" text-anchor="middle" font-size="9" fill="#9d174d">图谱模型线缆契约</text>
+  <text x="1850" y="254" text-anchor="middle" font-size="9" fill="#9d174d">traceId 23位生成复用</text>
+  <text x="1850" y="280" text-anchor="middle" font-size="9" fill="#9d174d">单一装配来源</text>
+  <text x="1850" y="322" text-anchor="middle" font-size="9" font-weight="bold" fill="#be185d">版本强制契约</text>
+  <text x="1850" y="348" text-anchor="middle" font-size="9" fill="#9d174d">semantica==0.6.5</text>
+  <text x="1850" y="374" text-anchor="middle" font-size="9" fill="#9d174d">celery==5.6.3</text>
+  <text x="1850" y="400" text-anchor="middle" font-size="9" fill="#9d174d">kombu==5.6.2</text>
+  <text x="1850" y="426" text-anchor="middle" font-size="9" fill="#9d174d">redis==6.2.0</text>
+  <text x="1850" y="452" text-anchor="middle" font-size="9" fill="#9d174d">禁止放宽为 &gt;=</text>
+  <line x1="1850" y1="128" x2="1850" y2="128" stroke="#ec4899" stroke-width="1"/>
+  <line x1="1850" y1="302" x2="1850" y2="302" stroke="#ec4899" stroke-width="1"/>
+  <line x1="1775" y1="140" x2="1740" y2="140" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrowPink)"/>
+  <line x1="1775" y1="434" x2="1740" y2="434" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrowPink)"/>
+  <rect x="1955" y="70" width="200" height="1012" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="2055" y="100" text-anchor="middle" font-size="15" font-weight="bold" fill="#047857">可观测与治理</text>
+  <rect x="1972" y="118" width="166" height="118" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="142" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">统一响应壳 Envelope</text>
+  <text x="2055" y="161" text-anchor="middle" font-size="9" fill="#d1fae5">{errCode,errMsg,data,traceId}</text>
+  <text x="2055" y="178" text-anchor="middle" font-size="9" fill="#d1fae5">成功 000000 · 业务码 HTTP200</text>
+  <text x="2055" y="195" text-anchor="middle" font-size="9" fill="#d1fae5">错误码字面量只在 sdk-lib</text>
+  <rect x="1972" y="250" width="166" height="104" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="274" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">traceId 全链路</text>
+  <text x="2055" y="293" text-anchor="middle" font-size="9" fill="#d1fae5">23 位纯函数 · contextvar</text>
+  <text x="2055" y="310" text-anchor="middle" font-size="9" fill="#d1fae5">贯穿请求-响应与日志</text>
+  <text x="2055" y="327" text-anchor="middle" font-size="9" fill="#d1fae5">非法值重新生成</text>
+  <rect x="1972" y="368" width="166" height="104" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="392" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">配置 GRAPH_ENGINE_*</text>
+  <text x="2055" y="411" text-anchor="middle" font-size="9" fill="#d1fae5">环境变量驱动·非法回退</text>
+  <text x="2055" y="428" text-anchor="middle" font-size="9" fill="#d1fae5">HTTP 18010 gRPC 50051</text>
+  <text x="2055" y="445" text-anchor="middle" font-size="9" fill="#d1fae5">engine.yaml 仅样例</text>
+  <rect x="1972" y="486" width="166" height="104" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="510" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">日志 · IKC Log Center</text>
+  <text x="2055" y="529" text-anchor="middle" font-size="9" fill="#d1fae5">单行 JSON · 远程投递</text>
+  <text x="2055" y="546" text-anchor="middle" font-size="9" fill="#d1fae5">GRAPH_ENGINE_LOG_CENTER_*</text>
+  <text x="2055" y="563" text-anchor="middle" font-size="9" fill="#d1fae5">探针不进日志</text>
+  <rect x="1972" y="604" width="166" height="118" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="628" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">守卫式降级</text>
+  <text x="2055" y="647" text-anchor="middle" font-size="9" fill="#d1fae5">semantica/LLM/RDF 缺依赖</text>
+  <text x="2055" y="664" text-anchor="middle" font-size="9" fill="#d1fae5">→ 如实降级标注 meta</text>
+  <text x="2055" y="681" text-anchor="middle" font-size="9" fill="#d1fae5">Neo4j 不可达 → SQLite</text>
+  <rect x="1972" y="736" width="166" height="104" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="760" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">契约守护测试</text>
+  <text x="2055" y="779" text-anchor="middle" font-size="9" fill="#d1fae5">服务端 + SDK 双侧</text>
+  <text x="2055" y="796" text-anchor="middle" font-size="9" fill="#d1fae5">线缆唯一来源 sdk-lib</text>
+  <text x="2055" y="813" text-anchor="middle" font-size="9" fill="#d1fae5">禁止自维护字段</text>
+  <rect x="1972" y="854" width="166" height="118" rx="9" fill="url(#gGreen)"/>
+  <text x="2055" y="878" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#ffffff">部署与运维</text>
+  <text x="2055" y="897" text-anchor="middle" font-size="9" fill="#d1fae5">HAProxy 唯一入口·回环</text>
+  <text x="2055" y="914" text-anchor="middle" font-size="9" fill="#d1fae5">离线包 save → load</text>
+  <text x="2055" y="931" text-anchor="middle" font-size="9" fill="#d1fae5">docker_smoke 八项</text>
+  <text x="2055" y="948" text-anchor="middle" font-size="9" fill="#d1fae5">数据卷 app_data</text>
+  <text x="2055" y="998" text-anchor="middle" font-size="10" font-weight="bold" fill="#047857">贯穿全部七层</text>
+  <text x="2055" y="1016" text-anchor="middle" font-size="9" fill="#059669">队列版本三条成组变更</text>
+  <text x="2055" y="1032" text-anchor="middle" font-size="9" fill="#059669">禁止单独放宽约束</text>
+  <line x1="1955" y1="140" x2="1740" y2="140" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1955" y1="292" x2="1740" y2="292" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1955" y1="434" x2="1740" y2="434" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1955" y1="576" x2="1740" y2="576" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1955" y1="728" x2="1740" y2="728" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1955" y1="875" x2="1740" y2="875" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+  <line x1="1955" y1="1017" x2="1740" y2="1017" stroke="#059669" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#arrowGreen)"/>
+
+</svg>

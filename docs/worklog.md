@@ -1524,3 +1524,8 @@
 
 - 按用户「对齐图标徽章样式」选择，就地改 docs/images/deep-agent架构总图_v1.0.svg 左侧六层标签：由 rotate(-90) 竖排文字改为「44×44 彩色圆角图标徽章 + 下方横向层名（粗体同色）+ 灰色英文副标签」，对齐 Semantica / 分层技术栈 v1.2 左侧风格。六枚扁平白描图标按层语义设计：调用方=人形、HTTP 接入层=滑块路由、Agent 编排层=图谱节点、工具层=2×2 域网格、外部北向依赖=外链箭头、本地落盘=数据库圆柱；徽章取各层带主题渐变 gBlue/gTeal/gViolet/gIndigo/gEmerald/gSlate，层名文字同色深阶，统一居中 x=84（避开层带左边缘 x=130）。
 - 验证：XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染覆盖 v1.0.png（3800×2720），左侧裁切目检六徽章图标清晰、无豆腐块、横向标签不与层带重叠。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：deep-agent 右侧「配置与运行纪律」条配色对齐 video（2026-10-19）
+
+- 按用户要求把 docs/images/deep-agent架构总图_v1.0.svg 右侧竖条配色改为与 ikc-video-service架构总图_v1.1 一致（原为「整条实心绿渐变 + 白色半透明虚线卡片」，video 为「浅绿虚线容器 + 实心绿渐变卡片」，二者反色）：①外层竖条 rect `fill=url(#gGreen)` → `fill=#f0fdf4 stroke=#10b981 stroke-width=1.5 stroke-dasharray=6 4`；②条标题「配置与运行纪律」文字 `#ffffff` → `#047857`；③五张分区卡片 rect 由 `fill=#ffffff fill-opacity=0.13 stroke=#ffffff...dasharray` → `fill=url(#gGreen)`（replace_all）；卡内标题保持白色、正文保持 #d1fae5（与 video 卡片文字方案一致）。
+- 验证：XML 校验 OK；注入 Noto Sans CJK SC 后 cairosvg 2x 渲染覆盖 v1.0.png，右侧裁切目检浅绿虚线容器+五张实心绿卡+白/浅绿文字清晰无溢出。仅配图改动，跳过 pytest 与 Claude 只读审查。

@@ -292,11 +292,11 @@
   <text x="150" y="710" transform="rotate(-90 150 710)" text-anchor="middle" font-size="10.5" fill="#64748b">routes / service 落盘读写（配置 · 会话 · 记忆 · 工件 · 附件）</text>
 
   <!-- ================= 右侧竖条：配置与运行纪律 ================= -->
-  <rect x="1650" y="66" width="190" height="1130" rx="12" fill="url(#gGreen)"/>
-  <text x="1745" y="96" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">配置与运行纪律</text>
+  <rect x="1650" y="66" width="190" height="1130" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1745" y="96" text-anchor="middle" font-size="15" font-weight="bold" fill="#047857">配置与运行纪律</text>
 
   <g>
-    <rect x="1662" y="112" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <rect x="1662" y="112" width="166" height="190" rx="8" fill="url(#gGreen)"/>
     <text x="1745" y="136" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">配置来源链</text>
     <text x="1745" y="162" text-anchor="middle" font-size="10" fill="#d1fae5">环境变量基线</text>
     <text x="1745" y="182" text-anchor="middle" font-size="10" fill="#d1fae5">→ PUT /config 运行期覆盖</text>
@@ -304,28 +304,28 @@
     <text x="1745" y="222" text-anchor="middle" font-size="10" fill="#d1fae5">生效值 = 基线 + 覆盖</text>
     <text x="1745" y="242" text-anchor="middle" font-size="10" fill="#d1fae5">重启后覆盖仍在</text>
 
-    <rect x="1662" y="316" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <rect x="1662" y="316" width="166" height="190" rx="8" fill="url(#gGreen)"/>
     <text x="1745" y="340" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">校验与脱敏</text>
     <text x="1745" y="366" text-anchor="middle" font-size="10" fill="#d1fae5">未知键 / 越界 / 非法 URL</text>
     <text x="1745" y="386" text-anchor="middle" font-size="10" fill="#d1fae5">→ 100001 + 字段级 errors</text>
     <text x="1745" y="406" text-anchor="middle" font-size="10" fill="#d1fae5">校验失败不落盘不重建</text>
     <text x="1745" y="426" text-anchor="middle" font-size="10" fill="#d1fae5">to_safe_dict 仅掩码回显</text>
 
-    <rect x="1662" y="520" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <rect x="1662" y="520" width="166" height="190" rx="8" fill="url(#gGreen)"/>
     <text x="1745" y="544" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">运行期重建</text>
     <text x="1745" y="570" text-anchor="middle" font-size="10" fill="#d1fae5">改配置必触发 rebuild()</text>
     <text x="1745" y="590" text-anchor="middle" font-size="10" fill="#d1fae5">重建 agent 与工具装配</text>
     <text x="1745" y="610" text-anchor="middle" font-size="10" fill="#d1fae5">CLI tools 与装配同源</text>
     <text x="1745" y="630" text-anchor="middle" font-size="10" fill="#d1fae5">（registry 单一入口）</text>
 
-    <rect x="1662" y="724" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <rect x="1662" y="724" width="166" height="190" rx="8" fill="url(#gGreen)"/>
     <text x="1745" y="748" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">凭证纪律</text>
     <text x="1745" y="774" text-anchor="middle" font-size="10" fill="#d1fae5">api_key 只出现在出站</text>
     <text x="1745" y="794" text-anchor="middle" font-size="10" fill="#d1fae5">请求头与落盘配置</text>
     <text x="1745" y="814" text-anchor="middle" font-size="10" fill="#d1fae5">响应 / 日志 / SSE 全脱敏</text>
     <text x="1745" y="834" text-anchor="middle" font-size="10" fill="#d1fae5">禁止新增私有错误码</text>
 
-    <rect x="1662" y="928" width="166" height="190" rx="8" fill="#ffffff" fill-opacity="0.13" stroke="#ffffff" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+    <rect x="1662" y="928" width="166" height="190" rx="8" fill="url(#gGreen)"/>
     <text x="1745" y="952" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">部署形态</text>
     <text x="1745" y="978" text-anchor="middle" font-size="10" fill="#d1fae5">单镜像：HAProxy :5192</text>
     <text x="1745" y="998" text-anchor="middle" font-size="10" fill="#d1fae5">→ uvicorn 回环 :5193</text>

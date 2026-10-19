@@ -1539,3 +1539,8 @@
 
 - 按用户要求就地修改 docs/images/ikc-flash-knowledge架构总图_v1.1.svg：①调用方层第二张卡「ikc-demo 样板」改名「ikc 标准知识库」（副行 BFF /bff/flash/* 转发保留）；②新增调用路由折线（stroke #94a3b8、复用 arrow marker）：agent/助手 顶边中点 (322.5,108) 上绕 y=99 横线至 ikc-core-service 顶边中点 (1027.5,108)，途经 ikc 标准知识库 (557.5) 与 open ikc platform (792.5) 各以短竖线下引箭头，左侧 x=120 加「调用路由」小注；未改 viewBox 与其余坐标。
 - 验证：XML OK；cairosvg 2x 重渲染同名 PNG，裁剪 L1 带目检连线不穿卡、箭头落点准确、文字无溢出。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：ikc-flash-knowledge v1.1 去除调用路由折线（2026-10-19 续）
+
+- 用户反馈路由折线表达有问题，撤销上一条 ②：删除调用方层顶部折线 path（M322.5,108 …）与左侧「调用路由」注记文本；「ikc-demo 样板 → ikc 标准知识库」改名保留。grep 确认图内 调用路由/M322.5 零残留（余下一处 #94a3b8 为 v1.0 既有 ES 虚线框描边，非本次连线）。
+- 验证：XML OK；cairosvg 2x 重渲染同名 PNG，裁剪 L1 带目检折线与注记已消失、五卡排布恢复原样。仅配图改动，跳过 pytest 与 Claude 只读审查。

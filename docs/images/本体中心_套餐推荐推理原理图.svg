@@ -1,0 +1,458 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1920" height="1080" viewBox="0 0 1920 1080">
+
+  <title>本体中心推理原理：套餐资格、变更类型与派单决策</title>
+  <desc>
+    使用模拟数据说明本体中心的推理过程。
+    客户C001当前套餐P169，基础月费169元，档位T3。
+    候选A为P129，基础月费129元，档位T2，适用普通个人客户。
+    候选B为CAMPUS99，基础月费99元，档位T2，仅适用校园客户。
+    示例客户不是校园客户，合约限制已解除，无相关在途工单。
+    通过事实校验、本体关系解析、规则求值、冲突处理，输出
+    候选A可办低迁，候选B因客群不符不可办理。
+    所有客户、套餐、规则、费用和派单配置均为模拟示例。
+    顶部140像素预留PPT标题。
+  </desc>
+
+  <defs>
+    <style>
+      text {
+        font-family: "Microsoft YaHei", "PingFang SC",
+                     "Noto Sans CJK SC", Arial, sans-serif;
+      }
+      .section {
+        font-size: 23px;
+        font-weight: 700;
+        fill: #193E68;
+      }
+      .title {
+        font-size: 19px;
+        font-weight: 700;
+        fill: #193E68;
+      }
+      .body {
+        font-size: 17px;
+        fill: #445F7A;
+      }
+      .small {
+        font-size: 15px;
+        fill: #617A93;
+      }
+      .code {
+        font-family: Consolas, "DejaVu Sans Mono", monospace;
+        font-size: 15px;
+        fill: #315F94;
+      }
+      .white {
+        fill: #FFFFFF;
+      }
+      .arrow {
+        fill: none;
+        stroke: #537EB3;
+        stroke-width: 2.5;
+        marker-end: url(#blue-arrow);
+      }
+      .purple-arrow {
+        fill: none;
+        stroke: #8764AE;
+        stroke-width: 2.5;
+        marker-end: url(#purple-arrow);
+      }
+      .teal-arrow {
+        fill: none;
+        stroke: #26938D;
+        stroke-width: 2.5;
+        marker-end: url(#teal-arrow);
+      }
+      .relation {
+        fill: none;
+        stroke: #8D75AF;
+        stroke-width: 2;
+        marker-end: url(#purple-arrow);
+      }
+    </style>
+
+    <marker id="blue-arrow" viewBox="0 0 10 10"
+            refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#537EB3"/>
+    </marker>
+
+    <marker id="purple-arrow" viewBox="0 0 10 10"
+            refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#8764AE"/>
+    </marker>
+
+    <marker id="teal-arrow" viewBox="0 0 10 10"
+            refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#26938D"/>
+    </marker>
+
+    <g id="database" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round">
+      <ellipse cx="16" cy="7" rx="11" ry="4"/>
+      <path d="M5 7 V25 C5 30 27 30 27 25 V7"/>
+      <path d="M5 15 C5 20 27 20 27 15"/>
+    </g>
+
+    <g id="graph" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round">
+      <circle cx="16" cy="6" r="4"/>
+      <circle cx="6" cy="25" r="4"/>
+      <circle cx="26" cy="25" r="4"/>
+      <path d="M14 10 L8 21 M18 10 L24 21 M10 25 H22"/>
+    </g>
+
+    <g id="check" fill="none" stroke="currentColor"
+       stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="16" cy="16" r="12"/>
+      <path d="M9 16 L14 21 L23 11"/>
+    </g>
+  </defs>
+
+  <!-- 顶部0～140px留白 -->
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+
+  <text x="60" y="153" font-size="18" fill="#526E8C">
+    示例：客户希望降低月费，保留1000M速率与80GB流量
+  </text>
+  <rect x="1435" y="132" width="425" height="29" rx="8" fill="#FFF3DF"/>
+  <text x="1647" y="152" text-anchor="middle"
+        font-size="15" font-weight="700" fill="#A47128">
+    模拟客户 / 套餐 / 规则数据，非现网政策
+  </text>
+
+  <!-- =====================================================
+       顶部服务调用链
+       ===================================================== -->
+  <rect x="60" y="176" width="1800" height="83" rx="14"
+        fill="#EFF4FB" stroke="#D6E2EF"/>
+
+  <rect x="80" y="190" width="310" height="55" rx="10"
+        fill="#FFFFFF" stroke="#8FAED1"/>
+  <text x="235" y="213" text-anchor="middle" class="title">
+    知识中心：融合检索和推理服务
+  </text>
+  <text x="235" y="234" text-anchor="middle" class="small">
+    组织客户事实、候选套餐与评估场景
+  </text>
+
+  <path d="M390 218 H655" class="arrow"/>
+  <text x="521" y="205" text-anchor="middle" class="code">
+    POST /inference/evaluate
+  </text>
+  <text x="521" y="240" text-anchor="middle" class="small">
+    客户事实 + 候选ID + 版本引用
+  </text>
+
+  <rect x="655" y="190" width="520" height="55" rx="10"
+        fill="#66508D"/>
+  <text x="915" y="213" text-anchor="middle"
+        font-size="21" font-weight="700" fill="#FFFFFF">
+    本体中心推理服务
+  </text>
+  <text x="915" y="235" text-anchor="middle"
+        font-size="15" fill="#E9E0F5">
+    事实校验 → 本体关系解析 → 规则求值 → 决策封装
+  </text>
+
+  <path d="M1175 218 H1430" class="teal-arrow"/>
+  <text x="1302" y="205" text-anchor="middle" class="small">
+    资格、变更类型、原因、派单建议
+  </text>
+  <text x="1302" y="240" text-anchor="middle" class="small">
+    决策ID + 规则执行记录
+  </text>
+
+  <rect x="1430" y="190" width="410" height="55" rx="10"
+        fill="#FFFFFF" stroke="#82B5A4"/>
+  <text x="1635" y="213" text-anchor="middle" class="title">
+    知识中心 → 智能体 → 坐席
+  </text>
+  <text x="1635" y="234" text-anchor="middle" class="small">
+    生成解释与话术；办理另走业务MCP
+  </text>
+
+  <!-- =====================================================
+       三大区域
+       ===================================================== -->
+  <rect x="60" y="279" width="495" height="518" rx="14"
+        fill="#F5F9FD" stroke="#D6E2EF"/>
+  <rect x="575" y="279" width="775" height="518" rx="14"
+        fill="#F7F3FC" stroke="#DED3EB"/>
+  <rect x="1370" y="279" width="490" height="518" rx="14"
+        fill="#F3F9F6" stroke="#D4E7DD"/>
+
+  <use xlink:href="#database" x="80" y="294" color="#315F94"/>
+  <text x="125" y="318" class="section">① 输入：可核验的业务事实</text>
+
+  <use xlink:href="#graph" x="595" y="294" color="#7653A6"/>
+  <text x="640" y="318" class="section">② 原理：对象关系 + 配置规则</text>
+
+  <use xlink:href="#check" x="1390" y="294" color="#26938D"/>
+  <text x="1435" y="318" class="section">③ 输出：决策与业务解释</text>
+
+  <!-- =====================================================
+       左侧：事实输入
+       ===================================================== -->
+  <rect x="80" y="338" width="455" height="141" rx="10"
+        fill="#FFFFFF" stroke="#C8D8E9"/>
+  <text x="96" y="364" class="title">CRM事实｜客户 C001</text>
+
+  <text x="96" y="391" class="body">
+    客群：普通个人；校园身份：false
+  </text>
+  <text x="96" y="416" class="body">
+    当前套餐：P169；相关在途工单：[]
+  </text>
+  <text x="96" y="441" class="body">
+    合约限制截止：2026-09-30；续约：无
+  </text>
+  <text x="96" y="465" class="small">
+    评估日：2026-10-19｜事实版本：F17
+  </text>
+
+  <!-- 套餐数据表 -->
+  <rect x="80" y="491" width="455" height="191" rx="10"
+        fill="#FFFFFF" stroke="#C8D8E9"/>
+  <text x="96" y="517" class="title">套餐目录｜同地域、同产品系列</text>
+
+  <rect x="90" y="529" width="435" height="28" rx="5" fill="#EAF1FA"/>
+  <text x="100" y="549" font-size="15" font-weight="700" fill="#365675">套餐</text>
+  <text x="244" y="549" font-size="15" font-weight="700" fill="#365675">月费</text>
+  <text x="307" y="549" font-size="15" font-weight="700" fill="#365675">档位</text>
+  <text x="379" y="549" font-size="15" font-weight="700" fill="#365675">适用客群</text>
+
+  <text x="100" y="582" font-size="16" fill="#445F7A">当前 P169</text>
+  <text x="244" y="582" font-size="16" fill="#445F7A">169元</text>
+  <text x="307" y="582" font-size="16" fill="#445F7A">T3</text>
+  <text x="379" y="582" font-size="16" fill="#445F7A">普通个人</text>
+
+  <line x1="95" y1="592" x2="520" y2="592" stroke="#E4EBF3"/>
+  <text x="100" y="615" font-size="16" fill="#137D79">候选A P129</text>
+  <text x="244" y="615" font-size="16" fill="#137D79">129元</text>
+  <text x="307" y="615" font-size="16" fill="#137D79">T2</text>
+  <text x="379" y="615" font-size="16" fill="#137D79">普通个人</text>
+
+  <line x1="95" y1="625" x2="520" y2="625" stroke="#E4EBF3"/>
+  <text x="100" y="648" font-size="15" fill="#A47128">候选B CAMPUS99</text>
+  <text x="244" y="648" font-size="16" fill="#A47128">99元</text>
+  <text x="307" y="648" font-size="16" fill="#A47128">T2</text>
+  <text x="379" y="648" font-size="16" fill="#A47128">仅校园</text>
+
+  <text x="96" y="673" class="small">
+    三者均为1000M / 80GB；候选在有效期内
+  </text>
+
+  <rect x="80" y="694" width="455" height="84" rx="10"
+        fill="#EAF1FA" stroke="#D7E3EF"/>
+  <text x="96" y="720" class="title">评估口径与版本</text>
+  <text x="96" y="745" class="small">
+    基础月费对比；示例无额外活动及一次性费用
+  </text>
+  <text x="96" y="767" class="small">
+    知识 K12｜本体 O3｜规则 R8｜场景：套餐变更
+  </text>
+
+  <!-- =====================================================
+       中间上部：本体对象与关系
+       ===================================================== -->
+  <rect x="595" y="338" width="735" height="160" rx="10"
+        fill="#FFFFFF" stroke="#D8CCE9"/>
+
+  <text x="611" y="365" class="title">本体模型：把业务字段映射为对象、属性与关系</text>
+
+  <rect x="615" y="385" width="105" height="37" rx="8"
+        fill="#E9F1FF" stroke="#A6BFDE"/>
+  <text x="667" y="409" text-anchor="middle" font-size="17" fill="#315F94">客户 C001</text>
+
+  <rect x="838" y="385" width="112" height="37" rx="8"
+        fill="#EDE5F7" stroke="#B7A1D0"/>
+  <text x="894" y="409" text-anchor="middle" font-size="17" fill="#7653A6">套餐 P169</text>
+
+  <rect x="1087" y="385" width="105" height="37" rx="8"
+        fill="#EDE5F7" stroke="#B7A1D0"/>
+  <text x="1139" y="409" text-anchor="middle" font-size="17" fill="#7653A6">档位 T3</text>
+
+  <path d="M720 403 H838" class="relation"/>
+  <text x="779" y="393" text-anchor="middle" font-size="14" fill="#7653A6">订购</text>
+
+  <path d="M950 403 H1087" class="relation"/>
+  <text x="1018" y="393" text-anchor="middle" font-size="14" fill="#7653A6">所属档位</text>
+
+  <rect x="615" y="443" width="105" height="37" rx="8"
+        fill="#EAF5EE" stroke="#A2C8B3"/>
+  <text x="667" y="467" text-anchor="middle" font-size="17" fill="#28654F">候选 P129</text>
+
+  <rect x="838" y="443" width="112" height="37" rx="8"
+        fill="#EDE5F7" stroke="#B7A1D0"/>
+  <text x="894" y="467" text-anchor="middle" font-size="17" fill="#7653A6">档位 T2</text>
+
+  <rect x="1087" y="443" width="210" height="37" rx="8"
+        fill="#F4EEFA" stroke="#B7A1D0"/>
+  <text x="1192" y="467" text-anchor="middle" font-size="16" fill="#7653A6">
+    T2 低于 T3（同系列）
+  </text>
+
+  <path d="M720 461 H838" class="relation"/>
+  <text x="779" y="451" text-anchor="middle" font-size="14" fill="#7653A6">所属档位</text>
+
+  <path d="M950 461 H1087" class="relation"/>
+  <text x="1018" y="451" text-anchor="middle" font-size="14" fill="#7653A6">档位序关系</text>
+
+  <!-- 处理步骤 -->
+  <rect x="595" y="510" width="355" height="81" rx="10"
+        fill="#FFFFFF" stroke="#D8CCE9"/>
+  <circle cx="619" cy="534" r="13" fill="#8764AE"/>
+  <text x="619" y="539" text-anchor="middle" font-size="15" fill="#FFFFFF">1</text>
+  <text x="642" y="540" class="title">事实校验与标准化</text>
+  <text x="611" y="564" class="body">核验必填项、来源、时效与版本</text>
+  <text x="611" y="583" class="small">缺失值记为UNKNOWN，不当作false</text>
+
+  <rect x="975" y="510" width="355" height="81" rx="10"
+        fill="#FFFFFF" stroke="#D8CCE9"/>
+  <circle cx="999" cy="534" r="13" fill="#8764AE"/>
+  <text x="999" y="539" text-anchor="middle" font-size="15" fill="#FFFFFF">2</text>
+  <text x="1022" y="540" class="title">关系解析与派生事实</text>
+  <text x="991" y="564" class="body">解析客群、合约、套餐与档位关系</text>
+  <text x="991" y="583" class="small">派生：无合约限制；T2低于T3</text>
+
+  <path d="M950 552 H975" class="purple-arrow"/>
+
+  <!-- 显式规则区 -->
+  <rect x="595" y="604" width="735" height="111" rx="10"
+        fill="#FFFFFF" stroke="#BBA7D1" stroke-width="1.5"/>
+  <circle cx="619" cy="628" r="13" fill="#8764AE"/>
+  <text x="619" y="633" text-anchor="middle" font-size="15" fill="#FFFFFF">3</text>
+  <text x="642" y="634" class="title">规则求值：按条件生成结论，而非根据价格猜测</text>
+
+  <text x="611" y="659" font-size="16" fill="#445F7A">
+    资格：范围匹配 ∧ 无合约限制 ∧ 无冲突工单 → 可办
+  </text>
+  <text x="611" y="682" font-size="16" fill="#445F7A">
+    类型：可办 ∧ 同系列 ∧ 目标档位低于当前档位 → 低迁
+  </text>
+  <text x="611" y="705" font-size="16" fill="#445F7A">
+    路由：可办低迁 ∧ 无相关在途工单 → 新建维系工单建议
+  </text>
+
+  <path d="M1152 591 V604" class="purple-arrow"/>
+
+  <rect x="595" y="728" width="735" height="50" rx="10"
+        fill="#EDE5F7" stroke="#D1C2E2"/>
+  <circle cx="619" cy="753" r="13" fill="#8764AE"/>
+  <text x="619" y="758" text-anchor="middle" font-size="15" fill="#FFFFFF">4</text>
+  <text x="642" y="750" font-size="17" font-weight="700" fill="#67458F">
+    汇总与冲突处理
+  </text>
+  <text x="642" y="770" font-size="15" fill="#67458F">
+    拒绝规则优先；关键事实未知则待核验；规则冲突则停止自动决策
+  </text>
+
+  <path d="M1250 715 V728" class="purple-arrow"/>
+
+  <!-- =====================================================
+       右侧：具体输出
+       ===================================================== -->
+  <rect x="1390" y="338" width="450" height="197" rx="12"
+        fill="#FFFFFF" stroke="#8DBCA6" stroke-width="1.6"/>
+  <path d="M1402 338 H1828 Q1840 338 1840 350 V378
+           H1390 V350 Q1390 338 1402 338" fill="#E0F0E7"/>
+
+  <text x="1408" y="365" font-size="20" font-weight="700" fill="#28654F">
+    候选A：P129｜可办低迁
+  </text>
+
+  <text x="1408" y="404" class="code">eligible: true</text>
+  <text x="1408" y="429" class="code">changeType: DOWNGRADE</text>
+  <text x="1408" y="454" class="body">基础月费：169 → 129元，减少40元</text>
+  <text x="1408" y="479" class="body">速率 / 流量：保持1000M / 80GB</text>
+  <text x="1408" y="504" class="body">派单建议：维系单 / 低迁服务队列</text>
+  <text x="1408" y="525" class="small">示例队列编码：RETENTION_DOWNGRADE</text>
+
+  <rect x="1390" y="548" width="450" height="109" rx="12"
+        fill="#FFFFFF" stroke="#DAB987" stroke-width="1.5"/>
+  <text x="1408" y="576" font-size="20" font-weight="700" fill="#A47128">
+    候选B：CAMPUS99｜不可办
+  </text>
+  <text x="1408" y="602" class="code">eligible: false</text>
+  <text x="1408" y="626" class="body">原因：限定校园客群，客户校园身份为false</text>
+  <text x="1408" y="647" class="small">不进入推荐与执行路由；不因低价覆盖资格规则</text>
+
+  <rect x="1390" y="670" width="450" height="108" rx="12"
+        fill="#EAF3EE" stroke="#C9DFD2"/>
+  <text x="1408" y="697" class="title">返回可解释决策包</text>
+  <text x="1408" y="723" class="code">decisionId: DEC-DEMO-001</text>
+  <text x="1408" y="748" class="small">输入快照F17 + 知识K12 + 本体O3 + 规则R8</text>
+  <text x="1408" y="770" class="small">逐候选返回：结果、原因、命中规则、派单建议</text>
+
+  <!-- =====================================================
+       底部：真实可读的规则执行记录
+       ===================================================== -->
+  <rect x="60" y="815" width="1800" height="197" rx="14"
+        fill="#FFFFFF" stroke="#D4E0ED" stroke-width="1.4"/>
+
+  <path d="M74 815 H1846 Q1860 815 1860 829 V853
+           H60 V829 Q60 815 74 815" fill="#EAF0F8"/>
+
+  <text x="80" y="841" font-size="20" font-weight="700" fill="#24558F">
+    规则执行记录｜同一输入快照 + 相同版本 + 相同评估时间，可复现同一结果
+  </text>
+
+  <!-- 表头 -->
+  <rect x="75" y="863" width="1770" height="26" fill="#F3F6FB"/>
+  <text x="90" y="882" font-size="15" font-weight="700" fill="#365675">规则ID</text>
+  <text x="290" y="882" font-size="15" font-weight="700" fill="#365675">读取的事实 / 条件</text>
+  <text x="1030" y="882" font-size="15" font-weight="700" fill="#365675">候选A：P129</text>
+  <text x="1400" y="882" font-size="15" font-weight="700" fill="#365675">候选B：CAMPUS99</text>
+
+  <!-- 行1 -->
+  <text x="90" y="911" font-size="15" fill="#445F7A">R01 合约限制</text>
+  <text x="290" y="911" font-size="15" fill="#445F7A">
+    2026-10-19晚于限制截止日2026-09-30，且无续约
+  </text>
+  <text x="1030" y="911" font-size="15" fill="#137D79">通过：无合约限制</text>
+  <text x="1400" y="911" font-size="15" fill="#137D79">通过：无合约限制</text>
+
+  <line x1="85" y1="920" x2="1835" y2="920" stroke="#E7EDF4"/>
+
+  <!-- 行2 -->
+  <text x="90" y="940" font-size="15" fill="#445F7A">R02 客群范围</text>
+  <text x="290" y="940" font-size="15" fill="#445F7A">
+    客户为普通个人；校园身份=false；分别匹配套餐适用客群
+  </text>
+  <text x="1030" y="940" font-size="15" fill="#137D79">通过：普通个人匹配</text>
+  <text x="1400" y="940" font-size="15" fill="#A47128">拒绝：校园身份不符合</text>
+
+  <line x1="85" y1="949" x2="1835" y2="949" stroke="#E7EDF4"/>
+
+  <!-- 行3 -->
+  <text x="90" y="969" font-size="15" fill="#445F7A">R03 / R04 资格与类型</text>
+  <text x="290" y="969" font-size="15" fill="#445F7A">
+    相关在途工单=[]；全部资格通过后，按同系列档位关系判定
+  </text>
+  <text x="1030" y="969" font-size="15" fill="#137D79">可办；T2低于T3 → 低迁</text>
+  <text x="1400" y="969" font-size="15" fill="#A47128">资格已拒绝，不生成可办类型</text>
+
+  <line x1="85" y1="978" x2="1835" y2="978" stroke="#E7EDF4"/>
+
+  <!-- 行4 -->
+  <text x="90" y="998" font-size="15" fill="#445F7A">R05 路由建议</text>
+  <text x="290" y="998" font-size="15" fill="#445F7A">
+    可办低迁且无相关在途工单；按示例派单映射配置选择队列
+  </text>
+  <text x="1030" y="998" font-size="15" fill="#137D79">建议新建维系单，进入低迁队列</text>
+  <text x="1400" y="998" font-size="15" fill="#A47128">不生成执行路由</text>
+
+  <!-- 最终业务落点 -->
+  <rect x="60" y="1027" width="1800" height="34" rx="9"
+        fill="#FFF3DF"/>
+
+  <text x="960" y="1050" text-anchor="middle"
+        font-size="16" fill="#936B2D">
+    推理输出是决策建议，不直接办理：智能体解释方案 → 坐席获取客户确认 → 业务MCP实时预检 → 幂等建单 → 回执闭环
+  </text>
+</svg>

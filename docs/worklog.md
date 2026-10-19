@@ -1519,3 +1519,8 @@
 
 - 按用户要求基于 v1.0 新建 docs/images/ikc-video-service架构总图_v1.1.svg（v1.0 保留）：左侧六层层标签由「rotate(-90) 竖排文字」改为 OpenWiki-Server 框架图同款「44×44 圆角渐变图标徽章（x=70，带内垂直居中）+ 徽章下方层名（14px bold 取各层色深阶）+ 副行（10.5px 灰，HTTP·HAProxy / Celery·Redis / video.process / integrations）」；图标为手绘白描矢量：调用方层人形（gBlue）、接入层地球（gTeal）、调度层时钟（gIndigo）、任务主流程四节点链路（gViolet）、集成层芯片（gCyan）、外部依赖层数据库柱（gSlate），复用图内既有渐变，未新增 defs；font-family 首位改 Noto Sans CJK SC 免临时副本。
 - 验证：XML 校验 OK；cairosvg 2x 渲染同名 PNG，目检六徽章图标全部正常、无豆腐块、文字未侵入层带（层带左缘 x=160）、布局与连线无位移。仅配图改动，无代码改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：deep-agent 架构总图左侧竖排标签改图标徽章（2026-10-19）
+
+- 按用户「对齐图标徽章样式」选择，就地改 docs/images/deep-agent架构总图_v1.0.svg 左侧六层标签：由 rotate(-90) 竖排文字改为「44×44 彩色圆角图标徽章 + 下方横向层名（粗体同色）+ 灰色英文副标签」，对齐 Semantica / 分层技术栈 v1.2 左侧风格。六枚扁平白描图标按层语义设计：调用方=人形、HTTP 接入层=滑块路由、Agent 编排层=图谱节点、工具层=2×2 域网格、外部北向依赖=外链箭头、本地落盘=数据库圆柱；徽章取各层带主题渐变 gBlue/gTeal/gViolet/gIndigo/gEmerald/gSlate，层名文字同色深阶，统一居中 x=84（避开层带左边缘 x=130）。
+- 验证：XML 校验 OK；临时副本注入 Noto Sans CJK SC 后 cairosvg 2x 渲染覆盖 v1.0.png（3800×2720），左侧裁切目检六徽章图标清晰、无豆腐块、横向标签不与层带重叠。仅配图改动，跳过 pytest 与 Claude 只读审查。

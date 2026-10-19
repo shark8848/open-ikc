@@ -38,9 +38,7 @@
 
   <!-- 背景与标题 -->
   <rect x="0" y="0" width="1900" height="1360" fill="#f8fafc"/>
-  <text x="950" y="30" text-anchor="middle" font-size="26" font-weight="bold" fill="#0f172a">deep-agent 助手服务架构总图</text>
-  <text x="950" y="52" text-anchor="middle" font-size="13" fill="#64748b">v1.0 · 独立助手服务（FastAPI + LangChain Deep Agents）· HTTP :5192 · 只对外提供 HTTP API，不做 UI / 登录</text>
-
+  
   <!-- ================= 层带背景 ================= -->
   <rect x="130" y="66"   width="1490" height="120" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
   <rect x="130" y="216"  width="1490" height="150" rx="10" fill="#f0fdfa" stroke="#99f6e4"/>
@@ -49,24 +47,60 @@
   <rect x="130" y="886"  width="1490" height="150" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
   <rect x="130" y="1056" width="1490" height="140" rx="10" fill="#f1f5f9" stroke="#cbd5e1"/>
 
-  <!-- 层名标签 -->
-  <g font-size="17" font-weight="bold" fill="#334155" text-anchor="middle">
-    <text x="93" y="126"  transform="rotate(-90 93 126)">调用方</text>
-    <text x="93" y="291"  transform="rotate(-90 93 291)">HTTP 接入层</text>
-    <text x="93" y="486"  transform="rotate(-90 93 486)">Agent 编排层</text>
-    <text x="93" y="736"  transform="rotate(-90 93 736)">工具层</text>
-    <text x="93" y="961"  transform="rotate(-90 93 961)">外部北向依赖</text>
-    <text x="93" y="1126" transform="rotate(-90 93 1126)">本地落盘</text>
+  <!-- 层名标签：彩色圆角图标徽章 + 横向层名（对齐 Semantica / 分层技术栈 v1.2 左侧样式） -->
+  <g text-anchor="middle">
+    <!-- 第 1 层 调用方 -->
+    <g transform="translate(62,76)">
+      <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gBlue)"/>
+      <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="6" r="2.6"/><path d="M5,17 a6,6 0 0 1 12,0"/></g></g>
+    </g>
+    <text x="84" y="140" font-size="13.5" font-weight="bold" fill="#1d4ed8">调用方</text>
+    <text x="84" y="156" font-size="9.5" fill="#64748b">caller</text>
+    <!-- 第 2 层 HTTP 接入层 -->
+    <g transform="translate(62,241)">
+      <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gTeal)"/>
+      <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,8 h14 M4,14 h14"/><circle cx="8" cy="8" r="2" fill="#fff" stroke="none"/><circle cx="15" cy="14" r="2" fill="#fff" stroke="none"/></g></g>
+    </g>
+    <text x="84" y="305" font-size="13.5" font-weight="bold" fill="#0f766e">HTTP 接入层</text>
+    <text x="84" y="321" font-size="9.5" fill="#64748b">routes</text>
+    <!-- 第 3 层 Agent 编排层 -->
+    <g transform="translate(62,436)">
+      <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gViolet)"/>
+      <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="5" r="2.2"/><circle cx="5" cy="16" r="2.2"/><circle cx="17" cy="16" r="2.2"/><path d="M11,7.2 v2 M9.5,10 l-3.2,4 M12.5,10 l3.2,4"/></g></g>
+    </g>
+    <text x="84" y="500" font-size="13.5" font-weight="bold" fill="#6d28d9">Agent 编排层</text>
+    <text x="84" y="516" font-size="9.5" fill="#64748b">service</text>
+    <!-- 第 4 层 工具层 -->
+    <g transform="translate(62,686)">
+      <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gIndigo)"/>
+      <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="4" y="4" width="6.5" height="6.5" rx="1.3"/><rect x="12" y="4" width="6.5" height="6.5" rx="1.3"/><rect x="4" y="12" width="6.5" height="6.5" rx="1.3"/><rect x="12" y="12" width="6.5" height="6.5" rx="1.3"/></g></g>
+    </g>
+    <text x="84" y="750" font-size="13.5" font-weight="bold" fill="#4338ca">工具层</text>
+    <text x="84" y="766" font-size="9.5" fill="#64748b">tools</text>
+    <!-- 第 5 层 外部北向依赖 -->
+    <g transform="translate(62,911)">
+      <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gEmerald)"/>
+      <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M9,5 H5 v11 h11 v-4"/><path d="M13,4 h5 v5"/><path d="M18,4 L10.5,11.5"/></g></g>
+    </g>
+    <text x="84" y="975" font-size="13.5" font-weight="bold" fill="#059669">外部北向依赖</text>
+    <text x="84" y="991" font-size="9.5" fill="#64748b">external</text>
+    <!-- 第 6 层 本地落盘 -->
+    <g transform="translate(62,1076)">
+      <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gSlate)"/>
+      <g transform="translate(11,11)"><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 V6"/><path d="M4,11 a7,2.6 0 0 0 14,0"/></g></g>
+    </g>
+    <text x="84" y="1140" font-size="13.5" font-weight="bold" fill="#475569">本地落盘</text>
+    <text x="84" y="1156" font-size="9.5" fill="#64748b">data/</text>
   </g>
 
   <!-- ================= 第 1 层：调用方 ================= -->
   <g>
     <rect x="200" y="88" width="390" height="76" rx="10" fill="url(#gBlue)"/>
-    <text x="395" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">ikc-demo 助手页面</text>
+    <text x="395" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">知识库助手页面</text>
     <text x="395" y="140" text-anchor="middle" font-size="11" fill="#dbeafe">配置页 + 对话页（/#/assistant）· UI 承载方</text>
 
     <rect x="620" y="88" width="390" height="76" rx="10" fill="url(#gBlue)"/>
-    <text x="815" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">样板 BFF（ikc-demo）</text>
+    <text x="815" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">api proxy</text>
     <text x="815" y="140" text-anchor="middle" font-size="11" fill="#dbeafe">/bff/agent/* 代理 → 本服务 · 不改写 SSE 帧语义</text>
 
     <rect x="1040" y="88" width="380" height="76" rx="10" fill="url(#gSlate)"/>
@@ -121,7 +155,7 @@
     <text x="655" y="536" text-anchor="middle" font-size="10.8" fill="#ede9fe">子代理 RETRIEVAL_ANALYST（可选）</text>
 
     <rect x="820" y="418" width="290" height="140" rx="10" fill="url(#gViolet)"/>
-    <text x="965" y="444" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">韧性与上下文中间件</text>
+    <text x="965" y="444" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">上下文中间件</text>
     <text x="965" y="470" text-anchor="middle" font-size="10.8" fill="#ede9fe">上下文裁剪 window / token_limit</text>
     <text x="965" y="492" text-anchor="middle" font-size="10.8" fill="#ede9fe">ToolError 归一（不中断对话）</text>
     <text x="965" y="514" text-anchor="middle" font-size="10.8" fill="#ede9fe">Model / Tool 重试</text>
@@ -310,7 +344,4 @@
   </g>
 
   <!-- ================= 底部脚注 ================= -->
-  <text x="810" y="1232" text-anchor="middle" font-size="12" fill="#475569">边界纪律：不直连 Elasticsearch / 不 import 检索内核 / 不做权限与业务判定 —— 检索、图谱、文档一律走北向端点，权限 · 密级 · 配额以端点返回为准，环境缺口按原码归因、不做代偿</text>
-  <text x="810" y="1256" text-anchor="middle" font-size="12" fill="#475569">SSE 面不走统一响应壳：帧为 data:{type:…}，type = token / tool_start / tool_end / artifact / tool_approval / plan / done / error；approval 模式写工具挂起不发 done，批准后经 /chat/approve 续跑</text>
-  <text x="810" y="1288" text-anchor="middle" font-size="11" fill="#94a3b8">依据 deep-agent 仓库 AGENTS.md / README.md / src 与 tools 源码结构绘制 · 相邻仓 ikc-demo（UI/BFF）· open ikc platform / universal-retriever（检索北向）· ikc-graph-service（图谱北向）</text>
 </svg>

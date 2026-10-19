@@ -1558,4 +1558,9 @@
 ### 任务：生成安全中心信任与鉴权原理流程图 v1.0（2026-10-19）
 
 - 依据相邻仓库 `/home/sharkyai/ikc-security-center/docs/设计方案.md`（信任模型 §4、控制面:18200 签发/数据面:18201 本地验签 §5、逐跳交换非升级不变量 §7、缺省拒绝矩阵 §8、fail-closed §10、五张时序 §13、中心不在调用链 §16）提炼系统运行逻辑，新建 docs/images/安全中心原理流程图_v1.0.svg/png（画布 1760×1240，标题「IKC 安全中心 · 信任与鉴权原理流程」）。布局：左侧「安全中心（信任根·不在调用链上）」面板列内部 CA·Ed25519 信任根 / 控制面:18200(mTLS) / 数据面:18201(只读免鉴权) / 服务级授权矩阵，用虚线绿·青箭头标注 工作负载证书 / exchange 换票 / 公钥 / canCall 四条交互；主流程七节点纵向串联 ①边界入口铸造 → ②逐跳交换(收窄) → ③携带票据 mTLS 直连 → ④本地验签通过?◇ → ⑤矩阵 canCall 允许?◇ → ⑥高危(写面/一次性)?◇ → ⑦执行本地业务→再换下一跳(收窄) 并回环至②；④⑤⑥「否」分支右指红色拒绝框（100401 未认证 signature/exp/audience/scope、100403 policy_denied 矩阵外/未登记），⑥「是」→灰色自省 /v1/token/introspect（判 jti_revoked/jti_replayed·唯一吊销保护，active→放行回流⑦）；底部居中审计台账 audit.jsonl（append-only·只记 jti），⑦执行/拒绝/自省/签发虚线汇入。最右绿色纪律竖条 7 卡：中心不在调用链 / 三要素乘积(通道×身份×授权) / 非升级不变量(scope⊆父·资源不放大·sub不变) / 受众逐跳收窄(aud 只能下一跳) / 缺省拒绝 / fail-closed / 短 TTL 补偿(300s 压窗)，配色对齐架构图家族。
-- 验证：XML 校验 OK；font-family 首位 Noto Sans CJK SC，cairosvg 2x 渲染 3520×2480 PNG，目检节点/菱形/连线/文字清晰无豆腐块、无溢出重叠；首版曾出现审计连线贝塞尔杂乱与「下一跳(收窄)」回环标签同 canCall 分支重叠，已将审计台账移底部居中、简化为直线下探并删除冗余回环标签。仅新增配图，无代码改动，跳过 pytest 与 Claude 只读审查。
+- 验证：XML 校验 OK；font-family 首位 Noto Sans CJK SC，cairosvg 2x 渲染 3520×2480 PNG，目检节点/菱形/连线/文字清晰无豆腐块、无溢出重叠；首版曾出现审计连线贝塞 尔杂乱与「下一跳(收窄)」回环标签同 canCall 分支重叠，已将审计台账移底部居中、简 化为直线下探并删除冗余回环标签。仅新增配图，无代码改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：PyUploadX 分层系统框架图归档至 open-ikc/docs/images（2026-10-19）
+
+- 按「IKC 生态架构图统一存储至 open-ikc/docs/images」规范，将相邻仓库 `/home/sharkyai/PyUploadX/docs/PyUploadX分层系统框架_v1.0.svg/png` 复制一份到 docs/images/ 做生态级统一归档（cp -p 保留时间戳）；PyUploadX 仓库自身作为独立交付物保留原件不动，避免破坏其仓内文档引用。复制后 XML 校验 OK。
+- 仅新增配图副本，无代码改动，跳过 pytest 与 Claude 只读审查。

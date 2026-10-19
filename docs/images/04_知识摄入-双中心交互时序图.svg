@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1010" viewBox="0 70 1920 1010" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Source Han Sans CN',sans-serif">
+  <!-- ============ 页面 ============ -->
+  <rect x="0" y="0" width="1920" height="1080" fill="#FFFFFF"/>
+
+  <!-- ============ 阶段背景带 ============ -->
+  <rect x="60" y="198" width="1800" height="196" rx="10" fill="#F5F8FC"/>
+  <rect x="60" y="400" width="1800" height="150" rx="10" fill="#F5F8FC"/>
+  <rect x="60" y="556" width="1800" height="250" rx="10" fill="#F5F8FC"/>
+  <rect x="60" y="812" width="1800" height="104" rx="10" fill="#F5F8FC"/>
+  <rect x="76" y="360" width="168" height="26" rx="13" fill="#5B7EA6"/>
+  <text x="160" y="378" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">阶段一 · 采集与解析</text>
+  <rect x="76" y="516" width="168" height="26" rx="13" fill="#C4611F"/>
+  <text x="160" y="534" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">阶段二 · 语义对齐</text>
+  <rect x="76" y="772" width="168" height="26" rx="13" fill="#8A4B12"/>
+  <text x="160" y="790" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">阶段三 · 回哺与评审</text>
+  <rect x="76" y="882" width="168" height="26" rx="13" fill="#2C5687"/>
+  <text x="160" y="900" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">阶段四 · 发布生效</text>
+
+  <!-- ============ 智能知识中心范围框（含解析与加工引擎 + 知识管理与发布）============ -->
+  <rect x="568" y="96" width="590" height="824" rx="12" fill="#2C5687" fill-opacity="0.05" stroke="#2C5687" stroke-width="1.8" stroke-dasharray="8,6"/>
+  <rect x="732" y="78" width="262" height="32" rx="16" fill="#2C5687"/>
+  <text x="863" y="100" text-anchor="middle" font-size="17" font-weight="bold" fill="#FFFFFF">智能知识中心</text>
+
+  <defs>
+    <marker id="mGray" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#64748B"/>
+    </marker>
+    <marker id="mOrange" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#C4611F"/>
+    </marker>
+    <marker id="mTeal" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2E7D6B"/>
+    </marker>
+  </defs>
+
+  <!-- ============ 生命线 ============ -->
+  <g stroke-dasharray="5,5" stroke-width="1.4">
+    <line x1="180" y1="172" x2="180" y2="916" stroke="#9AA8B8"/>
+    <line x1="440" y1="172" x2="440" y2="916" stroke="#9AA8B8"/>
+    <line x1="700" y1="172" x2="700" y2="916" stroke="#9AA8B8"/>
+    <line x1="1010" y1="172" x2="1010" y2="916" stroke="#7C93AC"/>
+    <line x1="1430" y1="172" x2="1430" y2="916" stroke="#D2A179"/>
+    <line x1="1740" y1="172" x2="1740" y2="916" stroke="#8FB8AC"/>
+  </g>
+
+  <!-- ============ 生命线头部 ============ -->
+  <g>
+    <rect x="55" y="118" width="250" height="54" rx="8" fill="#64748B"/>
+    <text x="180" y="141" text-anchor="middle" font-size="18" font-weight="bold" fill="#FFFFFF">数据源系统</text>
+    <text x="180" y="162" text-anchor="middle" font-size="12" fill="#E2E8F0">制度库 · 文档库 · 业务 API · 会话</text>
+
+    <rect x="315" y="118" width="250" height="54" rx="8" fill="#5B7EA6"/>
+    <text x="440" y="141" text-anchor="middle" font-size="18" font-weight="bold" fill="#FFFFFF">统一数据接入层</text>
+    <text x="440" y="162" text-anchor="middle" font-size="12" fill="#EAF1F8">文档/数据库/API/IM Adapter</text>
+
+    <rect x="575" y="118" width="250" height="54" rx="8" fill="#4E7BAE"/>
+    <text x="700" y="141" text-anchor="middle" font-size="18" font-weight="bold" fill="#FFFFFF">解析与加工引擎</text>
+    <text x="700" y="162" text-anchor="middle" font-size="12" fill="#EAF1F8">版式/图片/表格/音视频/MD·HTML</text>
+
+    <rect x="875" y="118" width="270" height="54" rx="8" fill="#2C5687"/>
+    <text x="1010" y="141" text-anchor="middle" font-size="19" font-weight="bold" fill="#FFFFFF">知识管理与发布</text>
+    <text x="1010" y="162" text-anchor="middle" font-size="12" fill="#D6E4F2">采编 · 图谱构建 · 治理 · 索引发布</text>
+
+    <rect x="1295" y="118" width="270" height="54" rx="8" fill="#B4690E"/>
+    <text x="1430" y="141" text-anchor="middle" font-size="19" font-weight="bold" fill="#FFFFFF">本体决策中心</text>
+    <text x="1430" y="162" text-anchor="middle" font-size="12" fill="#F7E8D4">T-Box 语义基线 · 映射评审</text>
+
+    <rect x="1615" y="118" width="250" height="54" rx="8" fill="#2E7D6B"/>
+    <text x="1740" y="141" text-anchor="middle" font-size="18" font-weight="bold" fill="#FFFFFF">评审岗</text>
+    <text x="1740" y="162" text-anchor="middle" font-size="12" fill="#DFF0EA">知识负责人 · 领域专家</text>
+  </g>
+
+  <!-- ============ 阶段一：采集与解析 ============ -->
+  <line x1="180" y1="228" x2="434" y2="228" stroke="#64748B" stroke-width="2.2" marker-end="url(#mGray)"/>
+  <text x="307" y="220" text-anchor="middle" font-size="16" fill="#3D4C5E">1. 定时/增量采集 · 变化检测</text>
+
+  <line x1="440" y1="266" x2="694" y2="266" stroke="#64748B" stroke-width="2.2" marker-end="url(#mGray)"/>
+  <text x="567" y="258" text-anchor="middle" font-size="15" fill="#3D4C5E">2. 原文 + 解析任务 · 密级预标</text>
+
+  <rect x="515" y="291" width="370" height="30" rx="6" fill="#E8EFF7" stroke="#4E7BAE" stroke-width="1.4"/>
+  <text x="700" y="311" text-anchor="middle" font-size="15" fill="#1F3B5B">3. 多模态解析 / 清洗 / 分块 / 元数据抽取</text>
+
+  <line x1="700" y1="350" x2="1004" y2="350" stroke="#64748B" stroke-width="2.2" marker-end="url(#mGray)"/>
+  <text x="852" y="342" text-anchor="middle" font-size="16" fill="#3D4C5E">4. 结构化分块 + 原文定位 + 来源属性</text>
+
+  <!-- ============ 阶段二：语义对齐 ============ -->
+  <line x1="1010" y1="428" x2="1424" y2="428" stroke="#C4611F" stroke-width="2.2" marker-end="url(#mOrange)"/>
+  <text x="1217" y="420" text-anchor="middle" font-size="16" fill="#8A4B12">5. 拉取语义基线（概念·属性·关系·术语）</text>
+
+  <line x1="1430" y1="466" x2="1016" y2="466" stroke="#C4611F" stroke-width="2.2" stroke-dasharray="7,5" marker-end="url(#mOrange)"/>
+  <text x="1223" y="458" text-anchor="middle" font-size="16" fill="#8A4B12">6. 返回 T-Box 基线 + 术语口径对齐</text>
+
+  <rect x="810" y="491" width="400" height="30" rx="6" fill="#E3EAF4" stroke="#2C5687" stroke-width="1.4"/>
+  <text x="1010" y="511" text-anchor="middle" font-size="15" fill="#1F3B5B">7. 按本体类型抽取 · LLM Wiki 编译 · 图谱三元组</text>
+
+  <!-- ============ 阶段三：回哺与评审 ============ -->
+  <text x="1220" y="580" text-anchor="middle" font-size="16" font-weight="bold" fill="#8A4B12">8. 映射候选回哺</text>
+  <line x1="1010" y1="590" x2="1424" y2="590" stroke="#C4611F" stroke-width="2.2" marker-end="url(#mOrange)"/>
+  <text x="1220" y="612" text-anchor="middle" font-size="13" fill="#8A4B12">制度→规则 · SOP→流程 · 术语案例→概念 · 字段→属性（只映射）</text>
+
+  <line x1="1430" y1="636" x2="1734" y2="636" stroke="#2E7D6B" stroke-width="2.2" marker-end="url(#mTeal)"/>
+  <text x="1582" y="628" text-anchor="middle" font-size="16" fill="#235C4F">9. 征求专家评审（映射候选）</text>
+
+  <line x1="1740" y1="668" x2="1436" y2="668" stroke="#2E7D6B" stroke-width="2.2" stroke-dasharray="7,5" marker-end="url(#mTeal)"/>
+  <text x="1588" y="660" text-anchor="middle" font-size="16" fill="#235C4F">10. 评审通过 → 写入 T-Box</text>
+
+  <line x1="1430" y1="700" x2="1016" y2="700" stroke="#C4611F" stroke-width="2.2" stroke-dasharray="7,5" marker-end="url(#mOrange)"/>
+  <text x="1223" y="692" text-anchor="middle" font-size="16" fill="#8A4B12">11. 新语义基线生效通知</text>
+
+  <line x1="1010" y1="732" x2="1734" y2="732" stroke="#2E7D6B" stroke-width="2.2" marker-end="url(#mTeal)"/>
+  <text x="1372" y="724" text-anchor="middle" font-size="16" fill="#235C4F">12. 采编内容 / 升 L1 提交审核</text>
+
+  <line x1="1740" y1="768" x2="1016" y2="768" stroke="#2E7D6B" stroke-width="2.2" stroke-dasharray="7,5" marker-end="url(#mTeal)"/>
+  <text x="1378" y="760" text-anchor="middle" font-size="16" fill="#235C4F">13. 批准发布 / 退回修改</text>
+
+  <!-- ============ 阶段四：发布生效 ============ -->
+  <rect x="800" y="826" width="420" height="30" rx="6" fill="#E3EAF4" stroke="#2C5687" stroke-width="1.4"/>
+  <text x="1010" y="846" text-anchor="middle" font-size="15" fill="#1F3B5B">14. 发布 L1 · 写全文 / 向量 / 图谱索引 · 版本留存</text>
+
+  <rect x="820" y="866" width="380" height="30" rx="6" fill="#E3EAF4" stroke="#2C5687" stroke-width="1.4"/>
+  <text x="1010" y="886" text-anchor="middle" font-size="15" fill="#1F3B5B">15. 通知统一知识访问层 · 索引生效可检索</text>
+
+  <!-- ============ 底部：硬约束与图例 ============ -->
+  <rect x="60" y="938" width="1800" height="50" rx="10" fill="#FDF3E7" stroke="#E3B881" stroke-width="1.4"/>
+  <text x="84" y="968" font-size="16" font-weight="bold" fill="#8A4B12">贯穿全程硬约束</text>
+  <text x="246" y="968" font-size="15" fill="#6B4A21">数据只映射不复制 · AI 内容须经评审方可升级 L1 · 实时事实以源系统为准 · 回哺候选未经评审不入 T-Box · 摄入不改变源系统权限</text>
+  <line x1="1230" y1="964" x2="1270" y2="964" stroke="#64748B" stroke-width="2.2" marker-end="url(#mGray)"/>
+  <text x="1278" y="969" font-size="13" fill="#4A5866">提交/指令</text>
+  <line x1="1380" y1="964" x2="1420" y2="964" stroke="#64748B" stroke-width="2.2" stroke-dasharray="7,5" marker-end="url(#mGray)"/>
+  <text x="1428" y="969" font-size="13" fill="#4A5866">响应/通知</text>
+  <text x="1540" y="969" font-size="13" fill="#8A4B12">橙 = 双中心语义交互</text>
+  <text x="1700" y="969" font-size="13" fill="#235C4F">青 = 人工评审</text>
+</svg>

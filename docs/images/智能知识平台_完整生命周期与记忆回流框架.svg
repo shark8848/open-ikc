@@ -875,7 +875,6 @@
   <rect x="3180" y="199" width="350" height="72" rx="10" fill="#E9F1F8"/>
   <use xlink:href="#shield" x="3195" y="209" color="#4E83AF"/>
   <text x="3245" y="236" font-size="28" font-weight="700" fill="#294E70">跨层治理</text>
-  <text x="3195" y="260" font-size="18" fill="#71869A">覆盖五层，不另计业务层级</text>
 
   <g transform="translate(3180 286)">
     <use xlink:href="#side-card"/>

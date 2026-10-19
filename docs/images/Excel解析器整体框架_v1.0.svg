@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1780 1082" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0891b2"/></linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#0284c7"/></linearGradient>
+    <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
+    <linearGradient id="gIndigo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#3730a3"/></linearGradient>
+    <linearGradient id="gSlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b"/><stop offset="1" stop-color="#475569"/></linearGradient>
+    <marker id="arrDown" markerWidth="9" markerHeight="8" refX="4.5" refY="6" orient="auto"><path d="M0,0 L9,0 L4.5,7 Z" fill="#94a3b8"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="1780" height="1082" fill="#f8fafc"/>
+  <text x="960" y="42" text-anchor="middle" font-size="24" font-weight="bold" fill="#0f172a">Excel 解析器 · 整体框架</text>
+
+  <!-- 层间连接箭头 -->
+  <g stroke="#cbd5e1" stroke-width="2">
+    <line x1="960" y1="221" x2="960" y2="233" marker-end="url(#arrDown)"/>
+    <line x1="960" y1="387" x2="960" y2="399" marker-end="url(#arrDown)"/>
+    <line x1="960" y1="553" x2="960" y2="565" marker-end="url(#arrDown)"/>
+    <line x1="960" y1="719" x2="960" y2="731" marker-end="url(#arrDown)"/>
+    <line x1="960" y1="885" x2="960" y2="897" marker-end="url(#arrDown)"/>
+  </g>
+
+  <!-- ================= BAND 1 输入与分类识别 ================= -->
+  <g transform="translate(90,123)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gCyan)"/>
+    <g stroke="#ffffff" stroke-width="2" fill="none"><path d="M22,30 V10 M15,17 L22,10 L29,17"/><path d="M10,34 h24"/></g>
+  </g>
+  <text x="112" y="187" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#0e7490">输入与分类</text>
+  <rect x="180" y="70" width="1560" height="150" rx="14" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="86" width="368" height="118" rx="12" fill="url(#gCyan)"/>
+    <g transform="translate(208,96)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,15 V4 M7,8 l4,-4 l4,4"/><path d="M4,15 v3 h14 v-3"/></g></g>
+    <text x="380" y="130" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Excel 上传</text>
+    <text x="380" y="154" text-anchor="middle" font-size="11" fill="#ecfeff">.xlsx / .xls · 读取前 20 行内容</text>
+    <text x="380" y="174" text-anchor="middle" font-size="11" fill="#ecfeff">转换为 HTML 表格（保留布局）</text>
+  </g>
+  <g>
+    <rect x="582" y="86" width="368" height="118" rx="12" fill="url(#gCyan)"/>
+    <g transform="translate(594,96)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="8" cy="8" r="4"/><path d="M12,8 h8 M4,14 h16 M4,18 h10"/></g></g>
+    <text x="766" y="130" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">分类识别（Python 算法）</text>
+    <text x="766" y="154" text-anchor="middle" font-size="11" fill="#ecfeff">规则 + 权重：含表头坐标与方向 / 规则不满足 / 置信度评分</text>
+    <text x="766" y="174" text-anchor="middle" font-size="11" fill="#ecfeff">行数 &gt; 200 强制清单型</text>
+  </g>
+  <g>
+    <rect x="968" y="86" width="368" height="118" rx="12" fill="url(#gCyan)"/>
+    <g transform="translate(980,96)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M3,9 h16 M9,9 v9"/></g></g>
+    <text x="1152" y="130" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">doc_type 判定</text>
+    <text x="1152" y="154" text-anchor="middle" font-size="11" fill="#ecfeff">清单型：规则识别表头 · 数据表格</text>
+    <text x="1152" y="174" text-anchor="middle" font-size="11" fill="#ecfeff">表单型：LLM 区域识别 · 混合布局</text>
+  </g>
+  <g>
+    <rect x="1354" y="86" width="368" height="118" rx="12" fill="url(#gCyan)"/>
+    <g transform="translate(1366,96)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,3 l7,4 v6 l-7,4 l-7,-4 V7 z"/><circle cx="11" cy="10" r="2"/></g></g>
+    <text x="1538" y="130" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">存储格式选型</text>
+    <text x="1538" y="154" text-anchor="middle" font-size="11" fill="#ecfeff">统一 HTML · 原生支持 rowspan/colspan</text>
+    <text x="1538" y="174" text-anchor="middle" font-size="11" fill="#ecfeff">按环节选型：压缩 / 精简 / 完整</text>
+  </g>
+
+  <!-- ================= BAND 2 清单型处理 ================= -->
+  <g transform="translate(90,289)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gBlue)"/>
+    <g stroke="#ffffff" stroke-width="2" fill="none"><rect x="9" y="10" width="26" height="24" rx="3"/><line x1="9" y1="17" x2="35" y2="17"/><circle cx="13.5" cy="13.5" r="1" fill="#ffffff" stroke="none"/><circle cx="18" cy="13.5" r="1" fill="#ffffff" stroke="none"/></g>
+  </g>
+  <text x="112" y="353" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1d4ed8">清单型处理</text>
+  <rect x="180" y="236" width="1560" height="150" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="252" width="368" height="118" rx="12" fill="url(#gBlue)"/>
+    <g transform="translate(208,262)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M3,9 h16 M8,4 v14"/></g></g>
+    <text x="380" y="296" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">表头识别（规则 + 权重）</text>
+    <text x="380" y="320" text-anchor="middle" font-size="11" fill="#dbeafe">输出表头坐标 [[row_start,col_start],[row_end,col_end]]</text>
+    <text x="380" y="340" text-anchor="middle" font-size="11" fill="#dbeafe">支持人工前端调整</text>
+  </g>
+  <g>
+    <rect x="582" y="252" width="368" height="118" rx="12" fill="url(#gBlue)"/>
+    <g transform="translate(594,262)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,5 h14 M4,11 h14 M4,17 h9"/></g></g>
+    <text x="766" y="296" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">按行分段（每行一条）</text>
+    <text x="766" y="320" text-anchor="middle" font-size="11" fill="#dbeafe">存储完整 HTML（含表头 + 行）</text>
+    <text x="766" y="340" text-anchor="middle" font-size="11" fill="#dbeafe">生成精简文本：列名:值 + col_map</text>
+  </g>
+  <g>
+    <rect x="968" y="252" width="368" height="118" rx="12" fill="url(#gBlue)"/>
+    <g transform="translate(980,262)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,7 h7 l2,2 h7 v9 h-16 z"/></g></g>
+    <text x="1152" y="296" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">双格式产物</text>
+    <text x="1152" y="320" text-anchor="middle" font-size="11" fill="#dbeafe">full_html 完整 · 回显与归纳</text>
+    <text x="1152" y="340" text-anchor="middle" font-size="11" fill="#dbeafe">compact_text 精简 · 用于向量化</text>
+  </g>
+  <g>
+    <rect x="1354" y="252" width="368" height="118" rx="12" fill="url(#gBlue)"/>
+    <g transform="translate(1366,262)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="7"/><path d="M8,11 h6 M11,8 v6"/></g></g>
+    <text x="1538" y="296" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">适用场景</text>
+    <text x="1538" y="320" text-anchor="middle" font-size="11" fill="#dbeafe">规整数据表格 · 逐行成条</text>
+    <text x="1538" y="340" text-anchor="middle" font-size="11" fill="#dbeafe">不经 LLM · 零 Token 消耗</text>
+  </g>
+
+  <!-- ================= BAND 3 表单型处理 ================= -->
+  <g transform="translate(90,455)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gSky)"/>
+    <g stroke="#ffffff" stroke-width="2" fill="none"><rect x="9" y="9" width="26" height="26" rx="3"/><path d="M9,18 H35 M20,9 V35"/></g>
+  </g>
+  <text x="112" y="519" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#0284c7">表单型处理</text>
+  <rect x="180" y="402" width="1560" height="150" rx="14" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="418" width="368" height="118" rx="12" fill="url(#gSky)"/>
+    <g transform="translate(208,428)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M3,9 h16 M9,9 v9"/></g></g>
+    <text x="380" y="462" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">全量 HTML 生成</text>
+    <text x="380" y="486" text-anchor="middle" font-size="11" fill="#e0f2fe">整 Sheet 转换 · 保留合并单元格 rowspan/colspan</text>
+    <text x="380" y="506" text-anchor="middle" font-size="11" fill="#e0f2fe">计算 Token 数 · 判断是否需拆分</text>
+  </g>
+  <g>
+    <rect x="582" y="418" width="368" height="118" rx="12" fill="url(#gSky)"/>
+    <g transform="translate(594,428)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M11,3 v6 M8,6 l3,3 l3,-3"/><rect x="4" y="11" width="14" height="8" rx="2"/></g></g>
+    <text x="766" y="462" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">压缩 HTML（供 LLM）</text>
+    <text x="766" y="486" text-anchor="middle" font-size="11" fill="#e0f2fe">删空行填充格 · 视觉样式属性 · 长文本截断</text>
+    <text x="766" y="506" text-anchor="middle" font-size="11" fill="#e0f2fe">rowspan/colspan → cover 属性 · Token −70%</text>
+  </g>
+  <g>
+    <rect x="968" y="418" width="368" height="118" rx="12" fill="url(#gSky)"/>
+    <g transform="translate(980,428)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="8" cy="8" r="2.6"/><circle cx="16" cy="8" r="2.6"/><circle cx="12" cy="15" r="2.6"/><path d="M8,10.5 v2 M16,10.5 v2 M12,12.5 v0.1" /></g></g>
+    <text x="1152" y="462" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">LLM 区域识别</text>
+    <text x="1152" y="486" text-anchor="middle" font-size="11" fill="#e0f2fe">压缩 HTML + 提示词 · 一次调用 5~30 秒</text>
+    <text x="1152" y="506" text-anchor="middle" font-size="11" fill="#e0f2fe">输出区域坐标组 [[row1,col1],[row2,col2]]</text>
+  </g>
+  <g>
+    <rect x="1354" y="418" width="368" height="118" rx="12" fill="url(#gSky)"/>
+    <g transform="translate(1366,428)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M14,4 h4 v14 h-4 M8,18 H4 V4 h4 M8,11 h8"/></g></g>
+    <text x="1538" y="462" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">按区域分段</text>
+    <text x="1538" y="486" text-anchor="middle" font-size="11" fill="#e0f2fe">LLM 只返回坐标不切分 HTML · 减少 Token</text>
+    <text x="1538" y="506" text-anchor="middle" font-size="11" fill="#e0f2fe">Python 按坐标切分 · 支持人工调整区域</text>
+  </g>
+
+  <!-- ================= BAND 4 存储与向量化 ================= -->
+  <g transform="translate(90,621)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gViolet)"/>
+    <g stroke="#ffffff" stroke-width="1.8" fill="none"><ellipse cx="22" cy="13" rx="10" ry="4"/><path d="M12,13 V31 a10,4 0 0 0 20,0 V13"/><path d="M12,22 a10,4 0 0 0 20,0"/></g>
+  </g>
+  <text x="112" y="685" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#6d28d9">存储与向量化</text>
+  <rect x="180" y="568" width="1560" height="150" rx="14" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="584" width="368" height="118" rx="12" fill="url(#gViolet)"/>
+    <g transform="translate(208,594)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M4,5 h14 M4,11 h14 M4,17 h9"/></g></g>
+    <text x="380" y="628" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">精简文本（用于向量）</text>
+    <text x="380" y="652" text-anchor="middle" font-size="11" fill="#ede9fe">表单型按 &lt;br&gt; 拆条目带 [分类] · 清单型列名:值</text>
+    <text x="380" y="672" text-anchor="middle" font-size="11" fill="#ede9fe">去 HTML 标签 · 体积最小 ~1.3KB</text>
+  </g>
+  <g>
+    <rect x="582" y="584" width="368" height="118" rx="12" fill="url(#gViolet)"/>
+    <g transform="translate(594,594)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M5,5 h9 l4,4 v8 h-13 z"/><path d="M14,5 v4 h4"/></g></g>
+    <text x="766" y="628" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">完整 HTML（召回/回显）</text>
+    <text x="766" y="652" text-anchor="middle" font-size="11" fill="#ede9fe">保留 rowspan/colspan · 不截断</text>
+    <text x="766" y="672" text-anchor="middle" font-size="11" fill="#ede9fe">供 LLM 归纳总结与前端展示</text>
+  </g>
+  <g>
+    <rect x="968" y="584" width="368" height="118" rx="12" fill="url(#gViolet)"/>
+    <g transform="translate(980,594)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="8" cy="8" r="2.4"/><circle cx="16" cy="16" r="2.4"/><path d="M8,7 L16,15"/></g></g>
+    <text x="1152" y="628" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">向量化字段</text>
+    <text x="1152" y="652" text-anchor="middle" font-size="11" fill="#ede9fe">embedding 精简文本向量 1024 维</text>
+    <text x="1152" y="672" text-anchor="middle" font-size="11" fill="#ede9fe">content 原始精简文本 · 新增 sheetName 元数据</text>
+  </g>
+  <g>
+    <rect x="1354" y="584" width="368" height="118" rx="12" fill="url(#gViolet)"/>
+    <g transform="translate(1366,594)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><ellipse cx="11" cy="6" rx="7" ry="2.6"/><path d="M4,6 v10 a7,2.6 0 0 0 14,0 v-10"/></g></g>
+    <text x="1538" y="628" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">存储后端</text>
+    <text x="1538" y="652" text-anchor="middle" font-size="11" fill="#ede9fe">Elasticsearch 向量库 · PostgreSQL 元数据</text>
+    <text x="1538" y="672" text-anchor="middle" font-size="11" fill="#ede9fe">S3/OSS 原始文件</text>
+  </g>
+
+  <!-- ================= BAND 5 智能问答与前端回显 ================= -->
+  <g transform="translate(90,787)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gIndigo)"/>
+    <g fill="#ffffff"><path d="M9,12 a13,10 0 0 1 26,0 a13,9 0 0 1 -7,8 l-2,6 -4,-6 a13,10 0 0 1 -13,-8 z" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="16" cy="17" r="1.6"/><circle cx="22" cy="17" r="1.6"/><circle cx="28" cy="17" r="1.6"/></g>
+  </g>
+  <text x="112" y="851" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#3730a3">问答与回显</text>
+  <rect x="180" y="734" width="1560" height="150" rx="14" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="750" width="368" height="118" rx="12" fill="url(#gIndigo)"/>
+    <g transform="translate(208,760)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="9" cy="9" r="5"/><path d="M13,13 l6,6"/></g></g>
+    <text x="380" y="794" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">检索流程</text>
+    <text x="380" y="818" text-anchor="middle" font-size="11" fill="#e0e7ff">用户问题 → 向量检索精简文本 → 召回 doc_id / chunk_id</text>
+    <text x="380" y="838" text-anchor="middle" font-size="11" fill="#e0e7ff">取完整 HTML · LLM 归纳总结生成答案</text>
+  </g>
+  <g>
+    <rect x="582" y="750" width="368" height="118" rx="12" fill="url(#gIndigo)"/>
+    <g transform="translate(594,760)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="4" width="16" height="10" rx="2"/><path d="M8,18 h6 M11,14 v4"/></g></g>
+    <text x="766" y="794" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">前端展示</text>
+    <text x="766" y="818" text-anchor="middle" font-size="11" fill="#e0e7ff">直接渲染完整 HTML 表格 · 保留布局与合并单元格</text>
+    <text x="766" y="838" text-anchor="middle" font-size="11" fill="#e0e7ff">浏览器原生渲染 · 布局完美</text>
+  </g>
+  <g>
+    <rect x="968" y="750" width="368" height="118" rx="12" fill="url(#gIndigo)"/>
+    <g transform="translate(980,760)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="4" y="4" width="14" height="14" rx="2"/><path d="M4,9 h14 M9,9 v9"/></g></g>
+    <text x="1152" y="794" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">高亮回显</text>
+    <text x="1152" y="818" text-anchor="middle" font-size="11" fill="#e0e7ff">支持区域高亮 · 坐标覆盖展示</text>
+    <text x="1152" y="838" text-anchor="middle" font-size="11" fill="#e0e7ff">答案锚定原始表格位置</text>
+  </g>
+  <g>
+    <rect x="1354" y="750" width="368" height="118" rx="12" fill="url(#gIndigo)"/>
+    <g transform="translate(1366,760)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M14,4 h4 v14 h-4 M8,18 H4 V4 h4 M8,11 h8"/></g></g>
+    <text x="1538" y="794" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">人工介入</text>
+    <text x="1538" y="818" text-anchor="middle" font-size="11" fill="#e0e7ff">调整类型 / 修正表头 / 区域坐标</text>
+    <text x="1538" y="838" text-anchor="middle" font-size="11" fill="#e0e7ff">提升复杂布局准确率</text>
+  </g>
+
+  <!-- ================= BAND 6 技术栈与运行 ================= -->
+  <g transform="translate(90,953)">
+    <rect x="0" y="0" width="44" height="44" rx="11" fill="url(#gSlate)"/>
+    <g fill="#ffffff"><rect x="8" y="8" width="28" height="9" rx="2"/><rect x="8" y="21" width="28" height="9" rx="2" opacity="0.8"/><circle cx="13" cy="12.5" r="1.6" fill="url(#gSlate)"/><circle cx="13" cy="25.5" r="1.6" fill="url(#gSlate)"/></g>
+  </g>
+  <text x="112" y="1017" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#475569">技术栈与运行</text>
+  <rect x="180" y="900" width="1560" height="150" rx="14" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <g>
+    <rect x="196" y="916" width="368" height="118" rx="12" fill="url(#gSlate)"/>
+    <g transform="translate(208,926)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><path d="M8,5 l-4,6 l4,6 M14,5 l4,6 l-4,6"/></g></g>
+    <text x="380" y="960" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Python 库</text>
+    <text x="380" y="984" text-anchor="middle" font-size="11" fill="#e2e8f0">openpyxl / pandas / lxml</text>
+    <text x="380" y="1004" text-anchor="middle" font-size="11" fill="#e2e8f0">自研 html_table_compressor 压缩</text>
+  </g>
+  <g>
+    <rect x="582" y="916" width="368" height="118" rx="12" fill="url(#gSlate)"/>
+    <g transform="translate(594,926)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="8" cy="8" r="4"/><path d="M12,8 h8 M4,14 h16 M4,18 h10"/></g></g>
+    <text x="766" y="960" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">分类 / 表头识别</text>
+    <text x="766" y="984" text-anchor="middle" font-size="11" fill="#e2e8f0">规则 + 权重算法 · 不经 LLM</text>
+    <text x="766" y="1004" text-anchor="middle" font-size="11" fill="#e2e8f0">分类识别 &lt; 1 秒 · 清单解析 &lt; 2 秒</text>
+  </g>
+  <g>
+    <rect x="968" y="916" width="368" height="118" rx="12" fill="url(#gSlate)"/>
+    <g transform="translate(980,926)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><circle cx="11" cy="11" r="7"/><path d="M8,11 h6 M11,8 v6"/></g></g>
+    <text x="1152" y="960" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">LLM 区域识别</text>
+    <text x="1152" y="984" text-anchor="middle" font-size="11" fill="#e2e8f0">OpenAI / 开源模型（API）</text>
+    <text x="1152" y="1004" text-anchor="middle" font-size="11" fill="#e2e8f0">表单型 5~30 秒 · 一次调用</text>
+  </g>
+  <g>
+    <rect x="1354" y="916" width="368" height="118" rx="12" fill="url(#gSlate)"/>
+    <g transform="translate(1366,926)"><rect width="22" height="22" rx="6" fill="#ffffff" opacity="0.18"/><g stroke="#fff" stroke-width="1.6" fill="none"><rect x="3" y="5" width="16" height="5" rx="1.5"/><rect x="3" y="12" width="16" height="5" rx="1.5"/><circle cx="6" cy="7.5" r="1" fill="#fff"/><circle cx="6" cy="14.5" r="1" fill="#fff"/></g></g>
+    <text x="1538" y="960" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">向量库与任务调度</text>
+    <text x="1538" y="984" text-anchor="middle" font-size="11" fill="#e2e8f0">Elasticsearch（dense_vector）</text>
+    <text x="1538" y="1004" text-anchor="middle" font-size="11" fill="#e2e8f0">Celery + Redis 异步向量化</text>
+  </g>
+
+  <!-- 层间连接说明 -->
+  <text x="978" y="231" font-size="11" fill="#64748b">doc_type 字段决定后续分支处理</text>
+  <text x="978" y="397" font-size="11" fill="#64748b">清单型与表单型双格式产物入库</text>
+  <text x="978" y="563" font-size="11" fill="#64748b">表单型按区域分段入库</text>
+  <text x="978" y="729" font-size="11" fill="#64748b">chunk 命中后回表取完整 HTML</text>
+  <text x="978" y="895" font-size="11" fill="#64748b">支撑组件与性能指标</text>
+</svg>

@@ -1534,3 +1534,8 @@
 
 - 按用户要求基于 v1.0 新建 docs/images/ikc-flash-knowledge架构总图_v1.1.svg（v1.0 保留）：①左侧六层层标签由 rotate(-90) 竖排文字改为 OpenWiki-Server 同款「44×44 圆角渐变图标徽章（x=70，带内垂直居中）+ 徽章下方层名 + 副行」——调用方层人形（gBlue）、接入层地球+HTTP·HAProxy（gTeal）、API 服务层浏览器窗+routers·/api/v1（gIndigo）、任务调度层时钟+Celery·beat（gViolet）、领域能力层堆叠菱形+domain 纯函数（gCyan）、数据层数据库柱+PG·Redis（gSlate），复用图内既有渐变；②右侧「治理与观测」竖条配色对调为 wiki 同款：容器由 gGreen 渐变改浅绿底 #f0fdf4 + #10b981 绿虚线描边、标题改深绿 #047857，五张卡片由白底绿字改为 gGreen 渐变底 + 白标题 + #d1fae5 正文，底部注记改 #047857/#059669；ikc-flash-sdk 粉条不动。font-family 首位改 Noto Sans CJK SC。
 - 验证：XML 校验 OK；cairosvg 2x 渲染同名 PNG，目检六徽章图标正常无豆腐块、文字未侵入层带（左缘 x=200）、治理条与 wiki 基准一致；首轮发现标题被正文批量替换误改为 #d1fae5 已修正 #047857。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：ikc-flash-knowledge v1.1 调用方层改名与调用路由连线（2026-10-19 续）
+
+- 按用户要求就地修改 docs/images/ikc-flash-knowledge架构总图_v1.1.svg：①调用方层第二张卡「ikc-demo 样板」改名「ikc 标准知识库」（副行 BFF /bff/flash/* 转发保留）；②新增调用路由折线（stroke #94a3b8、复用 arrow marker）：agent/助手 顶边中点 (322.5,108) 上绕 y=99 横线至 ikc-core-service 顶边中点 (1027.5,108)，途经 ikc 标准知识库 (557.5) 与 open ikc platform (792.5) 各以短竖线下引箭头，左侧 x=120 加「调用路由」小注；未改 viewBox 与其余坐标。
+- 验证：XML OK；cairosvg 2x 重渲染同名 PNG，裁剪 L1 带目检连线不穿卡、箭头落点准确、文字无溢出。仅配图改动，跳过 pytest 与 Claude 只读审查。

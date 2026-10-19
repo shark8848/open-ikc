@@ -1529,3 +1529,8 @@
 
 - 按用户要求把 docs/images/deep-agent架构总图_v1.0.svg 右侧竖条配色改为与 ikc-video-service架构总图_v1.1 一致（原为「整条实心绿渐变 + 白色半透明虚线卡片」，video 为「浅绿虚线容器 + 实心绿渐变卡片」，二者反色）：①外层竖条 rect `fill=url(#gGreen)` → `fill=#f0fdf4 stroke=#10b981 stroke-width=1.5 stroke-dasharray=6 4`；②条标题「配置与运行纪律」文字 `#ffffff` → `#047857`；③五张分区卡片 rect 由 `fill=#ffffff fill-opacity=0.13 stroke=#ffffff...dasharray` → `fill=url(#gGreen)`（replace_all）；卡内标题保持白色、正文保持 #d1fae5（与 video 卡片文字方案一致）。
 - 验证：XML 校验 OK；注入 Noto Sans CJK SC 后 cairosvg 2x 渲染覆盖 v1.0.png，右侧裁切目检浅绿虚线容器+五张实心绿卡+白/浅绿文字清晰无溢出。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：ikc-flash-knowledge 架构总图 v1.1 左侧 wiki 徽章化 + 治理条 wiki 配色（2026-10-19）
+
+- 按用户要求基于 v1.0 新建 docs/images/ikc-flash-knowledge架构总图_v1.1.svg（v1.0 保留）：①左侧六层层标签由 rotate(-90) 竖排文字改为 OpenWiki-Server 同款「44×44 圆角渐变图标徽章（x=70，带内垂直居中）+ 徽章下方层名 + 副行」——调用方层人形（gBlue）、接入层地球+HTTP·HAProxy（gTeal）、API 服务层浏览器窗+routers·/api/v1（gIndigo）、任务调度层时钟+Celery·beat（gViolet）、领域能力层堆叠菱形+domain 纯函数（gCyan）、数据层数据库柱+PG·Redis（gSlate），复用图内既有渐变；②右侧「治理与观测」竖条配色对调为 wiki 同款：容器由 gGreen 渐变改浅绿底 #f0fdf4 + #10b981 绿虚线描边、标题改深绿 #047857，五张卡片由白底绿字改为 gGreen 渐变底 + 白标题 + #d1fae5 正文，底部注记改 #047857/#059669；ikc-flash-sdk 粉条不动。font-family 首位改 Noto Sans CJK SC。
+- 验证：XML 校验 OK；cairosvg 2x 渲染同名 PNG，目检六徽章图标正常无豆腐块、文字未侵入层带（左缘 x=200）、治理条与 wiki 基准一致；首轮发现标题被正文批量替换误改为 #d1fae5 已修正 #047857。仅配图改动，跳过 pytest 与 Claude 只读审查。

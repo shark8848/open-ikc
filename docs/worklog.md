@@ -1581,3 +1581,10 @@
 - 原「智能知识中心」生命线头部框改用合理内部模块名「知识管理与发布」（副标题 采编·图谱构建·治理·索引发布 保留），范围语义上移到新范围框标题。
 - 因范围框标题胶囊需顶部空间：viewBox 顶由 100 上移到 70、height 980→1010（底部仍 1080），width 保持 1920。
 - 验证：XML OK；原 SVG 保留跨平台字体栈不动，仅临时副本注入 Noto Sans CJK SC 置首，cairosvg scale=2 重渲染仓库 PNG（3840×2020），fc-match 确认字体、目检全图中文无豆腐块、范围框与四阶段背景/连线无错位。仅配图改动，跳过 pytest 与 Claude 只读审查。
+
+### 任务：生成「平台到最终 Wiki 落库」时序图 v1.0（2026-10-21）
+
+- 依据 `ikc-open-platform`（`app/services/wiki.py`、`app/core/gateway/instance_client.py`）、`ikc-core-service`（`build_service.py`、`wiki_write_service.py`、`/internal/wiki/build`）、`openwiki-server`（HTTP API、`OpenWikiService.build_from_doc`、Celery worker、SQLite store、`core_writeback.py`）与 `ikc-sdk-lib` 稳定 ID 契约，新建 `docs/images/平台到Wiki落库时序图_v1.0.mmd/.svg/.png`。
+- 主链路覆盖：调用方 SDK → 平台北向 API（AuthN/AuthZ + 实例路由）→ `ikc-core-sdk` → core W-06 → openwiki HTTP API → 内核/OKF/规则切页 → 引擎 SQLite（引擎侧视图）→ `core_writeback` → core `/internal/wiki/build` → PostgreSQL `wiki_page` / `wiki_page_version`（`content_state=draft`）；另列 `async=true` 的 Celery 投递与 W-07 轮询支路、发布审核 `draft→reviewing→published`。
+- 明确 SDK 边界：本主链使用 `ikc-open-platform-sdk` 与 `ikc-core-sdk`；core→engine 为 `BuildEngineClient`（httpx），`openwiki-server-sdk` 是引擎独立接入 SDK，不在平台主链。图内注明引擎 SQLite 不是最终真相，PostgreSQL 才是权威落库。
+- 验证：Mermaid CLI 11.17.0 + 本地 Chromium 渲染 SVG/PNG，PNG 目检中文正常、组件与箭头无重叠；仅新增配图与源文件，无代码改动，跳过 pytest 与 Claude 只读审查。

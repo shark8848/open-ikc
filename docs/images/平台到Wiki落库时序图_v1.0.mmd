@@ -1,0 +1,96 @@
+sequenceDiagram
+    title 平台到最终 Wiki 落库时序图（W-06 / W-07）
+    autonumber
+    actor Caller as 业务应用 / Agent / CLI / MCP
+    box rgb(248,250,252) 开放平台
+        participant SDK as ikc-open-platform-sdk<br/>OpenPlatformClient.wiki
+        participant Platform as ikc-open-platform<br/>北向 API / W-06
+    end
+    box rgb(239,246,255) 实例 core
+        participant CSDK as ikc-core-sdk<br/>AsyncIkCCoreClient
+        participant Core as ikc-core-service<br/>WikiBuildService
+        participant CoreInt as /internal/wiki/build<br/>WikiWriteService
+        participant PG as PostgreSQL<br/>wiki_page / wiki_page_version
+        participant Gov as review_flow / audit_log
+    end
+    box rgb(255,247,237) Wiki 引擎
+        participant EngAPI as openwiki-server<br/>HTTP API
+        participant EngSvc as OpenWikiService
+        participant Kernel as OpenWiki 内核 / OKF<br/>Node CLI / 规则切页
+        participant EngDB as 引擎 SQLite<br/>wikis / pages / jobs
+        participant MQ as Redis / Celery
+        participant Worker as openwiki worker
+        participant WB as core_writeback<br/>回写适配器
+    end
+
+    Caller->>SDK: wiki.build(kbId, docId, markdown, wikiConfig, async?)
+    SDK->>Platform: POST /api/v1/knowledge-bases/{kbId}/wiki/build<br/>Bearer + X-Request-Id
+    Note over Platform: AuthN + AUTHZ(write kb)<br/>解析实例 + 补 23 位 traceId
+    Platform->>CSDK: forward_request(...)
+    CSDK->>Core: POST 同一路径 + 身份/追踪头
+    Core->>Core: 校验 kb / doc / kbMode<br/>检查引擎配置
+    Core->>EngAPI: GET /api/v1/wiki/wikis（ensure_resource）
+    EngAPI-->>Core: wikiId
+    Core->>EngAPI: POST /api/v1/wiki/wikis/{wikiId}/build
+    EngAPI->>EngSvc: build_from_doc(docId, markdown, wikiConfig)
+    EngSvc->>Kernel: openwiki / OKF / 规则切页
+    Kernel-->>EngSvc: pages[]：stableKey/title/markdown/fields/links
+    Note over EngSvc,WB: 双方按 ikc-sdk-lib 契约派生 wiki_ / page_ 稳定 ID
+    EngSvc->>EngDB: UPSERT pages + deprecate_doc_pages
+    EngDB-->>EngSvc: pages saved
+    EngSvc->>WB: write_pages(kbId, docId, pages, dedup, mode)
+    WB->>CoreInt: POST /internal/wiki/build<br/>X-Internal-Token
+    CoreInt->>CoreInt: validate_target + upsert_pages
+    CoreInt->>PG: UPSERT wiki_page<br/>revision_no+1（内容变化时）<br/>content_state=draft<br/>INSERT wiki_page_version
+    CoreInt->>Gov: audit_log(wiki.build.writeback)
+    CoreInt-->>WB: landed counts
+    WB-->>EngSvc: writeback {ok:true}
+    EngSvc-->>EngAPI: result + writeback
+    EngAPI-->>Core: 统一壳 data
+    Core->>Gov: audit_log(wiki.build)
+    Core-->>CSDK: 000000 + data
+    CSDK-->>Platform: envelope
+    Platform-->>SDK: 000000 + data
+    SDK-->>Caller: WikiBuildResult<br/>created / updated / deprecated
+    Note over PG: 最终权威落库：wiki_page + wiki_page_version<br/>引擎 SQLite 只是引擎侧视图，不是最终真相
+
+    opt async=true（W-06 投递 / W-07 轮询；复用上面的构建与回写）
+        Caller->>SDK: wiki.build(..., async=true)
+        SDK->>Platform: POST .../wiki/build {"async": true}
+        Platform->>CSDK: forward_request
+        CSDK->>Core: POST ...
+        Core->>EngAPI: POST .../wiki/build {"async": true}
+        EngAPI->>EngSvc: submit_job("build", payload)
+        EngSvc->>EngDB: INSERT job(status=pending)
+        EngSvc->>MQ: send_task(openwiki_server.build, jobId)
+        EngSvc-->>EngAPI: {jobId, status:pending}
+        EngAPI-->>Core: job view
+        Core-->>CSDK: job view
+        CSDK-->>Platform: job view
+        Platform-->>SDK: jobId
+        SDK-->>Caller: WikiBuildJobView
+        MQ->>Worker: 消费 build 任务
+        Worker->>EngSvc: build_from_doc(...)
+        Note over Worker,WB: 构建、引擎 SQLite UPSERT、core 回写与上方 10–21 步相同
+        Worker->>EngDB: update_job(success, result)
+        Caller->>SDK: wiki.job(kbId, jobId)
+        SDK->>Platform: GET .../wiki/jobs/{jobId}
+        Platform->>CSDK: forward_request
+        CSDK->>Core: GET ...
+        Core->>EngAPI: GET /api/v1/wiki/jobs/{jobId}
+        EngAPI->>EngSvc: get_job(jobId)
+        EngSvc->>EngDB: SELECT job
+        EngDB-->>EngSvc: status + result
+        EngSvc-->>EngAPI: job view
+        EngAPI-->>Core: job view
+        Core-->>CSDK: job view
+        CSDK-->>Platform: job view
+        Platform-->>SDK: job view
+        SDK-->>Caller: status=success
+    end
+
+    opt 发布生效（治理审核）
+        Note over CoreInt,Gov: 落库后 content_state=draft<br/>审核：draft→reviewing→published<br/>结果落 review_flow(wiki_publish) + audit_log
+    end
+
+    Note over Core,EngAPI: core→engine 使用 BuildEngineClient(httpx)；<br/>openwiki-server-sdk 是引擎独立接入 SDK，不在本主链
